@@ -34,3 +34,9 @@ Release/*
 ehthumbs.db
 Icon?
 Thumbs.db
+
+
+# Editor Shit #
+###############
+.project
+.cproject
