@@ -9,6 +9,7 @@
 #include <errno.h>		//Error number definitions
 #include <termios.h>	//POSIX terminal control definitions
 #include <iostream>		//Input-Output Streams
+#include <SFML/System.hpp> //SFML System header. For pause.
 
 #include "scon.h"		//WHY do i have to include what i've already include? who knows, i do.
 
@@ -100,18 +101,21 @@ void req_switches(void){
 };
 
 void read_switches(void){
-	char switches[4] = {'a','a','a','a'};
+	char switches[9] = {'a','a','a','a','a','a','a','a','a'};
 
 	char* pSwitches = switches;
 	int allOk = 0;
 	req_switches();
 
+	sf::Sleep(0.2f);
+
 	while(allOk == 0){
-		allOk = read(fd,pSwitches, 4);
+		allOk = read(fd,pSwitches, 9);
 	};
 
+
 	std::cout << "\n";
-	for (int i=0; i < 4; i++){
+	for (int i=0; i < 9; i++){
 		std::cout << switches[i];
 	};
 

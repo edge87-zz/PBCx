@@ -16,7 +16,7 @@ void loop() {
       delay(1000);
       digitalWrite(13,LOW);
       
-      Serial.write("ABCD");
+      Serial.write("xABCDEFGH");
     };
   };
 };
