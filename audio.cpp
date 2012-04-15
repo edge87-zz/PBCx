@@ -8,6 +8,8 @@
 #include <iostream>
 #include <SFML/Audio.hpp>
 
+#include "audio.hpp"
+
 
 void playTest(){
     sf::SoundBuffer Buffer;

@@ -1,4 +1,7 @@
 #include "scon.h"
+#include "audio.hpp"
+//#include "video.h"
+
 #include <iostream>
 
 int main (){
