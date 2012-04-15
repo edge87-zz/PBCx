@@ -84,5 +84,38 @@ int set_servo(char servo){
 	return 0;
 };
 
+void req_switches(void){
+	char reqCode = 62;
+	int written = 0;
+	char* sendReq = &reqCode;
+
+	written = write(fd, sendReq, 1);
+
+	if (written == 0){
+		//return 1;
+		std::cout<< "Sending request for switches failed";
+	};
+
+	//return 0;
+};
+
+void read_switches(void){
+	char switches[4] = {'a','a','a','a'};
+
+	char* pSwitches = switches;
+	int allOk = 0;
+	req_switches();
+
+	while(allOk == 0){
+		allOk = read(fd,pSwitches, 4);
+	};
+
+	std::cout << "\n";
+	for (int i=0; i < 4; i++){
+		std::cout << switches[i];
+	};
+
+};
+
 
 
