@@ -1,9 +1,9 @@
 //Serial CONnection header file
 int open_port(void);
 
-int fire_coil(char);
+void fire_coil(int, int);
 
-int set_servo(char);
+void set_servo(int, int);
 
 void req_switches(void);
 

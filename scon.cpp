@@ -15,9 +15,17 @@
 
 int fd;					//File descriptor for the port
 
+//OPCODE Constants
+const int OPC_COIL = 160;
+const int OPC_SERVO = 128;
+const int OPC_LIGHT = 64;
+const char OPC_RQSWITCH = (char)62;
+const char OPC_RQCABINET = (char)61;
+const char OPC_SENDRGB = (char)60;
+const char OPC_AUTOCOIL = (char)59;
+
 //open_port() - Opens serial port and returns file descriptor on success or -1 on error
 int open_port(void){
-
 	struct termios options;
 
 	fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
@@ -42,9 +50,6 @@ int open_port(void){
 
 		options.c_cflag &= ~CRTSCTS;			//disable flow control
 
-
-
-
 		tcsetattr(fd, TCSANOW, &options);			//Set the new options for the port "NOW"
 
 		std::cout << "seems like everything is ok, keep going\n";
@@ -53,36 +58,78 @@ int open_port(void){
 	return true;
 };
 
-int fire_coil(char coil){
-	//Coil should be between char 160 (for 0 coil) and 191 (coil 31)
-	if (coil > (char)192 || coil < (char)159){
-		std::cout << "Not a valid coil - Not Firing\n";
-		return 1;
-	}
-
+void fire_coil(int coil, int duration){
 	int written = 0;
+	char charConvert;
 	char* sendingThis;
 
-	sendingThis = &coil;
+	if (coil >= 32){
+		std::cout << "Coil out of Range\n";
+		return;
+	};
 
-	std::cout << "Firing coil " <<  *sendingThis << "\n";
+	if (duration >= 256){
+		std::cout << "Duration out of Range\n";
+		return;
+	};
+
+	coil += OPC_COIL;
+
+	charConvert = (char)coil;
+
+	sendingThis = &charConvert;
+
+	std::cout << "Firing coil " <<  *sendingThis << " for " << duration << "\n";
 
 	written = write(fd, sendingThis, 1);
 
-	if (written < 0 ){
-				//Failed to write data to serial port
+	charConvert = (char)duration;
+	sendingThis = &charConvert;
+
+	written += write(fd,sendingThis, 1);
+
+	if (written != 2 ){
+				//Failed to write 2 bytes of data to serial port
 				std::cout << "Failed to write to port \n";
-				return 1;
+				return;
 	};
-	return 0;
 };
 
-int set_servo(char servo){
-	//Servo should be between char 128 (for servo 0) and 159 (servo 31)
-	if (servo > (char)159 || servo < (char)127){
-		std::cout << "Not a vaild servo - Not setting\n" ;
-	}
-	return 0;
+void set_servo(int servo, int position){
+	int written = 0;
+	char charConvert;
+	char* sendingThis;
+
+	if (servo >= 32){
+		std::cout << "Servo out of Range\n";
+		return;
+	};
+
+	if (position >= 181){
+		std::cout << "Position out of Range\n";
+		return;
+	};
+
+	servo += OPC_SERVO;
+
+	charConvert = (char)servo;
+
+	sendingThis = &charConvert;
+
+	std::cout << "Setting servo " <<  *sendingThis << " to " << position << "\n";
+
+	written = write(fd, sendingThis, 1);
+
+	charConvert = (char)position;
+	sendingThis = &charConvert;
+
+	written += write(fd,sendingThis, 1);
+
+	if (written != 2 ){
+		//Failed to write 2 bytes of data to serial port
+		std::cout << "Failed to write to port \n";
+		return;
+	};
 };
 
 void req_switches(void){
