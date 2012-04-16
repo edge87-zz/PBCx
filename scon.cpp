@@ -113,7 +113,6 @@ void read_switches(void){
 		allOk = read(fd,pSwitches, 9);
 	};
 
-
 	std::cout << "\n";
 	for (int i=0; i < 9; i++){
 		std::cout << switches[i];
