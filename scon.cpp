@@ -19,10 +19,18 @@ int fd;					//File descriptor for the port
 const int OPC_COIL = 160;
 const int OPC_SERVO = 128;
 const int OPC_LIGHT = 64;
+
+const char OPC_EOL = (char)255;
+const char OPC_RQLIGHT = (char)63;
 const char OPC_RQSWITCH = (char)62;
 const char OPC_RQCABINET = (char)61;
 const char OPC_SENDRGB = (char)60;
 const char OPC_AUTOCOIL = (char)59;
+
+//Light Constant options
+const int PULSATE = 32;
+const int STROBE = 16;
+const int BLINK = 8;
 
 //open_port() - Opens serial port and returns file descriptor on success or -1 on error
 int open_port(void){
@@ -132,8 +140,88 @@ void set_servo(int servo, int position){
 	};
 };
 
+void set_light(int light, int option, int level){
+	int written = 0;
+	char charConvert;
+	char* sendingThis;
+
+	if (light > 63 || light < 0){
+		std::cout << "\nLight is outside range of 0 - 63\n";
+	};
+
+	if (option != 32 || option != 16 || option != 8){
+		std::cout << "\nInvalid option light";
+	};
+
+	if (level > 7 || level < 0){
+		std::cout << "\nLevel is Invalid\n";
+	};
+
+	light += OPC_LIGHT;
+	level += option;	//Level and options are combined into a single byte
+
+	charConvert = (char)light;
+	sendingThis = &charConvert;
+	written = write(fd, sendingThis, 1);
+
+	charConvert = (char)level;
+	sendingThis = &charConvert;
+	written += write(fd, sendingThis, 1);
+
+	if (written != 2 ){
+		//Failed to write 2 bytes of data to serial port
+		std::cout << "Failed to write to port \n";
+		return;
+	};
+
+};
+
+void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb){
+	int argb[6];
+	char rgbsend[6];
+	int written = 0;
+	char *sendingThis;
+	char charTemp;
+
+	argb[0] = lr;
+	argb[1] = lg;
+	argb[2] = lb;
+	argb[3] = rr;
+	argb[4] = rg;
+	argb[5] = rb;
+
+	for(int i=0; i < 6; i++){
+		if(argb[i]> 255 || argb[i] < 0){
+			std::cout << "\nRGB Value out of range\n";
+			return;
+		};
+
+		rgbsend[i] = (char)argb[i];
+	};
+
+	charTemp = OPC_SENDRGB;	//how ugly, can't send constant's address.
+	sendingThis = &charTemp;
+	written = write(fd, sendingThis, 1);
+
+	sendingThis = &rgbsend[0];
+	written += write(fd, sendingThis, 6);
+
+	charTemp = OPC_EOL;
+	sendingThis = &charTemp;
+	written += write(fd, sendingThis, 1);
+
+	if (written != 8){
+		std::cout << "Failed to write RGB colors";
+		return;
+	};
+
+	return;
+};
+
+
+
 void req_switches(void){
-	char reqCode = 62;
+	char reqCode = OPC_RQSWITCH;
 	int written = 0;
 	char* sendReq = &reqCode;
 
