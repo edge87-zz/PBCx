@@ -1,8 +1,21 @@
 #include "scon.h"
 #include "audio.hpp"
-//#include "video.h"
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 #include <iostream>
+
+
+//function prototypes
+void videokiller(void);
+
+
+sf::Window App(sf::VideoMode(800, 600, 32), "SFML Window");
+
+void video_startup(void){
+	//sets us full screen
+	App.Create(sf::VideoMode(800, 600, 32), "SFML Window", sf::Style::Fullscreen);
+};
 
 int main (){
 	int sPort = -1;
@@ -12,18 +25,11 @@ int main (){
 		std::cout << "Serial Port is Open and Ready";
 	};
 
-	int coil = 0;
-	int duration = 0;
+	video_startup();
 
-	while (true){
-		std::cout << "\nInput the coil number to fire and then duration\n";
-		std::cout << "\nIf you put a negative number in i'll bail out and crash\n";
 
-		if (coil == -1){
-			break;
-		};
-
-		fire_coil(coil, duration);
+	while(App.IsOpened()){
+		videokiller();
 	};
 
 	close(sPort);	//destroy serial connection on our way out.
@@ -31,6 +37,20 @@ int main (){
 	return 0;
 };
 
-
+void videokiller(void){
+	App.Display();
+	sf::Event Event;
+	while (App.GetEvent(Event))
+	{
+	    // Window closed
+	    if (Event.Type == sf::Event::Closed){
+	        App.Close();
+	    };
+	    // Escape key pressed
+	    if ((Event.Type == sf::Event::KeyPressed) && (Event.Key.Code == sf::Key::Escape)){
+	    	App.Close();
+	    };
+	}
+};
 
 
