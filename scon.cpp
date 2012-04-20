@@ -20,12 +20,12 @@ const int OPC_COIL = 160;
 const int OPC_SERVO = 128;
 const int OPC_LIGHT = 64;
 
-const char OPC_EOL = (char)255;
-const char OPC_RQLIGHT = (char)63;
-const char OPC_RQSWITCH = (char)62;
-const char OPC_RQCABINET = (char)61;
-const char OPC_SENDRGB = (char)60;
-const char OPC_AUTOCOIL = (char)59;
+const unsigned char OPC_EOL = (char)255;
+const unsigned char OPC_RQLIGHT = (char)63;
+const unsigned char OPC_RQSWITCH = (char)62;
+const unsigned char OPC_RQCABINET = (char)61;
+const unsigned char OPC_SENDRGB = (char)60;
+const unsigned char OPC_AUTOCOIL = (char)59;
 
 //Light Constant options
 const int PULSATE = 32;
@@ -40,7 +40,7 @@ int open_port(void){
 
 	if (fd == -1){
 		//Could not open the port.
-		std::cout << "Port Failed to Open";
+		std::cout << "Port Failed to Open!!!";
 	}
 	else{
 		fcntl(fd, F_SETFL, FNDELAY); // Sets the read() function to return NOW and not wait for data to enter buffer if there isn't anything there.
@@ -60,7 +60,7 @@ int open_port(void){
 
 		tcsetattr(fd, TCSANOW, &options);			//Set the new options for the port "NOW"
 
-		std::cout << "seems like everything is ok, keep going\n";
+		std::cout << "Serial Port OK!\n";
 	};
 
 	return true;
@@ -68,8 +68,8 @@ int open_port(void){
 
 void fire_coil(int coil, int duration){
 	int written = 0;
-	char charConvert;
-	char* sendingThis;
+	unsigned char charConvert;
+	unsigned char* sendingThis;
 
 	if (coil >= 32){
 		std::cout << "Coil out of Range\n";
@@ -105,8 +105,8 @@ void fire_coil(int coil, int duration){
 
 void set_servo(int servo, int position){
 	int written = 0;
-	char charConvert;
-	char* sendingThis;
+	unsigned char charConvert;
+	unsigned char* sendingThis;
 
 	if (servo >= 32){
 		std::cout << "Servo out of Range\n";
@@ -142,8 +142,8 @@ void set_servo(int servo, int position){
 
 void set_light(int light, int option, int level){
 	int written = 0;
-	char charConvert;
-	char* sendingThis;
+	unsigned char charConvert;
+	unsigned char* sendingThis;
 
 	if (light > 63 || light < 0){
 		std::cout << "\nLight is outside range of 0 - 63\n";
@@ -178,10 +178,10 @@ void set_light(int light, int option, int level){
 
 void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb){
 	int argb[6];
-	char rgbsend[6];
+	unsigned char rgbsend[6];
 	int written = 0;
-	char *sendingThis;
-	char charTemp;
+	unsigned char *sendingThis;
+	unsigned char charTemp;
 
 	argb[0] = lr;
 	argb[1] = lg;
@@ -219,30 +219,28 @@ void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb){
 };
 
 void req_switches(void){
-	char reqCode = OPC_RQSWITCH;
+	unsigned char reqCode = OPC_RQSWITCH;
 	int written = 0;
-	char* sendReq = &reqCode;
+	unsigned char* sendReq = &reqCode;
 
 	written = write(fd, sendReq, 1);
-	std::cout << "\nOpcode request for switches is away\n";
 
-	if (written == 0){
+	if (written <= 0){
 		//return 1;
-		std::cout<< "Sending request for switches failed";
+		std::cout<< "Sending request for switches FAILED";
 	};
 
 	return;
 };
 
 void req_cabinet(void){
-	char reqCode = OPC_RQCABINET;
+	unsigned char reqCode = OPC_RQCABINET;
 	int written = 0;
-	char* sendReq = &reqCode;
+	unsigned char* sendReq = &reqCode;
 
 	written = write(fd, sendReq, 1);
-	std::cout << "\nOpcode request for Cabinet Switches is away\n";
 
-	if (written == 0){
+	if (written <= 0){
 		//return 1;
 		std::cout<< "Sending request for Cabinet Switches failed";
 	};
@@ -250,73 +248,66 @@ void req_cabinet(void){
 	return;
 };
 
-void read_switches(char* switches){
-	int totalRead = -1;
-	char buffer[8] = {(char)0};
-	char opcode = (char)0;
-
-	char* pSwitches = buffer;
-	char* pOpcode = &opcode;
+void read_switches(unsigned char* switches){
+	int bytesRead = 0;
+	unsigned char buffer[8] = {(char)0};
+	unsigned char opcode[1] = {(char)0};
 
 
 
 	//wait for our opcode
-	while(totalRead == -1){
-		totalRead = read(fd,pOpcode, 1);
+	while (opcode[0] == 0){
+		read(fd,opcode, 1);
 	};
 
 	//If switch opcode get the next 8 bytes
-	if(opcode == OPC_RQSWITCH){
-		for(int i=0; i < 8; i++){
-			pSwitches = &buffer[i];
-			std::cout << "\nReading byte " << i << "\n";
-			read(fd,pSwitches, 1);
+	if(opcode[0] == OPC_RQSWITCH){
+		std::cout << "got our Playfield Switches opcode correctly\n";
+		for(int i=0; i<8; i++){
+			bytesRead = 0; //reset this value
+			while(bytesRead <= 0){
+				bytesRead = read(fd,&buffer[i], 1);
+			};
 		};
-		read(fd,pOpcode, 1);
-		if (opcode == OPC_EOL){
-			std::cout << "\nSuccess read EOL\n";
-		};
+		std::cout << "we got all the playfield switches\n";
+	};
+
+	read(fd,opcode, 1);
+
+	if (opcode[0] == OPC_EOL){
+			std::cout << "Success read EOL-playfield switches\n";
 	};
 
 	//copy our buffer to the global array
-	for(int j=0;j<8; j++){
-		std::cout << "\nSetting global array position " << j << "\n";
-		switches[j] |= (~buffer[j]);
+	for(int j = 0; j < 8; j++){
+		switches[j] |= (OPC_EOL ^ buffer[j]);
 	};
 	return;
 };
 
-void read_cabinet(char* cabinet){
-	int totalRead = -1;
-	char buffer[2] = {(char)0};
-	char opcode = (char)0;
-
-	char* pSwitches = buffer;
-	char* pOpcode = &opcode;
+void read_cabinet(unsigned char* cabinet){
+	unsigned char buffer[2] = {(char)0};
+	unsigned char opcode[1] = {(char)0};
 
 	//wait for our opcode
-	while(totalRead == -1){
-		totalRead = read(fd,pOpcode, 1);
+	while (opcode[0]== 0){
+		read(fd,opcode, 1);
 	};
 
-	if(opcode == OPC_RQCABINET){
-		for(int i=0; i<2; i++){
-			pSwitches = &buffer[i];
-			read(fd,pSwitches, 1);
-		};
+	if(opcode[0] == OPC_RQCABINET){
+		std::cout << "See our opcode for cabinet\n";
 
-		read(fd,pOpcode, 1); //Eat end of line
+		read(fd,buffer, 2);
 
-		if (opcode == OPC_EOL){
-			std::cout << "\nSuccess read EOL\n";
+		read(fd,opcode, 1); //Eat end of line
+
+		if (opcode[0] == OPC_EOL){
+			std::cout << "Success read EOL for cabinet\n";
 		};
 
 		for(int j=0; j<2; j++){
-			cabinet[j] |= (~buffer[j]);
+			cabinet[j] |= (OPC_EOL ^ buffer[j]);
 		};
 	};
 	return;
 };
-
-
-

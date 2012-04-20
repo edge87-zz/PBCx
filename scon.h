@@ -13,9 +13,9 @@ void req_switches(void);
 
 void req_cabinet(void);
 
-void read_switches(char*);
+void read_switches(unsigned char*);
 
-void read_cabinet(char*);
+void read_cabinet(unsigned char*);
 
 
 

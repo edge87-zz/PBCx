@@ -1,4 +1,14 @@
- int first = 0;
+byte one = B10101000;
+byte two = B10101000;
+byte three = B10101000;
+byte four = B10101000;
+byte five = B10101000;
+byte six = B10101000;
+byte seven = B10101000;
+byte eight = B10101000;
+
+byte cab0 = B11101111;
+byte cab1 = B11111111;
 
 void setup() {
   pinMode(13, OUTPUT);      
@@ -15,28 +25,24 @@ void loop() {
 
     //Check if it is our request switches
     if (incomingByte == 62){
-      if (first == 0){
-        Serial.write(62);//opcode for Switches next
-        Serial.write(~(65)); //byte 0
-        Serial.write(~(66)); //byte 1
-        Serial.write(~(67)); //byte 2
-        Serial.write(~(68)); //byte 3
-        Serial.write(~(69)); //byte 4
-        Serial.write(~(70)); //byte 5
-        Serial.write(~(71)); //byte 6
-        Serial.write(~(72)); //byte 7
-        Serial.write(255);  //end of line
-        first = 0;
-      };
+      digitalWrite(13, HIGH);
+      Serial.write(62);
+      Serial.write(one);
+      Serial.write(two);
+      Serial.write(three);
+      Serial.write(four);
+      Serial.write(five);
+      Serial.write(six);
+      Serial.write(seven);
+      Serial.write(eight);
+      Serial.write(255);
      };
      
-    if (incomingByte == 61){
-      digitalWrite(13, HIGH);      
-      Serial.write(61);  //Cabinet buttons to follow
-      Serial.write(239);  //Cabinet Switch - Start Button
-      Serial.write(155);  //who cares
-      Serial.write(255);  //end of line
-      
+    if (incomingByte == 61){    
+      Serial.write(61);
+      Serial.write(cab0);
+      Serial.write(cab1);
+      Serial.write(255);  
     };
   };
 };

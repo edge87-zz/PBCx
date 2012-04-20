@@ -35,33 +35,34 @@ void switch_thread(void);
 
 //global variables
 sf::Window App(sf::VideoMode(800, 600, 32), "SFML Window");
-char switches[8] = {(char)0};
-char cabinet[2] = {(char)0};
+unsigned char switches[8] = {(char)0};
+unsigned char cabinet[2] = {(char)0};
 
 int main (){
 	int sPort = -1;
 	sPort = open_port();
-
-	if (sPort){
-		std::cout << "Serial Port is Open and Ready";
-	};
+	sf::Sleep(2.0f);
 
 	//video_startup(); // uncomment for FULL screen
 
 	switch_thread();
 
 	if (bit4(cabinet[0])){
-		std::cout << "cabinet button hit" ;
+		std::cout << "\ncabinet button hit\n" ;
+
+	}
+	else{
+		std::cout << "\nfailed to see button hit\n";
 	};
 
+	switch_thread();
 
 	while(App.IsOpened()){
 		videokiller();
-
 	};
 
 	close(sPort);	//destroy serial connection on our way out.
-
+	std::cout << "destroyed serial interface";
 	return 0;
 };
 
@@ -78,7 +79,7 @@ void videokiller(void){
 	    if ((Event.Type == sf::Event::KeyPressed) && (Event.Key.Code == sf::Key::Escape)){
 	    	App.Close();
 	    };
-	}
+	};
 };
 
 void video_startup(void){
@@ -87,15 +88,15 @@ void video_startup(void){
 };
 
 void switch_thread(void){
+
 	req_switches();
 
 	read_switches(switches);
-
-	sf::Sleep(1.0f);
 
 	req_cabinet();
 
 	read_cabinet(cabinet);
 
+	return;
 };
 
