@@ -11,7 +11,11 @@ void set_rgb(int, int, int, int, int, int);
 
 void req_switches(void);
 
-void read_switches(void);
+void req_cabinet(void);
+
+void read_switches(char*);
+
+void read_cabinet(char*);
 
 
 

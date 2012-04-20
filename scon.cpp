@@ -11,7 +11,7 @@
 #include <iostream>		//Input-Output Streams
 #include <SFML/System.hpp> //SFML System header. For pause.
 
-#include "scon.h"		//WHY do i have to include what i've already include? who knows, i do.
+#include "scon.h"		//WHY do i have to include what i've already included? who knows, i do.
 
 int fd;					//File descriptor for the port
 
@@ -218,41 +218,104 @@ void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb){
 	return;
 };
 
-
-
 void req_switches(void){
 	char reqCode = OPC_RQSWITCH;
 	int written = 0;
 	char* sendReq = &reqCode;
 
 	written = write(fd, sendReq, 1);
+	std::cout << "\nOpcode request for switches is away\n";
 
 	if (written == 0){
 		//return 1;
 		std::cout<< "Sending request for switches failed";
 	};
 
-	//return 0;
+	return;
 };
 
-void read_switches(void){
-	char switches[9] = {'a','a','a','a','a','a','a','a','a'};
+void req_cabinet(void){
+	char reqCode = OPC_RQCABINET;
+	int written = 0;
+	char* sendReq = &reqCode;
 
-	char* pSwitches = switches;
-	int allOk = 0;
-	req_switches();
+	written = write(fd, sendReq, 1);
+	std::cout << "\nOpcode request for Cabinet Switches is away\n";
 
-	sf::Sleep(0.2f);
-
-	while(allOk == 0){
-		allOk = read(fd,pSwitches, 9);
+	if (written == 0){
+		//return 1;
+		std::cout<< "Sending request for Cabinet Switches failed";
 	};
 
-	std::cout << "\n";
-	for (int i=0; i < 9; i++){
-		std::cout << switches[i];
+	return;
+};
+
+void read_switches(char* switches){
+	int totalRead = -1;
+	char buffer[8] = {(char)0};
+	char opcode = (char)0;
+
+	char* pSwitches = buffer;
+	char* pOpcode = &opcode;
+
+
+
+	//wait for our opcode
+	while(totalRead == -1){
+		totalRead = read(fd,pOpcode, 1);
 	};
 
+	//If switch opcode get the next 8 bytes
+	if(opcode == OPC_RQSWITCH){
+		for(int i=0; i < 8; i++){
+			pSwitches = &buffer[i];
+			std::cout << "\nReading byte " << i << "\n";
+			read(fd,pSwitches, 1);
+		};
+		read(fd,pOpcode, 1);
+		if (opcode == OPC_EOL){
+			std::cout << "\nSuccess read EOL\n";
+		};
+	};
+
+	//copy our buffer to the global array
+	for(int j=0;j<8; j++){
+		std::cout << "\nSetting global array position " << j << "\n";
+		switches[j] |= (~buffer[j]);
+	};
+	return;
+};
+
+void read_cabinet(char* cabinet){
+	int totalRead = -1;
+	char buffer[2] = {(char)0};
+	char opcode = (char)0;
+
+	char* pSwitches = buffer;
+	char* pOpcode = &opcode;
+
+	//wait for our opcode
+	while(totalRead == -1){
+		totalRead = read(fd,pOpcode, 1);
+	};
+
+	if(opcode == OPC_RQCABINET){
+		for(int i=0; i<2; i++){
+			pSwitches = &buffer[i];
+			read(fd,pSwitches, 1);
+		};
+
+		read(fd,pOpcode, 1); //Eat end of line
+
+		if (opcode == OPC_EOL){
+			std::cout << "\nSuccess read EOL\n";
+		};
+
+		for(int j=0; j<2; j++){
+			cabinet[j] |= (~buffer[j]);
+		};
+	};
+	return;
 };
 
 
