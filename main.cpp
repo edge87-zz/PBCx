@@ -32,41 +32,57 @@
 void videokiller(void);
 void video_startup();
 void switch_thread(void);
+void load_fonts(void);
 
 //global variables
-sf::Window App(sf::VideoMode(800, 600, 32), "SFML Window");
+sf::RenderWindow App(sf::VideoMode(800, 600, 32), "SFML Window");
 unsigned char switches[8] = {(char)0};
 unsigned char cabinet[2] = {(char)0};
+
+//globals but shouldn't be
+sf::Font MyFont;
+sf::String Text;
 
 int main (){
 	int sPort = -1;
 	sPort = open_port();
 	sf::Sleep(2.0f);
 
-	//video_startup(); // uncomment for FULL screen
+	video_startup(); // uncomment for FULL screen
+	load_fonts();
 
 	switch_thread();
 
 	if (bit4(cabinet[0])){
 		std::cout << "\ncabinet button hit\n" ;
+		cabinet[0] = (char)0;
 
 	}
 	else{
 		std::cout << "\nfailed to see button hit\n";
 	};
 
-	switch_thread();
-
+	sf::String Text("Start Button Hit 0", MyFont, 15);
+	Text.Move(100.f, 200.f);
+	App.Draw(Text);
 	while(App.IsOpened()){
+		switch_thread();
+
+		if(bit4(cabinet[0])){
+			playTest();
+			cabinet[0] = (char)0;
+		};
+
 		videokiller();
 	};
 
 	close(sPort);	//destroy serial connection on our way out.
-	std::cout << "destroyed serial interface";
+	std::cout << "destroyed serial interface\n";
 	return 0;
 };
 
 void videokiller(void){
+	App.Clear(sf::Color(0, 0, 200));
 	App.Display();
 	sf::Event Event;
 	while (App.GetEvent(Event))
@@ -98,5 +114,16 @@ void switch_thread(void){
 	read_cabinet(cabinet);
 
 	return;
+};
+
+void load_fonts(void){
+	if (!MyFont.LoadFromFile("/home/edge87/workspace/PBCx/Debug/carbon.ttf"))
+	{
+	    std::cout << "\n!!!!!!!!!Failed font loading\n";
+	}
+
+
+
+
 };
 
