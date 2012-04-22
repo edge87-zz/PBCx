@@ -36,8 +36,10 @@ const int BLINK = 8;
 int open_port(void){
 	struct termios options;
 
-	fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
-	//fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
+	//fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
+	fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
+
+	sf::Sleep(3.0f);
 
 	if (fd == -1){
 		//Could not open the port.
@@ -67,7 +69,7 @@ int open_port(void){
 	return true;
 };
 
-void fire_coil(int coil, int duration){
+void kick_coil(int coil, int duration){
 	int written = 0;
 	unsigned char charConvert;
 	unsigned char* sendingThis;
@@ -77,18 +79,18 @@ void fire_coil(int coil, int duration){
 		return;
 	};
 
-	if (duration >= 256){
+	if (duration >= 251){
 		std::cout << "Duration out of Range\n";
 		return;
 	};
 
-	coil += OPC_COIL;
+	coil |= OPC_COIL;
 
 	charConvert = (char)coil;
 
 	sendingThis = &charConvert;
 
-	std::cout << "Firing coil " <<  *sendingThis << " for " << duration << "\n";
+	std::cout << "Kicking coil " <<  *sendingThis << " for " << duration << "\n";
 
 	written = write(fd, sendingThis, 1);
 
@@ -171,7 +173,7 @@ void set_light(int light, int option, int level){
 
 	if (written != 2 ){
 		//Failed to write 2 bytes of data to serial port
-		std::cout << "Failed to write to port \n";
+		std::cout << "Failed to write to port \n" << std::endl ;
 		return;
 	};
 
@@ -193,7 +195,7 @@ void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb){
 
 	for(int i=0; i < 6; i++){
 		if(argb[i]> 255 || argb[i] < 0){
-			std::cout << "\nRGB Value out of range\n";
+			std::cout << "RGB Value out of range\n";
 			return;
 		};
 
@@ -212,7 +214,7 @@ void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb){
 	written += write(fd, sendingThis, 1);
 
 	if (written != 8){
-		std::cout << "Failed to write RGB colors";
+		std::cout << "Failed to write RGB colors\n";
 		return;
 	};
 
@@ -226,9 +228,14 @@ void req_switches(void){
 
 	written = write(fd, sendReq, 1);
 
+	reqCode = OPC_EOL;
+	sendReq = &reqCode;
+	written = write(fd, sendReq, 1);
+
 	if (written <= 0){
 		//return 1;
-		std::cout<< "Sending request for switches FAILED";
+		std::cout<< "Sending Request for Playfield Switches FAILED\n";
+		return;
 	};
 
 	return;
@@ -241,10 +248,16 @@ void req_cabinet(void){
 
 	written = write(fd, sendReq, 1);
 
+	reqCode = OPC_EOL;
+	sendReq = &reqCode;
+	written = write(fd, sendReq, 1);
+
 	if (written <= 0){
 		//return 1;
-		std::cout<< "Sending request for Cabinet Switches failed";
+		std::cout<< "Sending request for Cabinet Switches FAILED\n";
 	};
+
+	std::cout << "Sent Cabinet Request ok\n";
 
 	return;
 };
@@ -254,8 +267,6 @@ void read_switches(unsigned char* switches){
 	unsigned char buffer[8] = {(char)0};
 	unsigned char opcode[1] = {(char)0};
 
-
-
 	//wait for our opcode
 	while (opcode[0] == 0){
 		read(fd,opcode, 1);
@@ -263,51 +274,52 @@ void read_switches(unsigned char* switches){
 
 	//If switch opcode get the next 8 bytes
 	if(opcode[0] == OPC_RQSWITCH){
-		std::cout << "got our Playfield Switches opcode correctly\n";
+		std::cout << "We heard our OPCODE for Playfield Switches\n";
 		for(int i=0; i<8; i++){
 			bytesRead = 0; //reset this value
 			while(bytesRead <= 0){
 				bytesRead = read(fd,&buffer[i], 1);
 			};
 		};
-		std::cout << "we got all the playfield switches\n";
 	};
 
 	read(fd,opcode, 1);
 
 	if (opcode[0] == OPC_EOL){
-			std::cout << "Success read EOL-playfield switches\n";
+			std::cout << "Success Read EOL For Playfield switches\n";
 	};
 
 	//copy our buffer to the global array
 	for(int j = 0; j < 8; j++){
-		switches[j] = (OPC_EOL ^ buffer[j]);
+		switches[j] = buffer[j];
 	};
 	return;
 };
 
 void read_cabinet(unsigned char* cabinet){
-	unsigned char buffer[2] = {(char)0};
+	unsigned char buffer[2] = {(char)0, (char)0};
 	unsigned char opcode[1] = {(char)0};
 
 	//wait for our opcode
-	while (opcode[0]== 0){
-		read(fd,opcode, 1);
-	};
+
+
+	read(fd,opcode, 1);
+
+	std::cout << (int)opcode[0] << std::endl;
 
 	if(opcode[0] == OPC_RQCABINET){
-		std::cout << "See our opcode for cabinet\n";
+		std::cout << "We see our OPCODE for Cabinet Switches\n";
 
 		read(fd,buffer, 2);
 
 		read(fd,opcode, 1); //Eat end of line
 
 		if (opcode[0] == OPC_EOL){
-			std::cout << "Success read EOL for cabinet\n";
+			std::cout << "Success Read EOL For Cabinet Switches\n";
 		};
 
 		for(int j=0; j<2; j++){
-			cabinet[j] = (OPC_EOL ^ buffer[j]);
+			cabinet[j] =  buffer[j];
 		};
 	};
 	return;

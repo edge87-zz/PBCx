@@ -38,9 +38,11 @@ void load_fonts(void);
 std::string char_to_bin_string(unsigned char*, int);
 
 //global variables
-sf::RenderWindow App(sf::VideoMode(800, 600, 32), "SFML Window");
+sf::RenderWindow App(sf::VideoMode(1920, 1080, 32), "SFML Window");
 unsigned char switches[8] = {(char)0};
 unsigned char cabinet[2] = {(char)0};
+
+//unsigned char test[8] = {(ch	ar)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255};
 
 //globals but shouldn't be
 sf::Font MyFont;
@@ -48,24 +50,17 @@ sf::Font MyFont;
 int main (){
 	int sPort = -1;
 	sPort = open_port();
-	sf::Sleep(2.0f);
+	sf::Sleep(3.0f);
+
+	switch_thread();
+
+
 
 	video_startup(); // uncomment for FULL screen
 	load_fonts();
 
-	switch_thread();
-
-	if (bit4(cabinet[0])){
-		std::cout << "\ncabinet button hit\n" ;
-		cabinet[0] = (char)0;
-
-	}
-	else{
-		std::cout << "\nfailed to see button hit\n";
-	};
-
-	sf::String playfieldText("a", MyFont, 15);
-	sf::String cabinetText("a", MyFont, 15);
+	sf::String playfieldText("a", MyFont, 18);
+	sf::String cabinetText("a", MyFont, 18);
 
 	playfieldText.Move(10.f, 200.f);
 	cabinetText.Move(10.f, 250.f);
@@ -73,17 +68,15 @@ int main (){
 	std::string sswitches;
 	std::string scabinet;
 
+	//kick coil 20
+	kick_coil(20, 100);
+
 	while(App.IsOpened()){
 		App.Clear(sf::Color(0, 0, 200));
 		switch_thread();
 
-		sswitches = "Switche bits: " + char_to_bin_string(switches, 8);
+		sswitches = "Switch bits: " + char_to_bin_string(switches, 8);
 		scabinet = "Cabinet bits: "  + char_to_bin_string(cabinet, 2);
-
-		if(bit4(cabinet[0])){
-			playTest();
-			cabinet[0] = (char)0;
-		};
 
 		playfieldText.SetText(sswitches);
 		cabinetText.SetText(scabinet);
@@ -116,10 +109,11 @@ void videokiller(void){
 
 void video_startup(void){
 	//sets us full screen
-	App.Create(sf::VideoMode(800, 600, 32), "SFML Window", sf::Style::Fullscreen);
+	App.Create(sf::VideoMode(1920, 1080, 32), "SFML Window", sf::Style::Fullscreen);
 };
 
 void switch_thread(void){
+	sf::Sleep(0.004f);
 
 	req_switches();
 
@@ -141,11 +135,68 @@ void load_fonts(void){
 std::string char_to_bin_string(unsigned char* charbytes, int nofbytes){
 	std::string rstring;
 
-	for(int i=0; i < nofbytes; i++){
+	for(int i=(nofbytes -1); i >= 0; i--){
+		if(bit7(charbytes[i])){
+			rstring += "1";
+		}
+		else{
+			rstring += "0";
+		};
+
+		if(bit6(charbytes[i])){
+			rstring += "1";
+		}
+		else{
+			rstring += "0";
+		};
+
+		if(bit5(charbytes[i])){
+			rstring += "1";
+		}
+		else{
+			rstring += "0";
+		};
+
+		if(bit4(charbytes[i])){
+			rstring += "1";
+		}
+		else{
+			rstring += "0";
+		};
+
+		if(bit3(charbytes[i])){
+			rstring += "1";
+		}
+		else{
+			rstring += "0";
+		};
+
+		if(bit2(charbytes[i])){
+			rstring += "1";
+		}
+		else{
+			rstring += "0";
+		};
+
+		if(bit1(charbytes[i])){
+			rstring += "1";
+		}
+		else{
+			rstring += "0";
+		};
+
+		if(bit0(charbytes[i])){
+			rstring += "1";
+		}
+		else{
+			rstring += "0";
+		};
+
 		rstring += " ";
-		rstring += "10101010";
 	};
 
 	return rstring;
 };
+
+
 
