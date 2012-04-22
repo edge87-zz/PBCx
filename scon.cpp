@@ -268,9 +268,11 @@ void read_switches(unsigned char* switches){
 	unsigned char opcode[1] = {(char)0};
 
 	//wait for our opcode
-	while (opcode[0] == 0){
+
 		read(fd,opcode, 1);
-	};
+
+	std::cout << "PF : " << (int)opcode[0] << std::endl;
+
 
 	//If switch opcode get the next 8 bytes
 	if(opcode[0] == OPC_RQSWITCH){

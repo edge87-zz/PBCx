@@ -113,7 +113,7 @@ void video_startup(void){
 };
 
 void switch_thread(void){
-	sf::Sleep(0.004f);
+	sf::Sleep(0.008f);
 
 	req_switches();
 
