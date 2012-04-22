@@ -19,7 +19,9 @@
 
 //Standard Libraries
 #include <iostream>
-
+#include <string>
+#include <cstdlib>
+#include <cstdio>
 //My includes
 #include "scon.h"
 #include "audio.hpp"
@@ -33,6 +35,7 @@ void videokiller(void);
 void video_startup();
 void switch_thread(void);
 void load_fonts(void);
+std::string char_to_bin_string(unsigned char*, int);
 
 //global variables
 sf::RenderWindow App(sf::VideoMode(800, 600, 32), "SFML Window");
@@ -41,7 +44,6 @@ unsigned char cabinet[2] = {(char)0};
 
 //globals but shouldn't be
 sf::Font MyFont;
-sf::String Text;
 
 int main (){
 	int sPort = -1;
@@ -62,16 +64,31 @@ int main (){
 		std::cout << "\nfailed to see button hit\n";
 	};
 
-	sf::String Text("Start Button Hit 0", MyFont, 15);
-	Text.Move(100.f, 200.f);
-	App.Draw(Text);
+	sf::String playfieldText("a", MyFont, 15);
+	sf::String cabinetText("a", MyFont, 15);
+
+	playfieldText.Move(10.f, 200.f);
+	cabinetText.Move(10.f, 250.f);
+
+	std::string sswitches;
+	std::string scabinet;
+
 	while(App.IsOpened()){
+		App.Clear(sf::Color(0, 0, 200));
 		switch_thread();
+
+		sswitches = "Switche bits: " + char_to_bin_string(switches, 8);
+		scabinet = "Cabinet bits: "  + char_to_bin_string(cabinet, 2);
 
 		if(bit4(cabinet[0])){
 			playTest();
 			cabinet[0] = (char)0;
 		};
+
+		playfieldText.SetText(sswitches);
+		cabinetText.SetText(scabinet);
+		App.Draw(playfieldText);
+		App.Draw(cabinetText);
 
 		videokiller();
 	};
@@ -82,7 +99,6 @@ int main (){
 };
 
 void videokiller(void){
-	App.Clear(sf::Color(0, 0, 200));
 	App.Display();
 	sf::Event Event;
 	while (App.GetEvent(Event))
@@ -117,13 +133,19 @@ void switch_thread(void){
 };
 
 void load_fonts(void){
-	if (!MyFont.LoadFromFile("/home/edge87/workspace/PBCx/Debug/carbon.ttf"))
-	{
+	if (!MyFont.LoadFromFile("/usr/share/cups/fonts/FreeMono.ttf")){
 	    std::cout << "\n!!!!!!!!!Failed font loading\n";
-	}
+	};
+};
 
+std::string char_to_bin_string(unsigned char* charbytes, int nofbytes){
+	std::string rstring;
 
+	for(int i=0; i < nofbytes; i++){
+		rstring += " ";
+		rstring += "10101010";
+	};
 
-
+	return rstring;
 };
 

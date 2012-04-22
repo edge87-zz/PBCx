@@ -10,6 +10,8 @@ byte eight = B10101000;
 byte cab0 = B11101111;
 byte cab1 = B11111111;
 
+byte temp = B11111111;
+
 void setup() {
   pinMode(13, OUTPUT);      
   Serial.begin(115200); 
@@ -17,9 +19,17 @@ void setup() {
 };
 
 void loop() {
-  int opcode, incomingByte = 0;
-  
+  int opcode,sometimes, incomingByte = 0;
+
   if (Serial.available() > 0) {
+    temp = B11111111;
+    sometimes++;
+  
+    if(sometimes > 200000){
+      temp = cab0;
+      sometimes = 0;
+    };
+        
     // read the incoming byte:
     incomingByte = Serial.read();
 
@@ -40,7 +50,7 @@ void loop() {
      
     if (incomingByte == 61){    
       Serial.write(61);
-      Serial.write(cab0);
+      Serial.write(temp);
       Serial.write(cab1);
       Serial.write(255);  
     };

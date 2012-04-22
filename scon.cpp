@@ -37,6 +37,7 @@ int open_port(void){
 	struct termios options;
 
 	fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
+	//fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
 
 	if (fd == -1){
 		//Could not open the port.
@@ -280,7 +281,7 @@ void read_switches(unsigned char* switches){
 
 	//copy our buffer to the global array
 	for(int j = 0; j < 8; j++){
-		switches[j] |= (OPC_EOL ^ buffer[j]);
+		switches[j] = (OPC_EOL ^ buffer[j]);
 	};
 	return;
 };
@@ -306,7 +307,7 @@ void read_cabinet(unsigned char* cabinet){
 		};
 
 		for(int j=0; j<2; j++){
-			cabinet[j] |= (OPC_EOL ^ buffer[j]);
+			cabinet[j] = (OPC_EOL ^ buffer[j]);
 		};
 	};
 	return;
