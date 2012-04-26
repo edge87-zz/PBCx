@@ -1,7 +1,7 @@
 // I got this code from : http://www.easysw.com/~mike/serial/serial.html
 //Also: http://www.cplusplus.com/doc/tutorial/files/
 
-
+//Standard Libraries
 #include <stdio.h>		//Standard input/output definitions
 #include <string.h>		//String function definitions
 #include <unistd.h>		//UNIX standard function definitions
@@ -9,11 +9,19 @@
 #include <errno.h>		//Error number definitions
 #include <termios.h>	//POSIX terminal control definitions
 #include <iostream>		//Input-Output Streams
+
+//SFML Libraries
 #include <SFML/System.hpp> //SFML System header. For pause.
 
+//My Libraries
 #include "scon.h"		//WHY do i have to include what i've already included? who knows, i do.
 
+//Local Variables
 int fd;					//File descriptor for the port
+
+//External Variables being Imported
+extern unsigned char switches[8];
+extern unsigned char cabinet[2];
 
 //OPCODE Constants
 const int OPC_COIL = 160;
@@ -262,20 +270,24 @@ void req_cabinet(void){
 	return;
 };
 
-void read_switches(unsigned char* switches){
-	int bytesRead = 0;
-	unsigned char buffer[8] = {(char)0};
+void read_switches(){
 	unsigned char opcode[1] = {(char)0};
+	int bytesRead = 0;
 
-	//wait for our opcode
+	//Read from the buffer if we can for our opcodes
+	read(fd,opcode, 1);
 
-		read(fd,opcode, 1);
+	//std::cout << "PF : " << (int)opcode[0] << std::endl;
 
-	std::cout << "PF : " << (int)opcode[0] << std::endl;
+	if(opcode[0]== (char)0){
+		//Nothing for us to do i guess..
+		return;
+	}
 
-
-	//If switch opcode get the next 8 bytes
-	if(opcode[0] == OPC_RQSWITCH){
+	//Playfield Switches
+	else if(opcode[0] == OPC_RQSWITCH){
+		//Process Playfield Switch Bytes
+		unsigned char buffer[8] = {(char)0};
 		std::cout << "We heard our OPCODE for Playfield Switches\n";
 		for(int i=0; i<8; i++){
 			bytesRead = 0; //reset this value
@@ -283,33 +295,21 @@ void read_switches(unsigned char* switches){
 				bytesRead = read(fd,&buffer[i], 1);
 			};
 		};
-	};
+		read(fd,opcode, 1);
 
-	read(fd,opcode, 1);
-
-	if (opcode[0] == OPC_EOL){
+		if (opcode[0] == OPC_EOL){
 			std::cout << "Success Read EOL For Playfield switches\n";
-	};
+		};
 
-	//copy our buffer to the global array
-	for(int j = 0; j < 8; j++){
-		switches[j] = buffer[j];
-	};
-	return;
-};
+		for(int j = 0; j < 8; j++){
+				switches[j] = buffer[j];
+		};
+	}
 
-void read_cabinet(unsigned char* cabinet){
-	unsigned char buffer[2] = {(char)0, (char)0};
-	unsigned char opcode[1] = {(char)0};
-
-	//wait for our opcode
-
-
-	read(fd,opcode, 1);
-
-	std::cout << (int)opcode[0] << std::endl;
-
-	if(opcode[0] == OPC_RQCABINET){
+	//Cabinet Switches
+	else if(opcode[0] == OPC_RQCABINET){
+		//process Cabinet Switch Bytes
+		unsigned char buffer[2] = {(char)0, (char)0};
 		std::cout << "We see our OPCODE for Cabinet Switches\n";
 
 		read(fd,buffer, 2);
@@ -323,6 +323,10 @@ void read_cabinet(unsigned char* cabinet){
 		for(int j=0; j<2; j++){
 			cabinet[j] =  buffer[j];
 		};
+	}
+
+	//Bad Things Happened
+	else{
+		//We got fucked up
 	};
-	return;
 };

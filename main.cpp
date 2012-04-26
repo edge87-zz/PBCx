@@ -22,6 +22,7 @@
 #include <string>
 #include <cstdlib>
 #include <cstdio>
+
 //My includes
 #include "scon.h"
 #include "audio.hpp"
@@ -32,31 +33,40 @@
 
 //function prototypes
 void videokiller(void);
-void video_startup();
+void request_switch_thread(void*);
+void read_switches_thread(void*);
 void switch_thread(void);
 void load_fonts(void);
 std::string char_to_bin_string(unsigned char*, int);
 
 //global variables
-sf::RenderWindow App(sf::VideoMode(1920, 1080, 32), "SFML Window");
+sf::RenderWindow App(sf::VideoMode(1920, 1080, 32), "Team Heck", sf::Style::Fullscreen);
 unsigned char switches[8] = {(char)0};
 unsigned char cabinet[2] = {(char)0};
-
 //unsigned char test[8] = {(ch	ar)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255};
+
+//Mutex flags
+sf::Mutex playfieldSwitchesM;
+sf::Mutex cabinetSwitchesM;
 
 //globals but shouldn't be
 sf::Font MyFont;
 
 int main (){
+	App.Clear(sf::Color(0, 0, 200));
+	App.Display();
+
 	int sPort = -1;
 	sPort = open_port();
-	sf::Sleep(3.0f);
 
-	switch_thread();
+	sf::Thread tRequestSwitch(&request_switch_thread);
+	sf::Thread tReadSwitch(&read_switches_thread);
 
+	tRequestSwitch.Launch();
+	tReadSwitch.Launch();
 
+	sf::Sleep(2.0f);	//sleep because board has too stablize
 
-	video_startup(); // uncomment for FULL screen
 	load_fonts();
 
 	sf::String playfieldText("a", MyFont, 18);
@@ -68,12 +78,8 @@ int main (){
 	std::string sswitches;
 	std::string scabinet;
 
-	//kick coil 20
-	kick_coil(20, 100);
-
 	while(App.IsOpened()){
 		App.Clear(sf::Color(0, 0, 200));
-		switch_thread();
 
 		sswitches = "Switch bits: " + char_to_bin_string(switches, 8);
 		scabinet = "Cabinet bits: "  + char_to_bin_string(cabinet, 2);
@@ -107,23 +113,19 @@ void videokiller(void){
 	};
 };
 
-void video_startup(void){
-	//sets us full screen
-	App.Create(sf::VideoMode(1920, 1080, 32), "SFML Window", sf::Style::Fullscreen);
+void request_switch_thread(void* none){
+	while(true){
+		sf::Sleep(0.004f);
+		req_switches();
+		sf::Sleep(0.004f);
+		req_cabinet();
+	};
 };
 
-void switch_thread(void){
-	sf::Sleep(0.008f);
-
-	req_switches();
-
-	read_switches(switches);
-
-	req_cabinet();
-
-	read_cabinet(cabinet);
-
-	return;
+void read_switches_thread(void * none){
+	while(true){
+		read_switches();
+	};
 };
 
 void load_fonts(void){
