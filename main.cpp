@@ -49,8 +49,10 @@ unsigned char cabinet[2] = {(char)0};
 sf::Mutex playfieldSwitchesM;
 sf::Mutex cabinetSwitchesM;
 
-//globals but shouldn't be
-sf::Font MyFont;
+//Fonts
+sf::Font mono;
+sf::Font solstice;
+
 
 int main (){
 	App.Clear(sf::Color(0, 0, 200));
@@ -129,8 +131,12 @@ void read_switches_thread(void * none){
 };
 
 void load_fonts(void){
-	if (!MyFont.LoadFromFile("/usr/share/cups/fonts/FreeMono.ttf")){
-	    std::cout << "\n!!!!!!!!!Failed font loading\n";
+	if (!mono.LoadFromFile("/home/teamheck/exec/media/font/mono.ttf")){
+	    std::cout << "Failed to load mono font\n";
+	};
+
+	if (!solstice.LoadFromFile("/home/teamheck/exec/media/font/solsticeofsuffering.ttf")){
+	    std::cout << "Failed to load solstice font.\n";
 	};
 };
 
