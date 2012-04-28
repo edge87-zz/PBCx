@@ -44,8 +44,8 @@ const int BLINK = 8;
 int open_port(void){
 	struct termios options;
 
-	//fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
-	fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
+	fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
+	//fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
 
 	sf::Sleep(3.0f);
 
@@ -246,6 +246,7 @@ void req_switches(void){
 		return;
 	};
 
+	std::cout << "Sent Playfield Switch Request OK\n";
 	return;
 };
 

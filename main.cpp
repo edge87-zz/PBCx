@@ -35,7 +35,6 @@
 void videokiller(void);
 void request_switch_thread(void*);
 void read_switches_thread(void*);
-void switch_thread(void);
 void load_fonts(void);
 std::string char_to_bin_string(unsigned char*, int);
 
@@ -48,6 +47,7 @@ unsigned char cabinet[2] = {(char)0};
 //Mutex flags
 sf::Mutex playfieldSwitchesM;
 sf::Mutex cabinetSwitchesM;
+sf::Mutex serialPortM;
 
 //Fonts
 sf::Font mono;
@@ -67,12 +67,12 @@ int main (){
 	tRequestSwitch.Launch();
 	tReadSwitch.Launch();
 
-	sf::Sleep(2.0f);	//sleep because board has too stablize
+
 
 	load_fonts();
 
-	sf::String playfieldText("a", MyFont, 18);
-	sf::String cabinetText("a", MyFont, 18);
+	sf::String playfieldText("a", mono, 18);
+	sf::String cabinetText("a", mono, 18);
 
 	playfieldText.Move(10.f, 200.f);
 	cabinetText.Move(10.f, 250.f);
@@ -93,8 +93,10 @@ int main (){
 
 		videokiller();
 	};
-
+	tRequestSwitch.Terminate();
+	tReadSwitch.Terminate();
 	close(sPort);	//destroy serial connection on our way out.
+
 	std::cout << "destroyed serial interface\n";
 	return 0;
 };
@@ -116,17 +118,27 @@ void videokiller(void){
 };
 
 void request_switch_thread(void* none){
+	sf::Sleep(2.0f);	//sleep because board has too stablize
 	while(true){
-		sf::Sleep(0.004f);
+		//sf::Sleep(0.004f);
+		sf::Sleep(.1f);
+		serialPortM.Lock();
 		req_switches();
-		sf::Sleep(0.004f);
+		serialPortM.Unlock();
+		//sf::Sleep(0.004f);
+		sf::Sleep(.1f);
+		serialPortM.Lock();
 		req_cabinet();
+		serialPortM.Unlock();
 	};
 };
 
 void read_switches_thread(void * none){
+	sf::Sleep(2.0f);	//sleep because board has too stablize
 	while(true){
+		serialPortM.Lock();
 		read_switches();
+		serialPortM.Unlock();
 	};
 };
 
