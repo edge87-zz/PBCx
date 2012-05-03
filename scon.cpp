@@ -47,11 +47,12 @@ int open_port(void){
 	fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
 	//fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
 
-	sf::Sleep(3.0f);
+	//sf::Sleep(3.0f);	// NO. Just NO. This was the only way it would work before but i think it was bc we were sending b4 the board was ready. delays were added to the thread.
 
 	if (fd == -1){
 		//Could not open the port.
 		std::cout << "Port Failed to Open!!!";
+		return false;
 	}
 	else{
 		fcntl(fd, F_SETFL, FNDELAY); // Sets the read() function to return NOW and not wait for data to enter buffer if there isn't anything there.
@@ -67,7 +68,7 @@ int open_port(void){
 		options.c_cflag &= ~CSIZE;					//8 bits
 		options.c_cflag |= CS8;						//8 bits
 
-		options.c_cflag &= ~CRTSCTS;			//disable flow control
+		options.c_cflag &= ~CRTSCTS;				//disable flow control
 
 		tcsetattr(fd, TCSANOW, &options);			//Set the new options for the port "NOW"
 

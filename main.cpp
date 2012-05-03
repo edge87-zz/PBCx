@@ -26,6 +26,7 @@
 //My includes
 #include "scon.h"
 #include "audio.hpp"
+#include "sprite.hpp"
 
 //Library (SFML) includes
 #include <SFML/Window.hpp>
@@ -53,6 +54,10 @@ sf::Mutex serialPortM;
 sf::Font mono;
 sf::Font solstice;
 
+//Global Sprites
+sf::Sprite sBackground;
+
+//Video Stuff
 
 int main (){
 	App.Clear(sf::Color(0, 0, 200));
@@ -64,18 +69,23 @@ int main (){
 	sf::Thread tRequestSwitch(&request_switch_thread);
 	sf::Thread tReadSwitch(&read_switches_thread);
 
+	sf::Image background;
+
+	background.LoadFromFile("/home/teamheck/exec/media/image/background.png");
+	sBackground.SetImage(background);
+	sBackground.SetPosition(0.f, 0.f);
+	App.Draw(sBackground);
+
 	tRequestSwitch.Launch();
 	tReadSwitch.Launch();
-
-
 
 	load_fonts();
 
 	sf::String playfieldText("a", mono, 18);
 	sf::String cabinetText("a", mono, 18);
 
-	playfieldText.Move(10.f, 200.f);
-	cabinetText.Move(10.f, 250.f);
+	playfieldText.Move(10.f, 950.f);
+	cabinetText.Move(10.f, 1000.f);
 
 	std::string sswitches;
 	std::string scabinet;
@@ -88,16 +98,20 @@ int main (){
 
 		playfieldText.SetText(sswitches);
 		cabinetText.SetText(scabinet);
+		App.Draw(sBackground);
 		App.Draw(playfieldText);
 		App.Draw(cabinetText);
 
 		videokiller();
 	};
+
+	//Destroy our Threads
 	tRequestSwitch.Terminate();
 	tReadSwitch.Terminate();
-	close(sPort);	//destroy serial connection on our way out.
 
-	std::cout << "destroyed serial interface\n";
+	//Destroy serial connection on our way out.
+	close(sPort);
+
 	return 0;
 };
 
