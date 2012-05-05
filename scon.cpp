@@ -230,48 +230,6 @@ void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb){
 	return;
 };
 
-void req_switches(void){
-	unsigned char reqCode = OPC_RQSWITCH;
-	int written = 0;
-	unsigned char* sendReq = &reqCode;
-
-	written = write(fd, sendReq, 1);
-
-	reqCode = OPC_EOL;
-	sendReq = &reqCode;
-	written += write(fd, sendReq, 1);
-
-	if (written <= 0){
-		//return 1;
-		std::cout<< "Sending Request for Playfield Switches FAILED\n";
-		return;
-	};
-
-	std::cout << "Sent Playfield Switch Request OK\n";
-	return;
-};
-
-void req_cabinet(void){
-	unsigned char reqCode = OPC_RQCABINET;
-	int written = 0;
-	unsigned char* sendReq = &reqCode;
-
-	written = write(fd, sendReq, 1);
-
-	reqCode = OPC_EOL;
-	sendReq = &reqCode;
-	written += write(fd, sendReq, 1);
-
-	if (written <= 0){
-		//return 1;
-		std::cout<< "Sending request for Cabinet Switches FAILED\n";
-	};
-
-	std::cout << "Sent Cabinet Request ok\n";
-
-	return;
-};
-
 void read_switches(){
 	unsigned char opcode[1] = {(char)0};
 	int bytesRead = 0;
@@ -279,19 +237,17 @@ void read_switches(){
 	//Read from the buffer if we can for our opcodes
 	read(fd,opcode, 1);
 
-	//std::cout << "PF : " << (int)opcode[0] << std::endl;
-
 	if(opcode[0]== (char)0){
 		//Nothing for us to do i guess..
 		return;
 	}
 
-	//Playfield Switches
+	//Playfield Switches and cabinet switches
 	else if(opcode[0] == OPC_RQSWITCH){
 		//Process Playfield Switch Bytes
-		unsigned char buffer[8] = {(char)0};
-		std::cout << "We heard our OPCODE for Playfield Switches\n";
-		for(int i=0; i<8; i++){
+		unsigned char buffer[10] = {(char)0};
+		std::cout << "We heard our OPCODE for All Switches\n";
+		for(int i=0; i<10; i++){
 			bytesRead = 0; //reset this value
 			while(bytesRead <= 0){
 				bytesRead = read(fd,&buffer[i], 1);
@@ -300,31 +256,15 @@ void read_switches(){
 		read(fd,opcode, 1);
 
 		if (opcode[0] == OPC_EOL){
-			std::cout << "Success Read EOL For Playfield switches\n";
+			std::cout << "Success Read EOL All switches\n";
 		};
 
 		for(int j = 0; j < 8; j++){
 				switches[j] = buffer[j];
 		};
-	}
+		cabinet[0] = buffer[8];
+		cabinet[1] = buffer[9];
 
-	//Cabinet Switches
-	else if(opcode[0] == OPC_RQCABINET){
-		//process Cabinet Switch Bytes
-		unsigned char buffer[2] = {(char)0, (char)0};
-		std::cout << "We see our OPCODE for Cabinet Switches\n";
-
-		read(fd,buffer, 2);
-
-		read(fd,opcode, 1); //Eat end of line
-
-		if (opcode[0] == OPC_EOL){
-			std::cout << "Success Read EOL For Cabinet Switches\n";
-		};
-
-		for(int j=0; j<2; j++){
-			cabinet[j] =  buffer[j];
-		};
 	}
 
 	//Bad Things Happened

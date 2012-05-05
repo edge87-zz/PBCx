@@ -34,7 +34,6 @@
 
 //function prototypes
 void videokiller(void);
-void request_switch_thread(void*);
 void read_switches_thread(void*);
 void load_fonts(void);
 std::string char_to_bin_string(unsigned char*, int);
@@ -66,7 +65,7 @@ int main (){
 	int sPort = -1;
 	sPort = open_port();
 
-	sf::Thread tRequestSwitch(&request_switch_thread);
+
 	sf::Thread tReadSwitch(&read_switches_thread);
 
 	sf::Image background;
@@ -76,13 +75,13 @@ int main (){
 	sBackground.SetPosition(0.f, 0.f);
 	App.Draw(sBackground);
 
-	tRequestSwitch.Launch();
+
 	tReadSwitch.Launch();
 
 	load_fonts();
 
 	sf::String playfieldText("a", mono, 18);
-	sf::String cabinetText("a", mono, 18);
+	sf::String cabinetText("a", solstice, 18);
 
 	playfieldText.Move(10.f, 950.f);
 	cabinetText.Move(10.f, 1000.f);
@@ -106,7 +105,6 @@ int main (){
 	};
 
 	//Destroy our Threads
-	tRequestSwitch.Terminate();
 	tReadSwitch.Terminate();
 
 	//Destroy serial connection on our way out.
@@ -128,22 +126,6 @@ void videokiller(void){
 	    if ((Event.Type == sf::Event::KeyPressed) && (Event.Key.Code == sf::Key::Escape)){
 	    	App.Close();
 	    };
-	};
-};
-
-void request_switch_thread(void* none){
-	sf::Sleep(2.0f);	//sleep because board has too stablize
-	while(true){
-		//sf::Sleep(0.004f);
-		sf::Sleep(.1f);
-		serialPortM.Lock();
-		req_switches();
-		serialPortM.Unlock();
-		//sf::Sleep(0.004f);
-		sf::Sleep(.1f);
-		serialPortM.Lock();
-		req_cabinet();
-		serialPortM.Unlock();
 	};
 };
 
