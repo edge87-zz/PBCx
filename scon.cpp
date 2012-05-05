@@ -14,7 +14,7 @@
 #include <SFML/System.hpp> //SFML System header. For pause.
 
 //My Libraries
-#include "scon.h"		//WHY do i have to include what i've already included? who knows, i do.
+#include "scon.h"
 
 //Local Variables
 int fd;					//File descriptor for the port
@@ -44,8 +44,8 @@ const int BLINK = 8;
 int open_port(void){
 	struct termios options;
 
-	fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
-	//fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
+	//fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
+	fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
 
 	//sf::Sleep(3.0f);	// NO. Just NO. This was the only way it would work before but i think it was bc we were sending b4 the board was ready. delays were added to the thread.
 
@@ -55,7 +55,7 @@ int open_port(void){
 		return false;
 	}
 	else{
-		fcntl(fd, F_SETFL, FNDELAY); // Sets the read() function to return NOW and not wait for data to enter buffer if there isn't anything there.
+		fcntl(fd, F_SETFL);
 
 		//Configure port for 8N1 transmission
 		tcgetattr(fd, &options);					//Gets the current options for the port
@@ -67,6 +67,9 @@ int open_port(void){
 
 		options.c_cflag &= ~CSIZE;					//8 bits
 		options.c_cflag |= CS8;						//8 bits
+
+		options.c_cc[VTIME] = 0;					//Lengh of time in " "  to wait for 12 bytes
+		options.c_cc[VMIN] =  12;					//Sets serial options to wait for 12 bytes
 
 		options.c_cflag &= ~CRTSCTS;				//disable flow control
 
