@@ -101,6 +101,14 @@ int main (){
 		App.Draw(playfieldText);
 		App.Draw(cabinetText);
 
+		if(bit3(switches[2])){
+			scream();
+		};
+
+		if(bit7(switches[7])){
+			playTest();
+		}
+
 		videokiller();
 	};
 

@@ -10,18 +10,37 @@
 
 #include "audio.hpp"
 
-sf::SoundBuffer Buffer;
+sf::SoundBuffer Buffer1;
+sf::SoundBuffer Buffer2;
+
+
 sf::Sound Sound;
 
 void playTest(){
-
-    if (!Buffer.LoadFromFile("/home/edge87/workspace/PBCx/media/sound/effect/heal.ogg"))
+	Sound.Stop();
+    if (!Buffer1.LoadFromFile("/home/teamheck/exec/media/sound/effect/boomattack.oga"))
     {
        std::cout << "Sound failed to load\n";
     }
 
 
-    Sound.SetBuffer(Buffer); // Buffer is a sf::SoundBuffer
+    Sound.SetBuffer(Buffer1); // Buffer is a sf::SoundBuffer
 
     Sound.Play();
+};
+
+void scream(){
+	Sound.Stop();
+
+    if (!Buffer2.LoadFromFile("/home/teamheck/exec/media/sound/effect/wilhelm.ogg"))
+    {
+       std::cout << "Sound failed to load\n";
+    }
+
+
+    Sound.SetBuffer(Buffer2); // Buffer is a sf::SoundBuffer
+
+    Sound.Play();
+
+
 };
