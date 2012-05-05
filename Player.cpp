@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-void Player::Player(void){
+Player::Player(void){
 	score = 0;
 };
 

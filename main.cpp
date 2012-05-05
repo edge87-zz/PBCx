@@ -51,7 +51,7 @@ sf::Mutex serialPortM;
 
 //Fonts
 sf::Font mono;
-sf::Font solstice;
+sf::Font trek;
 
 //Global Sprites
 sf::Sprite sBackground;
@@ -80,8 +80,8 @@ int main (){
 
 	load_fonts();
 
-	sf::String playfieldText("a", mono, 18);
-	sf::String cabinetText("a", solstice, 18);
+	sf::String playfieldText("a", trek, 20);
+	sf::String cabinetText("a", trek, 20);
 
 	playfieldText.Move(10.f, 950.f);
 	cabinetText.Move(10.f, 1000.f);
@@ -143,8 +143,8 @@ void load_fonts(void){
 	    std::cout << "Failed to load mono font\n";
 	};
 
-	if (!solstice.LoadFromFile("/home/teamheck/exec/media/font/solsticeofsuffering.ttf")){
-	    std::cout << "Failed to load solstice font.\n";
+	if (!trek.LoadFromFile("/home/teamheck/exec/media/font/StarNext.ttf")){
+	    std::cout << "Failed to load Star Trek font.\n";
 	};
 };
 
