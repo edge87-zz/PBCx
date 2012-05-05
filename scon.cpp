@@ -239,7 +239,7 @@ void req_switches(void){
 
 	reqCode = OPC_EOL;
 	sendReq = &reqCode;
-	written = write(fd, sendReq, 1);
+	written += write(fd, sendReq, 1);
 
 	if (written <= 0){
 		//return 1;
@@ -260,7 +260,7 @@ void req_cabinet(void){
 
 	reqCode = OPC_EOL;
 	sendReq = &reqCode;
-	written = write(fd, sendReq, 1);
+	written += write(fd, sendReq, 1);
 
 	if (written <= 0){
 		//return 1;
