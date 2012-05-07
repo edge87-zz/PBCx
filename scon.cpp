@@ -10,9 +10,6 @@
 #include <termios.h>	//POSIX terminal control definitions
 #include <iostream>		//Input-Output Streams
 
-//SFML Libraries
-#include <SFML/System.hpp> //SFML System header. For pause.
-
 //My Libraries
 #include "scon.h"
 
@@ -46,8 +43,6 @@ int open_port(void){
 
 	//fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
 	fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
-
-	//sf::Sleep(3.0f);	// NO. Just NO. This was the only way it would work before but i think it was bc we were sending b4 the board was ready. delays were added to the thread.
 
 	if (fd == -1){
 		//Could not open the port.

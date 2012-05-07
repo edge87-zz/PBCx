@@ -61,3 +61,49 @@ void req_cabinet(void){
 
 	return;
 };
+
+void videokiller(void){
+	App.Display();
+	sf::Event Event;
+	while (App.GetEvent(Event))
+	{
+	    // Window closed
+	    if (Event.Type == sf::Event::Closed){
+	        App.Close();
+	    };
+	    // Escape key pressed
+	    if ((Event.Type == sf::Event::KeyPressed) && (Event.Key.Code == sf::Key::Escape)){
+	    	App.Close();
+	    };
+	};
+};
+
+void load_fonts(void){
+	if (!mono.LoadFromFile("/home/teamheck/exec/media/font/mono.ttf")){
+	    std::cout << "Failed to load mono font\n";
+	};
+
+	if (!trek.LoadFromFile("/home/teamheck/exec/media/font/StarNext.ttf")){
+	    std::cout << "Failed to load Star Trek font.\n";
+	};
+};
+
+tReadSwitch.Terminate();
+
+playfieldText.SetText(sswitches);
+cabinetText.SetText(scabinet);
+App.Draw(sBackground);
+App.Draw(playfieldText);
+App.Draw(cabinetText);
+
+sf::Thread tReadSwitch(&read_switches_thread);
+
+sf::Image background;
+
+background.LoadFromFile("/home/teamheck/exec/media/image/background.png");
+sBackground.SetImage(background);
+sBackground.SetPosition(0.f, 0.f);
+App.Draw(sBackground);
+
+
+tReadSwitch.Launch();

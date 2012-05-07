@@ -1,3 +1,9 @@
+/*
+* We need a delay after we open the serial port. I originally had it at the beginning of the threaded function just before the infinate loop.
+* the delay was about one second.
+*
+*/
+
 //Flag Definations
 #define flag0	0x01	// 0000 0001
 #define flag1	0x02	// 0000 0010
@@ -26,94 +32,43 @@
 //My includes
 #include "scon.h"
 #include "audio.hpp"
-#include "sprite.hpp"
-
-//Library (SFML) includes
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
 
 //function prototypes
-void videokiller(void);
 void read_switches_thread(void*);
-void load_fonts(void);
 std::string char_to_bin_string(unsigned char*, int);
 
 //global variables
-sf::RenderWindow App(sf::VideoMode(1920, 1080, 32), "Team Heck", sf::Style::Fullscreen);
 unsigned char switches[8] = {(char)0};
 unsigned char cabinet[2] = {(char)0};
 //unsigned char test[8] = {(ch	ar)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255};
 
-//Mutex flags
-sf::Mutex playfieldSwitchesM;
-sf::Mutex cabinetSwitchesM;
-sf::Mutex serialPortM;
-
-//Fonts
-sf::Font mono;
-sf::Font trek;
-
-//Global Sprites
-sf::Sprite sBackground;
 
 //Video Stuff
 
 int main (){
-	App.Clear(sf::Color(0, 0, 200));
-	App.Display();
-
 	int sPort = -1;
 	sPort = open_port();
-
-
-	sf::Thread tReadSwitch(&read_switches_thread);
-
-	sf::Image background;
-
-	background.LoadFromFile("/home/teamheck/exec/media/image/background.png");
-	sBackground.SetImage(background);
-	sBackground.SetPosition(0.f, 0.f);
-	App.Draw(sBackground);
-
-
-	tReadSwitch.Launch();
-
-	load_fonts();
-
-	sf::String playfieldText("a", trek, 20);
-	sf::String cabinetText("a", trek, 20);
-
-	playfieldText.Move(10.f, 950.f);
-	cabinetText.Move(10.f, 1000.f);
 
 	std::string sswitches;
 	std::string scabinet;
 
-	while(App.IsOpened()){
-		App.Clear(sf::Color(0, 0, 200));
+	while(true){ //game loop
 
 		sswitches = "Switch bits: " + char_to_bin_string(switches, 8);
 		scabinet = "Cabinet bits: "  + char_to_bin_string(cabinet, 2);
 
-		playfieldText.SetText(sswitches);
-		cabinetText.SetText(scabinet);
-		App.Draw(sBackground);
-		App.Draw(playfieldText);
-		App.Draw(cabinetText);
-
 		if(bit3(switches[2])){
-			scream();
+			//event
 		};
 
 		if(bit7(switches[7])){
-			playTest();
+			//event
 		}
 
-		videokiller();
 	};
 
 	//Destroy our Threads
-	tReadSwitch.Terminate();
+
 
 	//Destroy serial connection on our way out.
 	close(sPort);
@@ -121,41 +76,19 @@ int main (){
 	return 0;
 };
 
-void videokiller(void){
-	App.Display();
-	sf::Event Event;
-	while (App.GetEvent(Event))
-	{
-	    // Window closed
-	    if (Event.Type == sf::Event::Closed){
-	        App.Close();
-	    };
-	    // Escape key pressed
-	    if ((Event.Type == sf::Event::KeyPressed) && (Event.Key.Code == sf::Key::Escape)){
-	    	App.Close();
-	    };
-	};
-};
+
 
 void read_switches_thread(void * none){
-	sf::Sleep(2.0f);	//sleep because board has too stablize
+	//Need a sleep function here
 	while(true){
-		serialPortM.Lock();
+		//need a MUTEX lock here
 		read_switches();
-		serialPortM.Unlock();
+		//need a MUTEX unlock here
 	};
 };
 
-void load_fonts(void){
-	if (!mono.LoadFromFile("/home/teamheck/exec/media/font/mono.ttf")){
-	    std::cout << "Failed to load mono font\n";
-	};
 
-	if (!trek.LoadFromFile("/home/teamheck/exec/media/font/StarNext.ttf")){
-	    std::cout << "Failed to load Star Trek font.\n";
-	};
-};
-
+//This function need an array to avoid rebuilding the string every single time.
 std::string char_to_bin_string(unsigned char* charbytes, int nofbytes){
 	std::string rstring;
 

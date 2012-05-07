@@ -1,3 +1,0 @@
-void playTest();
-
-void scream();
