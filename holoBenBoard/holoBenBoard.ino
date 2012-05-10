@@ -1,59 +1,43 @@
-byte one = B10101000;
-byte two = B10101000;
+//This whole thing hopefully waits 5ms sends 12 bytes, and repeats endless giving me an effective total of about 200 - 250 times per second. or fire..
+//You might be asking yourself, why didn't i build an interrupt. That is too damn complex. 
+
+#define MICROSECOND_DELAY 5000 // don't ask. 
+
+unsigned char opcode = (char)62;
+unsigned char eol = (char)255;
+
+byte one   = B10101000;
+byte two   = B10101000;
 byte three = B10101000;
-byte four = B10101000;
-byte five = B10101000;
-byte six = B10101000;
+byte four  = B10101000;
+byte five  = B10101000;
+byte six   = B10101000;
 byte seven = B10101000;
 byte eight = B10101000;
-
-byte cab0 = B11101111;
-byte cab1 = B11111111;
-
-byte temp = B11111111;
+byte nine  = B10101010;
+byte ten   = B10101010;
 
 void setup() {
   pinMode(13, OUTPUT);      
   Serial.begin(115200); 
- 
+  digitalWrite(13, HIGH); //I'm alive! 
 };
 
 void loop() {
-  int opcode,sometimes, incomingByte = 0;
-
-  if (Serial.available() > 0) {
-    temp = B11111111;
-    sometimes++;
+  delayMicroseconds(MICROSECOND_DELAY);
   
-    if(sometimes > 200000){
-      temp = cab0;
-      sometimes = 0;
-    };
-        
-    // read the incoming byte:
-    incomingByte = Serial.read();
+  Serial.write(opcode);
+  Serial.write(one);
+  Serial.write(two);
+  Serial.write(three);
+  Serial.write(four);
+  Serial.write(five);
+  Serial.write(six);
+  Serial.write(seven);
+  Serial.write(eight);
+  Serial.write(nine);
+  Serial.write(ten);
+  Serial.write(eol);
 
-    //Check if it is our request switches
-    if (incomingByte == 62){
-      digitalWrite(13, HIGH);
-      Serial.write(62);
-      Serial.write(one);
-      Serial.write(two);
-      Serial.write(three);
-      Serial.write(four);
-      Serial.write(five);
-      Serial.write(six);
-      Serial.write(seven);
-      Serial.write(eight);
-      Serial.write(255);
-     };
-     
-    if (incomingByte == 61){    
-      Serial.write(61);
-      Serial.write(temp);
-      Serial.write(cab1);
-      Serial.write(255);  
-    };
-  };
 };
 
