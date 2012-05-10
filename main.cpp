@@ -28,14 +28,18 @@
 #include <string>
 #include <cstdlib>
 #include <cstdio>
+#include <pthread.h>
 
 //My includes
-#include "scon.h"
+#include "scon.hpp"
 #include "audio.hpp"
 
 //function prototypes
-void read_switches_thread(void*);
+void* read_switches_thread(void* );
 std::string char_to_bin_string(unsigned char*, int);
+
+//Global Threads
+pthread_t readSwitchesThread;
 
 //global variables
 unsigned char switches[8] = {(char)0};
@@ -46,8 +50,13 @@ unsigned char cabinet[2] = {(char)0};
 //Video Stuff
 
 int main (){
+	int threadStatus = 0;
+	
 	int sPort = -1;
 	sPort = open_port();
+	
+	//Start our serial reading thread
+	threadStatus = pthread_create( &readSwitchesThread, NULL, read_switches_thread, NULL);
 
 	std::string sswitches;
 	std::string scabinet;
@@ -78,13 +87,15 @@ int main (){
 
 
 
-void read_switches_thread(void * none){
+void* read_switches_thread(void* ){
 	//Need a sleep function here
 	while(true){
 		//need a MUTEX lock here
 		read_switches();
 		//need a MUTEX unlock here
 	};
+
+	//return void*; //Compiler is pissed off i'm not returning anything but i didn't know a void* could return?
 };
 
 

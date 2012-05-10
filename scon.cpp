@@ -11,7 +11,7 @@
 #include <iostream>		//Input-Output Streams
 
 //My Libraries
-#include "scon.h"
+#include "scon.hpp"
 
 //Local Variables
 int fd;					//File descriptor for the port
