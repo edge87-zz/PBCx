@@ -9,6 +9,11 @@
 
 //Includes
 #include <string>
+#include <fstream>
+
+//Constants
+const std::string logFileName= "log.txt";
+const std::string highScoreFileName = "highscore.txt";
 
 class Storage {
 public:
@@ -28,9 +33,11 @@ public:
 	bool log(std::string, std::string);
 
 private:
+	// \Handle for our Log File
+	std::ofstream logFile;
+	// \Handle for our High Score File
+	std::ofstream highScoreFile;
 
 
 };
-
-
 #endif /* STORAGE_HPP_ */
