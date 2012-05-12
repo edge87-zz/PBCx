@@ -4,15 +4,22 @@
 class Player{
 
 	public:
+		// \Constructor
 		Player();
 
+		// \Destructor
+		~Player();
+
+		// \Adds points to the players score
 		void add_score(int points);
 
-
-		unsigned int get_score(void);
+		// \Returns Player's Score
+		unsigned int getScore(void);
 
 
 	private:
+
+		// \Player's Score
 		unsigned int score;
 
 

@@ -1,14 +1,20 @@
+
+
 #include "Player.hpp"
 
 Player::Player(void){
 	score = 0;
 };
 
+Player::~Player(){
+	//nothing really to destroy or clean up
+};
+
 void Player::add_score(int points){
 	score += points;
 };
 
-unsigned int Player::get_score(void){
+unsigned int Player::getScore(void){
 	return score;
 };
 
