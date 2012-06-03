@@ -108,7 +108,7 @@ int main (){
 
 	while(displayRunning)
   { //game loop
-	OnDraw(Surf_Display, Surf_Background, 0, 0);
+    OnDraw(Surf_Display, Surf_Background, 0, 0);
 
     for(int i = 0; i < 8; i++)
     {
