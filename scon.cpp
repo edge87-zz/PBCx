@@ -247,7 +247,7 @@ void read_switches(){
 	else if(opcode[0] == OPC_RQSWITCH){
 		//Process Playfield Switch Bytes
 		unsigned char buffer[10] = {(char)0};
-		std::cout << "We heard our OPCODE for All Switches\n";
+
 		for(int i=0; i<10; i++){
 			bytesRead = 0; //reset this value
 			while(bytesRead <= 0){
@@ -256,9 +256,7 @@ void read_switches(){
 		};
 		read(fd,opcode, 1);
 
-		if (opcode[0] == OPC_EOL){
-			std::cout << "Success Read EOL All switches\n";
-		};
+
 
     pthread_mutex_lock(&switch_lock);
 		for(int j = 0; j < 8; j++){

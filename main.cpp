@@ -67,6 +67,8 @@ int main (){
 	int sPort = -1;
 	sPort = open_port();
 	
+	SDL_Delay(200);
+
 	//Start our serial reading thread
 	threadStatus = pthread_create( &readSwitchesThread, NULL, read_switches_thread, NULL);
 
@@ -85,8 +87,6 @@ int main (){
 		 return false;
 	};
 
-
-
 	OnDraw(Surf_Display, Surf_Background, 0, 0);
 
 	SDL_Flip(Surf_Display);
@@ -94,7 +94,7 @@ int main (){
   TTF_Init();
   
   TTF_Font *font;
-  font = TTF_OpenFont("FreeSans.ttf", 24);
+  font = TTF_OpenFont("FreeMono.ttf", 24);
 
   // Write text to surface
   SDL_Surface *text;
@@ -120,13 +120,15 @@ int main (){
       text_color);
     SDL_BlitSurface(text, NULL, Surf_Display, NULL);
     
+
     while(SDL_PollEvent(&Event)) {
     	OnEvent(&Event);
-    };
+    }
 
+    SDL_Flip(Surf_Display);
 	
 
-	};
+	}
 
 	//Destroy our Threads
 
