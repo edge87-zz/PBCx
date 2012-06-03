@@ -4,10 +4,9 @@
 #define SWITCHHANDLER_HPP
 
 #include <vector>
+#include <string>
 #include "Switch.hpp"
 #include "Game.hpp"
-
-using namespace std;
 
 class SwitchHandler
 {
@@ -19,6 +18,8 @@ public:
   void giveSwitchData(int subset, unsigned char switchInfo);
 	
   void registerObserver(int switchNumber, SwitchObserver *observer);
+  
+  std::string getSwitchString();
   
 private:
 	vector<Switch*> switches;

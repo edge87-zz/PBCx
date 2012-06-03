@@ -92,7 +92,7 @@ int main (){
 
 
 
-void* read_switches_thread(void* ){
+void* read_switches_thread(void *){
 	//Need a sleep function here
 	while(true){
 		//need a MUTEX lock here
@@ -104,72 +104,7 @@ void* read_switches_thread(void* ){
 };
 
 
-//This function need an array to avoid rebuilding the string every single time.
-std::string char_to_bin_string(unsigned char* charbytes, int nofbytes){
-	std::string rstring;
 
-	for(int i=(nofbytes -1); i >= 0; i--){
-		if(bit7(charbytes[i])){
-			rstring += "1";
-		}
-		else{
-			rstring += "0";
-		};
-
-		if(bit6(charbytes[i])){
-			rstring += "1";
-		}
-		else{
-			rstring += "0";
-		};
-
-		if(bit5(charbytes[i])){
-			rstring += "1";
-		}
-		else{
-			rstring += "0";
-		};
-
-		if(bit4(charbytes[i])){
-			rstring += "1";
-		}
-		else{
-			rstring += "0";
-		};
-
-		if(bit3(charbytes[i])){
-			rstring += "1";
-		}
-		else{
-			rstring += "0";
-		};
-
-		if(bit2(charbytes[i])){
-			rstring += "1";
-		}
-		else{
-			rstring += "0";
-		};
-
-		if(bit1(charbytes[i])){
-			rstring += "1";
-		}
-		else{
-			rstring += "0";
-		};
-
-		if(bit0(charbytes[i])){
-			rstring += "1";
-		}
-		else{
-			rstring += "0";
-		};
-
-		rstring += " ";
-	};
-
-	return rstring;
-};
 
 
 

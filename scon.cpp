@@ -188,7 +188,8 @@ void set_light(int light, int option, int level){
 
 };
 
-void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb){
+void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb)
+{
 	int argb[6];
 	unsigned char rgbsend[6];
 	int written = 0;
