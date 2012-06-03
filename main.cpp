@@ -36,6 +36,7 @@
 #include "scon.hpp"
 #include "audio.hpp"
 
+extern pthread_mutex_t switch_lock;
 //function prototypes
 void* read_switches_thread(void* );
 std::string char_to_bin_string(unsigned char*, int);
@@ -66,14 +67,14 @@ int main (){
 	std::string sswitches;
 	std::string scabinet;
 
-	while(true){ //game loop
-
-		sswitches = "Switch bits: " + char_to_bin_string(switches, 8);
-		scabinet = "Cabinet bits: "  + char_to_bin_string(cabinet, 2);
-    
+	while(true)
+  { //game loop
+      
     for(int i = 0; i < 8; i++)
     {
+      pthread_mutex_lock(&switch_lock);
       switchHandler.giveSwitchData(i, switches[i]);
+      pthread_mutex_unlock(&switch_lock);
     }
     
 	

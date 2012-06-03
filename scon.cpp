@@ -9,7 +9,7 @@
 #include <errno.h>		//Error number definitions
 #include <termios.h>	//POSIX terminal control definitions
 #include <iostream>		//Input-Output Streams
-
+#include <pthread.h>
 //My Libraries
 #include "scon.hpp"
 
@@ -31,6 +31,8 @@ const unsigned char OPC_RQSWITCH = (char)62;
 const unsigned char OPC_RQCABINET = (char)61;
 const unsigned char OPC_SENDRGB = (char)60;
 const unsigned char OPC_AUTOCOIL = (char)59;
+
+pthread_mutex_t switch_lock = PTHREAD_MUTEX_INITIALIZER;
 
 //Light Constant options
 const int PULSATE = 32;
@@ -257,12 +259,13 @@ void read_switches(){
 			std::cout << "Success Read EOL All switches\n";
 		};
 
+    pthread_mutex_lock(&switch_lock);
 		for(int j = 0; j < 8; j++){
 				switches[j] = buffer[j];
 		};
 		cabinet[0] = buffer[8];
 		cabinet[1] = buffer[9];
-
+    pthread_mutex_unlock(&switch_lock);
 	}
 
 	//Bad Things Happened
