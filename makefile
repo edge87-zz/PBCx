@@ -1,5 +1,5 @@
 pbcx : main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o
-	g++ -o pbcx -lrt -lpthread main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o
+	g++ -o pbcx -lrt -lpthread -L/usr/lib/i386-linux-gnu -lSDL -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o
 	
 main.o : main.cpp
 	g++ -c main.cpp

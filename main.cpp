@@ -31,15 +31,20 @@
 #include <pthread.h>
 #include "SwitchHandler.hpp"
 #include "Game.hpp"
+#include "/usr/include/SDL/SDL.h"
 
 //My includes
 #include "scon.hpp"
 #include "audio.hpp"
 
 extern pthread_mutex_t switch_lock;
+
 //function prototypes
 void* read_switches_thread(void* );
 std::string char_to_bin_string(unsigned char*, int);
+SDL_Surface* OnLoad(char* File);
+bool OnDraw(SDL_Surface* Surf_Dest, SDL_Surface* Surf_Src, int X, int Y);
+void OnEvent(SDL_Event* Event);
 
 //Global Threads
 pthread_t readSwitchesThread;
@@ -49,8 +54,11 @@ unsigned char switches[8] = {(char)0};
 unsigned char cabinet[2] = {(char)0};
 //unsigned char test[8] = {(ch	ar)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255};
 
-
 //Video Stuff
+bool displayRunning = false;
+SDL_Surface*	Surf_Display;
+SDL_Surface*	Surf_Background;
+SDL_Event Event;
 
 int main (){
 	int threadStatus = 0;
@@ -60,6 +68,25 @@ int main (){
 	
 	//Start our serial reading thread
 	threadStatus = pthread_create( &readSwitchesThread, NULL, read_switches_thread, NULL);
+
+	//Bring SDL up
+	displayRunning = true;
+
+	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		return false;
+	};
+
+	if((Surf_Display = SDL_SetVideoMode(1920, 1080, 32, SDL_HWSURFACE | SDL_DOUBLEBUF)) == NULL) {
+		return false;
+	};
+
+	if((Surf_Background = OnLoad("background.bmp")) == NULL) {
+		 return false;
+	};
+
+	OnDraw(Surf_Display, Surf_Background, 0, 0);
+
+	SDL_Flip(Surf_Display);
   
   Game tehGame;
   SwitchHandler switchHandler(&tehGame);
@@ -67,7 +94,7 @@ int main (){
 	std::string sswitches;
 	std::string scabinet;
 
-	while(true)
+	while(displayRunning)
   { //game loop
       
     for(int i = 0; i < 8; i++)
@@ -77,6 +104,10 @@ int main (){
       pthread_mutex_unlock(&switch_lock);
     }
     
+    while(SDL_PollEvent(&Event)) {
+    	OnEvent(&Event);
+    };
+
 	
 
 	};
@@ -90,8 +121,6 @@ int main (){
 	return 0;
 };
 
-
-
 void* read_switches_thread(void *){
 	//Need a sleep function here
 	while(true){
@@ -103,6 +132,44 @@ void* read_switches_thread(void *){
 	//return void*; //Compiler is pissed off i'm not returning anything but i didn't know a void* could return?
 };
 
+SDL_Surface* OnLoad(char* File){
+	SDL_Surface* Surf_Temp = NULL;
+	SDL_Surface* Surf_Return = NULL;
+
+	if((Surf_Temp = SDL_LoadBMP(File)) == NULL) {
+	        return NULL;
+	};
+
+	Surf_Return = SDL_DisplayFormat(Surf_Temp);
+	SDL_FreeSurface(Surf_Temp);
+
+	return Surf_Return;
+};
+
+bool OnDraw(SDL_Surface* Surf_Dest, SDL_Surface* Surf_Src, int X, int Y) {
+    if(Surf_Dest == NULL || Surf_Src == NULL) {
+        return false;
+    };
+
+    SDL_Rect DestR;
+
+    DestR.x = X;
+    DestR.y = Y;
+
+    SDL_BlitSurface(Surf_Src, NULL, Surf_Dest, &DestR);
+
+    return true;
+};
+
+void OnEvent(SDL_Event* Event) {
+    if(Event->type == SDL_QUIT) {
+        displayRunning = false;
+    };
+
+    if(Event->key.keysym.sym ==  SDLK_ESCAPE){
+    	displayRunning = false;
+    };
+};
 
 
 
