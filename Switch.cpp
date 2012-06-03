@@ -22,7 +22,6 @@ Switch::~Switch()
 
 void Switch::switchActive(bool value)
 {
-	cout << value << endl;
 	if(value != m_switchValue)
 	{
 		timespec tempTime;
@@ -32,6 +31,7 @@ void Switch::switchActive(bool value)
 			double difference = (( (double)tempTime.tv_sec + (double)tempTime.tv_nsec/NANO) - ((double)m_lastActiveTime.tv_sec + (double)m_lastActiveTime.tv_nsec/NANO));
 			if(difference > m_debounceTime && difference < m_debounceTime * 2)
 			{
+				cout << "switch " << m_switchNumber << " activated!" << endl;
 				m_switchValue = value;
 				m_active = false;
 				// do something when switch is activated, advance score?
@@ -39,7 +39,7 @@ void Switch::switchActive(bool value)
 				// a less time sensitive task
 				if(value)
 				{
-					notifyObservers();
+					//notifyObservers();
 				}
 			}
 			else if(difference > m_debounceTime * 2)
