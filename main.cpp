@@ -33,6 +33,7 @@
 #include "Game.hpp"
 #include "/usr/include/SDL/SDL.h"
 #include "/usr/include/SDL/SDL_ttf.h"
+#include "WikiMode.hpp"
 
 //My includes
 #include "scon.hpp"
@@ -102,6 +103,7 @@ int main (){
 
   Game tehGame;
   SwitchHandler switchHandler(&tehGame);
+  WikiMode wikiMode(&switchHandler);
   
 	std::string sswitches;
 	std::string scabinet;
@@ -120,6 +122,10 @@ int main (){
       switchHandler.getSwitchString().c_str(),
       text_color);
     SDL_BlitSurface(text, NULL, Surf_Display, NULL);
+    
+    
+    wikiMode.run();
+    
     
 
     while(SDL_PollEvent(&Event)) {
