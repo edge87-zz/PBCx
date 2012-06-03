@@ -31,15 +31,14 @@ void Switch::switchActive(bool value)
 			double difference = (( (double)tempTime.tv_sec + (double)tempTime.tv_nsec/NANO) - ((double)m_lastActiveTime.tv_sec + (double)m_lastActiveTime.tv_nsec/NANO));
 			if(difference > m_debounceTime && difference < m_debounceTime * 2)
 			{
-				cout << "switch " << m_switchNumber << " activated!" << endl;
 				m_switchValue = value;
 				m_active = false;
 				// do something when switch is activated, advance score?
 				// perhaps add the function to a stack/list to be called by 
 				// a less time sensitive task
-				if(value)
+				if(m_switchValue)
 				{
-					//notifyObservers();
+					notifyObservers();
 				}
 			}
 			else if(difference > m_debounceTime * 2)

@@ -7,6 +7,8 @@ namespace
 
 Game::Game(){
 	ball = 0; // \ We set this to zero because when the game starts it will add the first ball.
+  m_numOfPlayers = 1;
+  resetPlayers();
 };
 
 Game::~Game(){
