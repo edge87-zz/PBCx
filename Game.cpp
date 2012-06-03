@@ -1,5 +1,10 @@
 #include "Game.hpp"
 
+namespace
+{
+  const int BallDrain = 100; 
+}
+
 Game::Game(){
 	ball = 0; // \ We set this to zero because when the game starts it will add the first ball.
 };
@@ -42,9 +47,46 @@ void Game::ballDrain(){
 	};
 };
 
+void Game::resetPlayers()
+{
+  m_players.clear();
+  for(int i = 0; i < m_numOfPlayers; i++)
+  {
+    m_players.push_back(new Player());
+  }
+}
+
 bool Game::highScore(unsigned int score){
 
 
 
 	return false;
 };
+
+void Game::incrementScore(int scoreAddition)
+{
+  (*m_currentPlayer)->add_score(scoreAddition);
+}
+
+void Game::nextPlayer()
+{
+  m_currentPlayer++;
+  if(m_currentPlayer == m_players.end())
+  {
+    m_currentPlayer = m_players.begin();
+  }
+}
+void Game::notify(int switchNumber)
+{
+  (*m_currentPlayer)->add_score(100);
+  switch(switchNumber)
+  {
+    // ball drain stuff
+    case BallDrain:
+      ball++;
+      nextPlayer();
+      break;
+    default:
+      break;
+  }
+}

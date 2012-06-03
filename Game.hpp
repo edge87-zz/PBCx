@@ -1,7 +1,12 @@
 #ifndef GAME_HPP_
 #define GAME_HPP_
 
-class Game{
+#include "SwitchObserver.hpp"
+#include "Player.hpp"
+#include <vector>
+
+class Game : public SwitchObserver
+{
 public:
 
 	// \Game Constructor
@@ -21,12 +26,25 @@ public:
 
 	// \When the game ends lets check if it was a high score and get the player's Name. ::FUTURE FEATURE:: Get Username from ID Card.
 	// \If high score return true.
-	bool Game::highScore(unsigned int);
+	bool highScore(unsigned int);
 
-private:
-
+  void resetPlayers();
+  
+  virtual void notify(int switchNumber);
+  
+  void incrementScore(int scoreAddition);
+private:  
+  
+  void nextPlayer();
+  
 	// \Player's Current Ball. Starts on zero when the ball is launched it goes to one.
-	unsigned int ball;
+	int ball;
+  
+  int m_numOfPlayers;
+  
+  std::vector<Player*>::iterator m_currentPlayer;
+  
+  std::vector<Player*> m_players;
 };
 
 

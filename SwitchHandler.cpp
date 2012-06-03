@@ -1,11 +1,20 @@
 #include "SwitchHandler.hpp"
 
-SwitchHandler::SwitchHandler()
+namespace
 {
-	for(int i = 0; i < 64; i++)
+  const int maxSwitches = 64;
+}
+
+SwitchHandler::SwitchHandler(Game *game)
+{
+	for(int i = 0; i < maxSwitches; i++)
 	{
-		switches.append(new Switch(i, 15));
+		switches.push_back(new Switch(i, 15));
 	}
+  for(int i = 0; i < switches.size(); i++)
+  {
+    registerObserver(i, game);
+  }
 }
 
 SwitchHandler::~SwitchHandler()
@@ -13,12 +22,15 @@ SwitchHandler::~SwitchHandler()
 
 }
 
-void SwitchHandler::giveSwitchData(int subset, char* switchInfo)
+void SwitchHandler::giveSwitchData(int subset, unsigned char switchInfo)
 {
 	for(int i = 0; i < 8; i++)
 	{
-		switches[(subset * 8) + i].switchActive(1 && ((switchInfo >> i) & 1));
+		switches[(subset * 8) + i]->switchActive(1 && ((switchInfo >> i) & 1));
 	}
 }
 
-void
+void SwitchHandler::registerObserver(int number, SwitchObserver *observer)
+{
+  switches[number]->registerObserver(observer);
+}

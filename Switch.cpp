@@ -1,6 +1,7 @@
 /// Switch.cpp
 
 #include "Switch.hpp"
+#include "Game.hpp"
 #include <iostream>
 #include <iomanip>
 #include <stdio.h>
@@ -9,13 +10,8 @@ using namespace std;
 
 #define NANO 1000000000
 
-Switch::Switch()
-{
-	clock_gettime(CLOCK_MONOTONIC, &m_lastActiveTime);
-}
-
-Switch::Switch(int debounceTime):m_switchValue(false),
-m_debounceTime((double)debounceTime / 1000), m_active(false), m_callback(NULL)
+Switch::Switch(int number, int debounceTime):m_switchValue(false),
+m_debounceTime((double)debounceTime / 1000), m_active(false), m_switchNumber(number)
 {
 	clock_gettime(CLOCK_MONOTONIC, &m_lastActiveTime);
 }
@@ -42,7 +38,7 @@ void Switch::switchActive(bool value)
 				// a less time sensitive task
 				if(value)
 				{
-					//m_callback();
+					notifyObservers();
 				}
 			}
 			else if(difference > m_debounceTime * 2)
@@ -63,3 +59,15 @@ bool Switch::getSwitchValue()
 	return m_switchValue;
 }
 
+void Switch::registerObserver(SwitchObserver *observer)
+{
+	m_observers.push_back(observer);
+}
+
+void Switch::notifyObservers()
+{
+	for(vector<SwitchObserver*>::iterator iter = m_observers.begin(); iter != m_observers.end(); iter++)
+	{
+		(*iter)->notify(m_switchNumber);
+	}
+}

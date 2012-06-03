@@ -29,6 +29,8 @@
 #include <cstdlib>
 #include <cstdio>
 #include <pthread.h>
+#include "SwitchHandler.hpp"
+#include "Game.hpp"
 
 //My includes
 #include "scon.hpp"
@@ -57,7 +59,10 @@ int main (){
 	
 	//Start our serial reading thread
 	threadStatus = pthread_create( &readSwitchesThread, NULL, read_switches_thread, NULL);
-
+  
+  Game tehGame;
+  SwitchHandler switchHandler(&tehGame);
+  
 	std::string sswitches;
 	std::string scabinet;
 
@@ -65,14 +70,13 @@ int main (){
 
 		sswitches = "Switch bits: " + char_to_bin_string(switches, 8);
 		scabinet = "Cabinet bits: "  + char_to_bin_string(cabinet, 2);
-
-		if(bit3(switches[2])){
-			//event
-		};
-
-		if(bit7(switches[7])){
-			//event
-		}
+    
+    for(int i = 0; i < 8; i++)
+    {
+      switchHandler.giveSwitchData(i, switches[i]);
+    }
+    
+	
 
 	};
 
@@ -93,7 +97,7 @@ void* read_switches_thread(void* ){
 		//need a MUTEX lock here
 		read_switches();
 		//need a MUTEX unlock here
-	};
+	}
 
 	//return void*; //Compiler is pissed off i'm not returning anything but i didn't know a void* could return?
 };
