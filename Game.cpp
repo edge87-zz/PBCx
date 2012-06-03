@@ -1,4 +1,7 @@
 #include "Game.hpp"
+#include <iostream>
+
+using namespace std;
 
 namespace
 {
@@ -80,15 +83,5 @@ void Game::nextPlayer()
 }
 void Game::notify(int switchNumber)
 {
-  (*m_currentPlayer)->add_score(100);
-  switch(switchNumber)
-  {
-    // ball drain stuff
-    case BallDrain:
-      ball++;
-      nextPlayer();
-      break;
-    default:
-      break;
-  }
+  cout << "switch " << switchNumber << " active" << endl;
 }

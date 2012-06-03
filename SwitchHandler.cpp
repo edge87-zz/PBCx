@@ -12,7 +12,7 @@ SwitchHandler::SwitchHandler(Game *game)
 {
 	for(int i = 0; i < maxSwitches; i++)
 	{
-		switches.push_back(new Switch(i, 10));
+		switches.push_back(new Switch(i, 15));
 	}
   for(int i = 0; i < switches.size(); i++)
   {
