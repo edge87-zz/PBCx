@@ -32,6 +32,7 @@
 #include "SwitchHandler.hpp"
 #include "Game.hpp"
 #include "/usr/include/SDL/SDL.h"
+#include "/usr/include/SDL/SDL_ttf.h"
 
 //My includes
 #include "scon.hpp"
@@ -84,6 +85,8 @@ int main (){
 		 return false;
 	};
 
+
+
 	OnDraw(Surf_Display, Surf_Background, 0, 0);
 
 	SDL_Flip(Surf_Display);
@@ -117,6 +120,7 @@ int main (){
 
 	//Destroy serial connection on our way out.
 	close(sPort);
+	TTF_Quit;
 
 	return 0;
 };
