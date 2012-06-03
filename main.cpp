@@ -111,9 +111,9 @@ int main (){
       
     for(int i = 0; i < 8; i++)
     {
-      pthread_mutex_lock(&switch_lock);
+      //pthread_mutex_lock(&switch_lock);
       switchHandler.giveSwitchData(i, switches[i]);
-      pthread_mutex_unlock(&switch_lock);
+      //pthread_mutex_unlock(&switch_lock);
     }
     text = TTF_RenderText_Solid(font,
       switchHandler.getSwitchString().c_str(),
