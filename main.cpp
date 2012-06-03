@@ -32,6 +32,7 @@
 #include "SwitchHandler.hpp"
 #include "Game.hpp"
 #include "/usr/include/SDL/SDL.h"
+#include "/usr/include/SDL/SDL_ttf.h"
 
 //My includes
 #include "scon.hpp"
@@ -88,6 +89,15 @@ int main (){
 
 	SDL_Flip(Surf_Display);
   
+  TTF_Init();
+  
+  TTF_Font *font;
+  font = TTF_OpenFont("FreeSans.ttf", 24);
+
+  // Write text to surface
+  SDL_Surface *text;
+  SDL_Color text_color = {255, 255, 255};
+
   Game tehGame;
   SwitchHandler switchHandler(&tehGame);
   
@@ -103,6 +113,10 @@ int main (){
       switchHandler.giveSwitchData(i, switches[i]);
       pthread_mutex_unlock(&switch_lock);
     }
+    text = TTF_RenderText_Solid(font,
+      switchHandler.getSwitchString().c_str(),
+      text_color);
+    SDL_BlitSurface(text, NULL, Surf_Display, NULL);
     
     while(SDL_PollEvent(&Event)) {
     	OnEvent(&Event);
