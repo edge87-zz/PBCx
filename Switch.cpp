@@ -30,7 +30,7 @@ void Switch::switchActive(bool value)
 		{
 			double difference = (( (double)tempTime.tv_sec + (double)tempTime.tv_nsec/NANO) - ((double)m_lastActiveTime.tv_sec + (double)m_lastActiveTime.tv_nsec/NANO));
 			cout << difference << endl;
-			if(difference > m_debounceTime && difference < m_debounceTime * 4)
+			if(difference > m_debounceTime && difference < .1)
 			{
 				m_switchValue = value;
 				m_active = false;
@@ -42,7 +42,7 @@ void Switch::switchActive(bool value)
 					notifyObservers();
 				}
 			}
-			else if(difference > m_debounceTime * 4)
+			else if(difference > .1)
 			{
 				m_active = false;
 			}

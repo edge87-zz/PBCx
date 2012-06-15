@@ -1,5 +1,5 @@
 pbcx : main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o WikiMode.o
-	g++ -o pbcx -lrt -lpthread -lSDL_ttf $(shell sdl-config --cflags) $(shell sdl-config --libs) main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o WikiMode.o
+	g++ -o pbcx main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o WikiMode.o -lrt -lpthread $(shell sdl-config --libs) $(shell sdl-config --cflags) -lSDL_ttf 
 	
 main.o : main.cpp
 	g++ -c main.cpp

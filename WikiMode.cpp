@@ -18,7 +18,7 @@ void WikiMode::notify(int SwitchNumber)
 {
   if(progress <= 4 && reset != true)
   {
-    set_light(progress, 8, 8);
+    set_light(progress, 8, 5);
     progress++;
   }  
   if(progress == 4)

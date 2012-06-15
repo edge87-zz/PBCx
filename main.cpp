@@ -31,8 +31,8 @@
 #include <pthread.h>
 #include "SwitchHandler.hpp"
 #include "Game.hpp"
-#include "/usr/include/SDL/SDL.h"
-#include "/usr/include/SDL/SDL_ttf.h"
+#include </usr/include/SDL/SDL.h>
+#include </usr/include/SDL/SDL_ttf.h>
 #include "WikiMode.hpp"
 
 //My includes

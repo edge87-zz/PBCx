@@ -161,7 +161,7 @@ void set_light(int light, int option, int level){
 		std::cout << "\nLight is outside range of 0 - 63\n";
 	};
 
-	if (option != 32 || option != 16 || option != 8){
+	if (option != 32 && option != 16 && option != 8){
 		std::cout << "\nInvalid option light";
 	};
 
