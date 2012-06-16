@@ -11,6 +11,10 @@ WikiMode::WikiMode(SwitchHandler *handler)
 void WikiMode::resetMode()
 {
   progress = 0;
+  set_light(0, 8, 5);
+  set_light(1, 8, 5);
+  set_light(2, 8, 5);
+  set_light(3, 8, 5);
   reset = false;
 }
 
