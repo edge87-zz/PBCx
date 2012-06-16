@@ -169,14 +169,15 @@ void set_light(int light, int option, int level){
 		std::cout << "\nLevel is Invalid\n";
 	};
 
-	light += OPC_LIGHT;
-	level += option;	//Level and options are combined into a single byte
+	light |= OPC_LIGHT;
+	level |= option;	//Level and options are combined into a single byte
 
 	charConvert = (char)light;
 	sendingThis = &charConvert;
 	written = write(fd, sendingThis, 1);
 
-	charConvert = (char)level;
+	//charConvert = (char)level;	//Ben's Code isn't ready
+	charConvert = (char)8;
 	sendingThis = &charConvert;
 	written += write(fd, sendingThis, 1);
 
