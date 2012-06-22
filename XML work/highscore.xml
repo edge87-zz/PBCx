@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<score>
+	<value>140300</value>
+	<name>Andrew R. Edgerton</name>
+	<initials>are</initals>
+	<rfid>1</rfid>
+	<uniqueid>20392</uniqueid>
+</score>
+
+<score>
+	<value>46500</value>
+	<name>Ben Heckendorn</name>
+	<initials>bh</initals>
+	<rfid>1</rfid>
+	<uniqueid>20393</uniqueid>
+</score>
+
+<score>
+	<value>548100</value>
+	<name>NULL</name>
+	<initials>jj</initals>
+	<rfid>0</rfid>
+	<uniqueid>20394</uniqueid>
+</score>

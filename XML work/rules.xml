@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+
+<mode> <!-- Entire Single Game Mode -->
+	<name>basement</name>
+	<priority>1</priority> <!-- Indicates what priority within a group it is -->
+	<groupstack>1</groupstack> <!-- If this is a stackable mode (meaning it can run WITH other modes, then what group of modes does it fall into -->
+		
+	<attract> <!-- To get people to "start" the mode they need to know what to hit. These setup the lights and sounds to bring them into this mode. Should NOT contain Switch hits. This is only for attracting, IE lights, servos, rgb -->
+		<light>
+			<number>3</number>
+			<option>blink</number>
+			<level>200</number>
+		</light>
+		
+		<light>
+			<number>4</number>
+			<option>blink</number>
+			<level>200</number>
+		</light>
+		
+		<light>
+			<number>5</number>
+			<option>blink</number>
+			<level>200</number>
+		</light>
+	</attract>
+	
+	<condictions> <!-- Requirements to enter this mode -->
+		<unordered_hit> <!-- Hitting these switches in any order will start this mode -->
+			<switch>
+				<number>5</number>
+			</switch>
+			
+			<switch>
+				<number>50</number>
+			</switch>
+			
+			<switch> 
+				<number>30</number>
+			</switch>
+		</unordered_hit>
+	</condictions>
+	
+	<setup> <!-- Setup at the start of the mode. This happens AFTER attract and condictions -->
+		<light>	<!-- Light in front of switch 5 -->
+			<number>10</number>
+			<option>blink</option>
+			<level>130</level>
+		</light>
+		
+		<light> <!-- Light in front of switch 12 -->
+			<number>3</number>
+			<option>on</option>
+			<level>100</level>
+		</light>
+		
+		<light> <!-- Light in front of switch 4 -->
+			<number>4</number>
+			<option>pulse</option>
+			<level>30</level>
+		</light>
+		
+		<rgb> <!-- RGB Light. Sets right to Red and left to Green -->
+			<right>200</right>
+			<left>020</left>
+		</rgb>
+			
+		<servo> <!-- Sets Servo 2 to 100 deg -->
+			<number>2</number>
+			<pos>100</pos>
+		</servo>
+		
+	</setup>
+	
+	<ordered_hit>
+		<switch>
+			<number>5</number>
+			<play_audio>Run For The Hills.mp3</play_audio>
+			<light>
+				<number>10</number>
+				<option>off</option>
+				<level>0</level>
+			</light>
+		</switch>
+		
+		<switch number=12/>
+		<switch number=4/>
+	</ordered_hit>
+	
+	<unordered_hit>
+		<switch number=5/>
+		<switch number=50/>
+		<switch number=30/>
+	</unordered_hit>
+	
+	<end> <!-- Defines what we do when the mode ends. Either because another mode started with a higher priority, because the ball drained, or it was completed. -->
+	
+	</end>
+	
+	
+</mode>

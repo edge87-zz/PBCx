@@ -8,6 +8,7 @@ Release/*
 *.exe
 *.o
 *.so
+pbcx
 
 # Packages #
 ############
