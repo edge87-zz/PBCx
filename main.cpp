@@ -29,15 +29,16 @@
 #include <cstdlib>
 #include <cstdio>
 #include <pthread.h>
-#include "SwitchHandler.hpp"
-#include "Game.hpp"
 #include </usr/include/SDL/SDL.h>
 #include </usr/include/SDL/SDL_ttf.h>
-#include "WikiMode.hpp"
 
 //My includes
 #include "scon.hpp"
 #include "audio.hpp"
+#include "LogController.hpp"
+#include "WikiMode.hpp"
+#include "SwitchHandler.hpp"
+#include "Game.hpp"
 
 extern pthread_mutex_t switch_lock;
 
@@ -63,6 +64,11 @@ SDL_Surface*	Surf_Background;
 SDL_Event Event;
 
 int main (){
+	//Load Logger
+	LogController logger;
+
+	logger.info("Log Object Created");
+
 	int threadStatus = 0;
 	
 	int sPort = -1;

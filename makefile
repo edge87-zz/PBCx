@@ -1,5 +1,5 @@
-pbcx : main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o WikiMode.o
-	g++ -o pbcx main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o WikiMode.o -lrt -lpthread $(shell sdl-config --libs) $(shell sdl-config --cflags) -lSDL_ttf 
+pbcx : main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o WikiMode.o LogController.o
+	g++ -o pbcx main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o WikiMode.o LogController.o -lrt -lpthread $(shell sdl-config --libs) $(shell sdl-config --cflags) -lSDL_ttf 
 	
 main.o : main.cpp
 	g++ -c main.cpp
@@ -25,5 +25,8 @@ Event.o : Event.cpp Event.hpp
 WikiMode.o : WikiMode.cpp WikiMode.hpp
 	g++ -c WikiMode.cpp
 	
+LogController.o : LogController.cpp LogController.hpp
+	g++ -c LogController.cpp
+	
 clean :
-	rm pbcx main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o
+	rm pbcx main.o audio.o Game.o Player.o scon.o Switch.o SwitchHandler.o LogController.o
