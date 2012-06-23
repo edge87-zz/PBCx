@@ -1,10 +1,19 @@
 //Serial CONnection header file
 
-int open_port(void);
+#include "LogController.hpp"
+
+void open_port(LogController *logger);
 /*
  * open_port() opens the serial port and sets the options.
  *
- * Return type int. True if everything is ok , False if it is not.
+ * Has internal logging for status
+ *
+ */
+
+void close_port(LogController* logger);
+/*
+ * close_port() closes the serial port.
+ *
  *
  */
 

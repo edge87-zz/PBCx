@@ -63,17 +63,19 @@ SDL_Surface*	Surf_Display;
 SDL_Surface*	Surf_Background;
 SDL_Event Event;
 
-int main (){
-	//Load Logger
-	LogController logger;
+//Load Logger
+LogController *logger = new LogController();
 
-	logger.info("Log Object Created");
+int main (){
+	//Log that we can log. (so we know when we can't)
+	logger->info("Log Object Created");
 
 	int threadStatus = 0;
 	
-	int sPort = -1;
-	sPort = open_port();
+	//Open our Serial Port
+	open_port(logger);
 	
+	//Wait for Ben's board to "restart" because of the serial connection being opened
 	SDL_Delay(200);
 
 	//Start our serial reading thread
@@ -83,25 +85,35 @@ int main (){
 	displayRunning = true;
 
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		logger->error("Failed to load and initialize SDL. This is fatal.");
 		return false;
 	};
 
 	if((Surf_Display = SDL_SetVideoMode(1920, 1080, 32, SDL_HWSURFACE | SDL_DOUBLEBUF)) == NULL) {
-		return false;
+		logger->warn("Couldn't Set video Mode to 1920x1080.");
 	};
 
-	if((Surf_Background = OnLoad("background.bmp")) == NULL) {
-		 return false;
+	if((Surf_Background = OnLoad("./media/images/background.bmp")) == NULL) {
+		 logger->warn("Background Failed to Load");
 	};
 
 	OnDraw(Surf_Display, Surf_Background, 0, 0);
 
 	SDL_Flip(Surf_Display);
   
-  TTF_Init();
+	if (TTF_Init() < 0) {
+	    logger->error("SDL TTF Failed to Initalize. Fatal Error");
+	}
   
   TTF_Font *font;
   font = TTF_OpenFont("FreeMono.ttf", 24);
+
+  if (font){
+	  logger->info("Font FreeMono Loaded.");
+  }
+  else {
+	  logger->error("Font FreeMono Failed to load.");
+  }
 
   // Write text to surface
   SDL_Surface *text;
@@ -124,16 +136,14 @@ int main (){
       switchHandler.giveSwitchData(i, switches[i]);
       //pthread_mutex_unlock(&switch_lock);
     }
+
     text = TTF_RenderText_Solid(font,
       switchHandler.getSwitchString().c_str(),
       text_color);
     SDL_BlitSurface(text, NULL, Surf_Display, NULL);
-    
-    
+
     wikiMode.run();
     
-    
-
     while(SDL_PollEvent(&Event)) {
     	OnEvent(&Event);
     }
@@ -143,13 +153,16 @@ int main (){
 
 	}
 
-	//Destroy our Threads
-
-
 	//Destroy serial connection on our way out.
-	close(sPort);
+	close_port(logger);
+
+	//Call the destructor of our object and close the file.
+	delete logger;
+
+	//Release the TTF fonts and their resources
 	TTF_Quit;
 
+	//And die
 	return 0;
 };
 

@@ -10,8 +10,10 @@
 #include <termios.h>	//POSIX terminal control definitions
 #include <iostream>		//Input-Output Streams
 #include <pthread.h>
+
 //My Libraries
 #include "scon.hpp"
+
 
 //Local Variables
 int fd;					//File descriptor for the port
@@ -40,7 +42,7 @@ const int STROBE = 16;
 const int BLINK = 8;
 
 //open_port() - Opens serial port and returns file descriptor on success or -1 on error
-int open_port(void){
+void open_port(LogController *logger){
 	struct termios options;
 
 	//fd = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_NDELAY);
@@ -48,8 +50,8 @@ int open_port(void){
 
 	if (fd == -1){
 		//Could not open the port.
-		std::cout << "Port Failed to Open!!!";
-		return false;
+		logger->error("Serial Port Didn't Open.");
+		return;
 	}
 	else{
 		fcntl(fd, F_SETFL);
@@ -72,11 +74,17 @@ int open_port(void){
 
 		tcsetattr(fd, TCSANOW, &options);			//Set the new options for the port "NOW"
 
-		std::cout << "Serial Port OK!\n";
+		logger->info("Serial Port is open and configured.");
 	};
 
-	return true;
+	return;
 };
+
+void close_port(LogController* logger){
+	logger->info("Closing Serial Port.");
+
+	close(fd);
+}
 
 void kick_coil(int coil, int duration){
 	int written = 0;
@@ -84,12 +92,12 @@ void kick_coil(int coil, int duration){
 	unsigned char* sendingThis;
 
 	if (coil >= 32){
-		std::cout << "Coil out of Range\n";
+		//std::cout << "Coil out of Range\n";
 		return;
 	};
 
 	if (duration >= 251){
-		std::cout << "Duration out of Range\n";
+		//std::cout << "Duration out of Range\n";
 		return;
 	};
 
@@ -99,7 +107,7 @@ void kick_coil(int coil, int duration){
 
 	sendingThis = &charConvert;
 
-	std::cout << "Kicking coil " <<  *sendingThis << " for " << duration << "\n";
+	//std::cout << "Kicking coil " <<  *sendingThis << " for " << duration << "\n";
 
 	written = write(fd, sendingThis, 1);
 
@@ -110,7 +118,7 @@ void kick_coil(int coil, int duration){
 
 	if (written != 2 ){
 				//Failed to write 2 bytes of data to serial port
-				std::cout << "Failed to write to port \n";
+				//std::cout << "Failed to write to port \n";
 				return;
 	};
 };
@@ -121,12 +129,12 @@ void set_servo(int servo, int position){
 	unsigned char* sendingThis;
 
 	if (servo >= 32){
-		std::cout << "Servo out of Range\n";
+		//std::cout << "Servo out of Range\n";
 		return;
 	};
 
 	if (position >= 181){
-		std::cout << "Position out of Range\n";
+		//std::cout << "Position out of Range\n";
 		return;
 	};
 
@@ -136,7 +144,7 @@ void set_servo(int servo, int position){
 
 	sendingThis = &charConvert;
 
-	std::cout << "Setting servo " <<  *sendingThis << " to " << position << "\n";
+	//std::cout << "Setting servo " <<  *sendingThis << " to " << position << "\n";
 
 	written = write(fd, sendingThis, 1);
 
@@ -147,7 +155,7 @@ void set_servo(int servo, int position){
 
 	if (written != 2 ){
 		//Failed to write 2 bytes of data to serial port
-		std::cout << "Failed to write to port \n";
+		//std::cout << "Failed to write to port \n";
 		return;
 	};
 };
@@ -158,15 +166,15 @@ void set_light(int light, int option, int level){
 	unsigned char* sendingThis;
 
 	if (light > 63 || light < 0){
-		std::cout << "\nLight is outside range of 0 - 63\n";
+		//std::cout << "\nLight is outside range of 0 - 63\n";
 	};
 
 	if (option != 32 && option != 16 && option != 8){
-		std::cout << "\nInvalid option light";
+		//std::cout << "\nInvalid option light";
 	};
 
 	if (level > 7 || level < 0){
-		std::cout << "\nLevel is Invalid\n";
+		//std::cout << "\nLevel is Invalid\n";
 	};
 
 	light |= OPC_LIGHT;
@@ -183,7 +191,7 @@ void set_light(int light, int option, int level){
 
 	if (written != 2 ){
 		//Failed to write 2 bytes of data to serial port
-		std::cout << "Failed to write to port \n" << std::endl ;
+		//std::cout << "Failed to write to port \n" << std::endl ;
 		return;
 	};
 
@@ -206,7 +214,7 @@ void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb)
 
 	for(int i=0; i < 6; i++){
 		if(argb[i]> 255 || argb[i] < 0){
-			std::cout << "RGB Value out of range\n";
+			//std::cout << "RGB Value out of range\n";
 			return;
 		};
 
@@ -225,7 +233,7 @@ void set_rgb(int lr, int lg, int lb, int rr, int rg, int rb)
 	written += write(fd, sendingThis, 1);
 
 	if (written != 8){
-		std::cout << "Failed to write RGB colors\n";
+		//std::cout << "Failed to write RGB colors\n";
 		return;
 	};
 

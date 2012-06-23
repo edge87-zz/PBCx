@@ -16,9 +16,9 @@ LogController::LogController(){
 };
 
 LogController::~LogController(){
+	logfile << "[INFO] Log File Destructor Called" << std::endl;
 	logfile.close();
 };
-
 
 void LogController::warn(std::string warning){
 	logfile << "[WARNING] " << warning << std::endl;
