@@ -28,6 +28,7 @@ pbcx
 *.log
 *.sql
 *.sqlite
+PBCxlog*
 
 # OS generated files #
 ######################

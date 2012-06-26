@@ -14,7 +14,6 @@
 //My Libraries
 #include "scon.hpp"
 
-
 //Local Variables
 int fd;					//File descriptor for the port
 

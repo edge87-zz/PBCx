@@ -1,5 +1,0 @@
-[INFO] Log Object Created
-[ERROR] Serial Port Didn't Open.
-[INFO] Font FreeMono Loaded.
-[INFO] Closing Serial Port.
-[INFO] Log File Destructor Called
