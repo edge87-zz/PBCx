@@ -41,7 +41,41 @@ SerialController::SerialController(LogController *pnt){
 
 
 SerialController::~SerialController(){
+	logger->info("Closing Serial Port.");
 
-}
+	close(fd);
+};
+
+void SerialController::KickCoil(int number, int duration){
+	unsigned char byte1;
+	unsigned char byte2;
+
+	if (number >= 32){
+		logger->warn("KickCoil called with Invalid Coil Number. Coil Not Fired.");
+		return;
+	};
+
+	if (duration >= 251){
+		logger->warn("KickCoil called with Invalid Duration. Coil Not Fired");
+		return;
+	};
+
+	logger ->info("Firing Coil " + number +" for " + duration);
+
+	//Add our opcode to the coil
+	number |= OPC_COIL;
+
+	//Convert our ints to bytes
+	byte1 = (char)number;
+	byte2 = (char)duration;
+
+	pthread_mutex_lock(&serialqueue);
+
+	//Put our two bytes into the Stack
+
+	pthread_mutex_unlock(&serialqueue);
+
+	return;
+};
 
 
