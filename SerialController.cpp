@@ -40,6 +40,16 @@ SerialController::SerialController(LogController *pnt) : serialOut(100)
 		tcsetattr(fd, TCSANOW, &options);			//Set the new options for the port "NOW"
 
 		logger->info("Serial Port is open and configured.");
+
+		if(pthread_create(&sdthread, NULL, SerialController::SendData, (void *)NULL)){
+			logger ->error("SerialSend Thread failed to spawn. Fatal Error.");
+		}
+
+		else{
+			logger ->info("SerialSend Thread was Successfully Created");
+		}
+
+
 	};
 };
 
@@ -85,8 +95,8 @@ void SerialController::KickCoil(int number, int duration){
 	return;
 };
 
-void SerialController::SendData(){
-	std::vector<char>::iterator itr;
+void *SerialController::SendData(void* args){
+	std::vector<unsigned char>::iterator itr;
 
 	while(true){
 		if(serialOut.size() > 1){
@@ -101,6 +111,8 @@ void SerialController::SendData(){
 			pthread_mutex_unlock(&serialqueue);
 		}
 	}
+
+	pthread_exit(NULL);
 };
 
 

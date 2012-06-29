@@ -43,7 +43,7 @@ class SerialController{
 		~SerialController();
 
 		//Thread to send data to microcontroller
-		void SendData();
+		void *SendData(void *args);
 
 		/* KickCoil() sends a two byte command / coil + duration.
 		 *
@@ -100,7 +100,10 @@ class SerialController{
 		pthread_mutex_t serialqueue;
 
 		//Vector for Serial Out
-		std::vector<char> serialOut;
+		std::vector<unsigned char> serialOut;
+
+		//SerialSend() Thread
+		pthread_t sdthread;
 
 
 };
