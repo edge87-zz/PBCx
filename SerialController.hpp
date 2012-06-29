@@ -10,6 +10,8 @@
 #include <termios.h>	//POSIX terminal control definitions
 #include <iostream>		//Input-Output Streams
 #include <pthread.h>	//Threading
+#include <vector>		//Vector Lib
+#include <sstream>		//String Streams
 
 //Our files
 #include "LogController.hpp"
@@ -39,6 +41,9 @@ class SerialController{
 
 		//Deconstructor
 		~SerialController();
+
+		//Thread to send data to microcontroller
+		void SendData();
 
 		/* KickCoil() sends a two byte command / coil + duration.
 		 *
@@ -86,13 +91,16 @@ class SerialController{
 
 	private:
 		//Logger has nothing until set
-		LogController* logger = NULL;
+		LogController* logger;
 
 		//File Descriptor
 		int fd;
 
 		//Vector Mutex for inserting or removing from queue
-		pthread_mutex_t serialqueue = PTHREAD_MUTEX_INITIALIZER;
+		pthread_mutex_t serialqueue;
+
+		//Vector for Serial Out
+		std::vector<char> serialOut;
 
 
 };

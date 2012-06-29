@@ -193,7 +193,7 @@ SDL_Surface* OnLoad(char* File){
 
 bool OnDraw(SDL_Surface* Surf_Dest, SDL_Surface* Surf_Src, int X, int Y) {
     if(Surf_Dest == NULL || Surf_Src == NULL) {
-    	logger->error("SDL failed to draw. Function OnDraw.")
+    	logger->error("SDL failed to draw. Function OnDraw.");
         return false;
     };
 

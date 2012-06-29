@@ -1,8 +1,12 @@
 #include "SerialController.hpp"
 
-SerialController::SerialController(LogController *pnt){
+SerialController::SerialController(LogController *pnt) : serialOut(100)
+{
 	// Link up our serial logger to our pointer.
 	logger = pnt;
+
+	// Setup our Mutex
+	serialqueue = PTHREAD_MUTEX_INITIALIZER;
 
 	// Setup our options
 	struct termios options;
@@ -49,6 +53,7 @@ SerialController::~SerialController(){
 void SerialController::KickCoil(int number, int duration){
 	unsigned char byte1;
 	unsigned char byte2;
+	std::ostringstream log;
 
 	if (number >= 32){
 		logger->warn("KickCoil called with Invalid Coil Number. Coil Not Fired.");
@@ -60,7 +65,8 @@ void SerialController::KickCoil(int number, int duration){
 		return;
 	};
 
-	logger ->info("Firing Coil " + number +" for " + duration);
+	log << "Firing Coil " << number << " for " << duration;
+	logger ->info(log.str());
 
 	//Add our opcode to the coil
 	number |= OPC_COIL;
@@ -71,11 +77,30 @@ void SerialController::KickCoil(int number, int duration){
 
 	pthread_mutex_lock(&serialqueue);
 
-	//Put our two bytes into the Stack
+	serialOut.push_back(byte1);
+	serialOut.push_back(byte2);
 
 	pthread_mutex_unlock(&serialqueue);
 
 	return;
+};
+
+void SerialController::SendData(){
+	std::vector<char>::iterator itr;
+
+	while(true){
+		if(serialOut.size() > 1){
+			//Lock Vector
+			pthread_mutex_lock(&serialqueue);
+
+			for(itr=serialOut.begin(); itr < serialOut.end(); itr++){
+				write(fd,&itr, 1);
+			}
+
+			//Unlock Vector
+			pthread_mutex_unlock(&serialqueue);
+		}
+	}
 };
 
 
