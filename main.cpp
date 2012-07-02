@@ -48,9 +48,13 @@ std::string char_to_bin_string(unsigned char*, int);
 SDL_Surface* OnLoad(char* File);
 bool OnDraw(SDL_Surface* Surf_Dest, SDL_Surface* Surf_Src, int X, int Y);
 void OnEvent(SDL_Event* Event);
+void * SerialOutThread(void *args);
 
 //Global Threads
 pthread_t readSwitchesThread;
+
+//SerialSend() Thread
+pthread_t sdthread;
 
 //global variables
 unsigned char switches[8] = {(char)0};
@@ -70,16 +74,28 @@ int main (){
 	//Log that we can log. (so we know when we can't)
 	logger->info("Log Object Created");
 
-	int threadStatus = 0;
-	
 	//Open our Serial Port
 	open_port(logger);
 	
 	//Wait for Ben's board to "restart" because of the serial connection being opened
 	SDL_Delay(200);
 
+	if(pthread_create(&sdthread, NULL, SerialOutThread, (void *)NULL)){
+			logger ->error("SerialSend Thread failed to spawn. Fatal Error.");
+		}
+
+		else{
+			logger ->info("SerialSend Thread was Successfully Created");
+	}
+
 	//Start our serial reading thread
-	threadStatus = pthread_create( &readSwitchesThread, NULL, read_switches_thread, NULL);
+	if(pthread_create( &readSwitchesThread, NULL, read_switches_thread, NULL)){
+			logger ->error("readSwitchesThread Thread failed to spawn. Fatal Error.");
+		}
+		else{
+			logger ->info("readSwitchesThread Thread was Successfully Created");
+
+	}
 
 	//Bring SDL up
 	displayRunning = true;
@@ -217,6 +233,10 @@ void OnEvent(SDL_Event* Event) {
     };
 };
 
+void * SerialOutThread(void *args){
+	//call SerialController.
+	return NULL;
+};
 
 
 

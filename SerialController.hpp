@@ -42,8 +42,11 @@ class SerialController{
 		//Deconstructor
 		~SerialController();
 
-		//Thread to send data to microcontroller
-		void *SendData(void *args);
+		//Send data to microcontroller (thread from main calls this)
+		void SendData();
+
+		//Read Data from MicroController (thread from main calls this)
+		void RecieveData();
 
 		/* KickCoil() sends a two byte command / coil + duration.
 		 *
@@ -101,13 +104,6 @@ class SerialController{
 
 		//Vector for Serial Out
 		std::vector<unsigned char> serialOut;
-
-		//SerialSend() Thread
-		pthread_t sdthread;
-
-
 };
-
-
 
 #endif /* SERIALCONTROLLER_HPP_ */

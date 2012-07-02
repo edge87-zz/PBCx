@@ -40,19 +40,8 @@ SerialController::SerialController(LogController *pnt) : serialOut(100)
 		tcsetattr(fd, TCSANOW, &options);			//Set the new options for the port "NOW"
 
 		logger->info("Serial Port is open and configured.");
-
-		if(pthread_create(&sdthread, NULL, SerialController::SendData, (void *)NULL)){
-			logger ->error("SerialSend Thread failed to spawn. Fatal Error.");
-		}
-
-		else{
-			logger ->info("SerialSend Thread was Successfully Created");
-		}
-
-
 	};
 };
-
 
 SerialController::~SerialController(){
 	logger->info("Closing Serial Port.");
@@ -95,24 +84,63 @@ void SerialController::KickCoil(int number, int duration){
 	return;
 };
 
-void *SerialController::SendData(void* args){
+void SerialController::SendData(){
 	std::vector<unsigned char>::iterator itr;
 
-	while(true){
-		if(serialOut.size() > 1){
-			//Lock Vector
-			pthread_mutex_lock(&serialqueue);
+	if(serialOut.size() > 1){
+		//Lock Vector
+		pthread_mutex_lock(&serialqueue);
 
-			for(itr=serialOut.begin(); itr < serialOut.end(); itr++){
-				write(fd,&itr, 1);
-			}
-
-			//Unlock Vector
-			pthread_mutex_unlock(&serialqueue);
+		//Interate through the Vector till its empty sending that data to the serial
+		for(itr=serialOut.begin(); itr < serialOut.end(); itr++){
+			write(fd,&itr, 1);
 		}
+		//Unlock Vector
+		pthread_mutex_unlock(&serialqueue);
+	}
+};
+
+void SerialController::RecieveData(){
+	unsigned char opcode[1] = {(char)0};
+	int bytesRead = 0;
+
+	//Read from the buffer if we can for our opcodes
+	read(fd,opcode, 1);
+
+	if(opcode[0]== (char)0){
+		//Nothing for us to do i guess..
+		return;
 	}
 
-	pthread_exit(NULL);
+	//Playfield Switches and cabinet switches
+	else if(opcode[0] == OPC_RQSWITCH){
+		//Process Playfield Switch Bytes
+		unsigned char buffer[10] = {(char)0};
+
+		for(int i=0; i<10; i++){
+			bytesRead = 0; //reset this value
+			while(bytesRead <= 0){
+				bytesRead = read(fd,&buffer[i], 1);
+			};
+		};
+
+		read(fd,opcode, 1);
+
+	    pthread_mutex_lock(&switch_lock);
+			for(int j = 0; j < 8; j++){
+				switches[j] = buffer[j];
+			};
+
+		cabinet[0] = buffer[8];
+		cabinet[1] = buffer[9];
+
+		pthread_mutex_unlock(&switch_lock);
+	}
+
+	//Bad Things Happened
+	else{
+		//We got fucked up
+	}
 };
 
 
