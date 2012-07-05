@@ -41,6 +41,16 @@ SerialController::SerialController(LogController *pnt) : serialOut(100)
 
 		logger->info("Serial Port is open and configured.");
 	};
+
+	//TODO Wait for a "we're running" opcode from Ben's board
+	unsigned char opcode = (char)0;
+	while(true){
+		read(fd,opcode, 1);
+		if(opcode == OPC_OK){
+			logger -> info("Valid Serial Response from Board");
+			break;
+		}
+	};
 };
 
 SerialController::~SerialController(){
@@ -141,6 +151,140 @@ void SerialController::RecieveData(){
 	else{
 		//We got fucked up
 	}
+};
+
+void SerialController::set_servo(int servo, int position){
+	std::ostringstream log;
+	unsigned char byte1;
+	unsigned char byte2;
+
+	if (servo >= 32){
+		logger->warn("Servo Out Of Range. Not Setting.");
+		return;
+	};
+
+	if (position >= 181){
+		logger->warn("Servo Position Out of Range. Not Setting.");
+		return;
+	};
+
+	//Log that we are moving servo # into a position
+	log << "Setting Servo " << servo << " to " << position;
+	logger ->info(log.str());
+
+	//OR our opcode into servo
+	servo |= OPC_SERVO;
+
+	//Convert our ints to bytes
+	byte1 = (char)servo;
+	byte2 = (char)position;
+
+	//Lock Sending Thread
+	pthread_mutex_lock(&serialqueue);
+
+	//Put some data at the end of the vector
+	serialOut.push_back(byte1);
+	serialOut.push_back(byte2);
+
+	//Let the Thread continue sending
+	pthread_mutex_unlock(&serialqueue);
+
+	return;
+};
+
+void SerialController::set_light(int light, int option, int level){
+	std::ostringstream log;
+	unsigned char byte1;
+	unsigned char byte2;
+
+	if (light > 63 || light < 0){
+		logger -> warn("Light is outside of valid 0 - 63 range");
+		return;
+	};
+
+	if (option != 32 && option != 16 && option != 8){
+		logger -> warn("Light option is invalid");
+		return;
+	};
+
+	if (level > 7 || level < 0){
+		logger -> warn("Light Level is invalid");
+		return;
+	};
+
+	//Log that we are moving servo # into a position
+	log << "Setting light " << light << " with option " << option << " to level " << level;
+	logger ->info(log.str());
+
+	//OR our OPcode and options and level into the two bytes
+	light |= OPC_LIGHT;
+	level |= option;	//Level and options are combined into a single byte
+
+	byte1 = (char)light;
+	byte2 = (char)option;
+
+	//Lock Sending Thread
+	pthread_mutex_lock(&serialqueue);
+
+	//Put some data at the end of the vector
+	serialOut.push_back(byte1);
+	serialOut.push_back(byte2);
+
+	//Let the Thread continue sending
+	pthread_mutex_unlock(&serialqueue);
+
+	return;
+};
+
+void SerialController::set_rgb(int lred, int lgreen, int lblue, int rred, int rgreen, int rblue){
+	std::ostringstream log;
+	unsigned char bytes[6];
+
+	int argb[6];
+
+	argb[0]= lred;
+	argb[1]= lgreen;
+	argb[2]= lblue;
+	argb[3]= rred;
+	argb[4]= rgreen;
+	argb[5]= rblue;
+
+	log << "Sending RGB Values of ";
+	for(int i=0; i < 6; i++){
+
+		if(argb[i]> 255 || argb[i] < 0){
+			//std::cout << "RGB Value out of range\n";
+			logger->warn("RGB Value out of range");
+			return;
+		};
+
+		bytes[i] = (char)argb[i];
+		log << argb[i] << " ";
+	};
+
+	//If we got this far the RGB values were good so we can write the info log
+	logger ->info(log.str());
+
+	//Lock Sending Thread
+	pthread_mutex_lock(&serialqueue);
+
+	//Put some data at the end of the vector
+
+	//Send RGB LED OPcode
+	serialOut.push_back(OPC_SENDRGB);
+
+	for(int i=0; i < 6; i++){
+		serialOut.push_back(bytes[i]);
+	}
+
+	//Let the Thread continue sending
+	pthread_mutex_unlock(&serialqueue);
+
+	return;
+
+
+
+
 };
 
 

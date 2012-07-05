@@ -1,3 +1,5 @@
+//TODO Make this thread safe. Add a mutex to keep other threads from calling a log function at the same time. bad things may happen if u don't
+
 #include "LogController.hpp"
 
 LogController::LogController(){

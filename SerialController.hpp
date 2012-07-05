@@ -28,6 +28,7 @@ const unsigned char OPC_RQSWITCH = (char)62;
 const unsigned char OPC_RQCABINET = (char)61;
 const unsigned char OPC_SENDRGB = (char)60;
 const unsigned char OPC_AUTOCOIL = (char)59;
+const unsigned char OPC_OK = (char)255; // WRONG WRONG WRONG NOT SET BY BEN YET
 
 //Light Constant options
 const int PULSATE = 32;
@@ -62,7 +63,7 @@ class SerialController{
 		 *
 		 * Example: set_servo(2, 80);
 		 */
-		void set_servo(int, int);
+		void set_servo(int servo, int position);
 
 		/* set_light sends a two byte command to changes lights. First byte is light number second byte is options and level.
 		 *
@@ -79,7 +80,7 @@ class SerialController{
 		 *
 		 * Sets the 13th light to blink at a level of 3.
 		 */
-		void set_light(int, int, int);
+		void set_light(int light, int option, int level);
 
 
 		/* set_rgb sets the rbg left and right rgb lights. Sends 8 bytes (1 command , 1 EOL)
@@ -90,7 +91,7 @@ class SerialController{
 		 *
 		 * Sets the left side to blue and the right side to red.
 		 */
-		void set_rgb(int, int, int, int, int, int);
+		void set_rgb(int lred, int lgreen, int lblue, int rred, int rgreen, int rblue);
 
 	private:
 		//Logger has nothing until set
