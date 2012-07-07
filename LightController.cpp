@@ -4,11 +4,11 @@ using namespace std;
 
 LightController::LightController() : lights(64)
 {
-
-	for (int i=0; i++; i < lights.size()){
-		lights[i].status = false;
-		lights[i].level = 0;
-		lights[i].option = solid;
+  vector<Lights>::iterator iter;
+	for (iter = lights.begin(); iter != lights.end(); ++iter){
+		iter->status = false;
+		iter->level = 0;
+		iter->option = solid;
 	};
 
 	LightController::Update();
@@ -16,27 +16,31 @@ LightController::LightController() : lights(64)
 
 LightController::~LightController()
 {
-//Destroy Lights Vector
+
 };
 
-void LightController::Reset(){
-	for (int i=0; i++; i < lights.size()){
-			lights[i].status = false;
-			lights[i].level = 0;
-			lights[i].option = solid;
+void LightController::Reset()
+{  
+  vector<Lights>::iterator iter;
+	for (iter = lights.begin(); iter != lights.end(); ++iter){
+			iter->status = false;
+			iter->level = 0;
+			iter->option = solid;
 		};
 
 	LightController::Update();
 };
 
 void LightController::Set(int lightnum, bool state, int level, Light_Option option){
-	if (lightnum > 63 || lightnum < 0){
+	if (lightnum > 63 || lightnum < 0)
+  {
 		//Bad Log here
 		//Complain that we've been lied to about the cake
 		return;
 	}
 
-	if (level > 8 || level < 0){
+	if (level > 8 || level < 0)
+  {
 		//Bad Log Here
 		//Complain about level
 		return;
@@ -52,19 +56,22 @@ void LightController::Set(int lightnum, bool state, int level, Light_Option opti
 };
 
 void LightController::SetRange(int lightstart, int lightend, bool state, int level, Light_Option option){
-		if (lightstart > 63 || lightstart < 0 || lightstart >= lightend){
+		if (lightstart > 63 || lightstart < 0 || lightstart >= lightend)
+    {
 			//Bad Log here
 			//Complain that we've been lied to about the cake
 			return;
 		}
 
-		if(lightend > 63 || lightend < 0 || lightend <= lightstart){
+		if(lightend > 63 || lightend < 0 || lightend <= lightstart)
+    {
 			//Bad Log Here
 			//Complain about lightend
 			return;
 		}
 
-		if (level > 8 || level < 0){
+		if (level > 8 || level < 0)
+    {
 			//Bad Log Here
 			//Complain about level
 			return;
@@ -79,7 +86,8 @@ void LightController::SetRange(int lightstart, int lightend, bool state, int lev
 		LightController::Update();
 }
 
-bool LightController::Update(void){
+bool LightController::Update(void)
+{
 	// Send the whole Vector to ben's Board... easier said than done.
 
 

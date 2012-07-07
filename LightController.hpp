@@ -19,37 +19,34 @@ struct Lights{
 class LightController {
 
 public:
-	//Constructor
+	///\brief Constructor
 	LightController();
 
-	//Destructor
+	///\brief Destructor
 	~LightController();
 
-	//Resets the Light Vector back to its original construct
+	///\brief Resets the Light Vector back to its original construct
 	void Reset();
 
-	//Set a light. Takes 4 args (arrrgs like a pirate)
-
-		// lightnum = light number you wish to change. Valid range is 0 - 63 with anything above or below given you a error.
-		// state    = Either true (on) or false (off)
-		// level	= Level of brightness. between 0 and 8. Should avoid 0, use the state to turn it off. anything above or below range throws a error.
-		// option   = using our enumeration, pick solid, blink pulse or rapid. Anything else won't comple.
+	///\brief Set a light. Takes 4 args (arrrgs like a pirate)
+  ///\param lightnum = light number you wish to change. Valid range is 0 - 63 with anything above or below given you a error.
+  ///\param state    = Either true (on) or false (off)
+  ///\param level	= Level of brightness. between 0 and 8. Should avoid 0, use the state to turn it off. anything above or below range throws a error.
+  ///\param option   = using our enumeration, pick solid, blink pulse or rapid. Anything else won't comple.
 
 	void Set(int lightnum, bool state, int level, Light_Option option);
 
 
-	//Set Range of Lights
-
-		// lightstart 	= light number you wish to start changing at. Valid range is 0 - 63 with anything above or below given you a error.
-		// lightend		= light number you wish to end at. Should be larger than lightstart or what are you doing?
-		// state    	= Either true (on) or false (off)
-		// level		= Level of brightness. between 0 and 8. Should avoid 0, use the state to turn it off. anything above or below range throws a error.
-		// option   	= using our enumeration, pick solid, blink pulse or rapid. Anything else won't comple.
+	///\brief Set Range of Lights
+  ///\param lightstart 	= light number you wish to start changing at. Valid range is 0 - 63 with anything above or below given you a error.
+  ///\param lightend		= light number you wish to end at. Should be larger than lightstart or what are you doing?
+  ///\param state    	= Either true (on) or false (off)
+  ///\param level		= Level of brightness. between 0 and 8. Should avoid 0, use the state to turn it off. anything above or below range throws a error.
+  ///\param option   	= using our enumeration, pick solid, blink pulse or rapid. Anything else won't comple.
 
 	void SetRange(int lightstart, int lightend, bool state, int level, Light_Option option);
 
-	//Update Ben's Board
-
+	///\brief Update Ben's Board
 	bool Update(void);
 
 
