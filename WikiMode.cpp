@@ -2,7 +2,7 @@
 
 namespace
 {
-  const int WikiModeBeginning = 11;
+  const int WikiModeBeginning = 27;
 }
 
 WikiMode::WikiMode(SwitchHandler *handler)
@@ -14,7 +14,7 @@ WikiMode::WikiMode(SwitchHandler *handler)
 void WikiMode::resetMode()
 {
   progress = 0;
-  LightController::SetStrobe(14, 3);
+  LightController::SetStrobe(WikiModeBeginning, 4);
   reset = false;
 }
 
@@ -36,13 +36,17 @@ void WikiMode::notify(int SwitchNumber)
 
 void WikiMode::setLights()
 {
+  if(progress == 1)
+  {
+    LightController::Set(WikiModeBeginning, 0, Solid);
+  }
   for(int i = 0; i <= progress; i++)
   {
-    LightController::Set(WikiModeBeginning + i, 8, Solid);
+    LightController::Set(WikiModeBeginning + 4 - i, 7, Solid);
   }
   if(!reset)
   {
-    LightController::Set(WikiModeBeginning + progress + 1, 0, Blink);
+    LightController::Set(WikiModeBeginning + 4 - (progress + 1), 0, Blink);
   }
 }
 

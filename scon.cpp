@@ -79,6 +79,14 @@ void open_port(LogController *logger){
 	return;
 };
 
+void setSerialReadLength()
+{
+  struct termios options;
+  tcgetattr(fd, &options);
+  options.c_cc[VMIN] =  12;
+  tcsetattr(fd, TCSANOW, &options);
+}
+
 void close_port(LogController* logger){
 	logger->info("Closing Serial Port.");
 
@@ -162,13 +170,12 @@ void set_servo(int servo, int position){
 void set_light(int light, int option, int level){
 	int written = 0;
 	unsigned char charConvert;
-	unsigned char* sendingThis;
 
 	if (light > 63 || light < 0){
 		//std::cout << "\nLight is outside range of 0 - 63\n";
 	};
 
-	if (option != 32 && option != 16 && option != 8){
+	if (option != 32 && option != 16 && option != 8 && option != 0){
 		//std::cout << "\nInvalid option light";
 	};
 
@@ -177,16 +184,11 @@ void set_light(int light, int option, int level){
 	};
 
 	light |= OPC_LIGHT;
-	level |= option;	//Level and options are combined into a single byte
-
 	charConvert = (char)light;
-	sendingThis = &charConvert;
-	written = write(fd, sendingThis, 1);
+	written = write(fd, &charConvert, 1);
 
-	//charConvert = (char)level;	//Ben's Code isn't ready
-	charConvert = (char)8;
-	sendingThis = &charConvert;
-	written += write(fd, sendingThis, 1);
+	charConvert = option | (char)level;
+	written += write(fd, &charConvert, 1);
 
 	if (written != 2 ){
 		//Failed to write 2 bytes of data to serial port

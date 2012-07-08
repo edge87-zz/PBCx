@@ -10,6 +10,8 @@ void open_port(LogController *logger);
  *
  */
 
+void setSerialReadLength();
+
 void close_port(LogController* logger);
 /*
  * close_port() closes the serial port.

@@ -35,6 +35,7 @@
 #include "Game.hpp"
 
 extern pthread_mutex_t switch_lock;
+extern int fd;
 
 //function prototypes
 void* read_switches_thread(void* );
@@ -72,7 +73,7 @@ int main (){
 	open_port(logger);
 	
 	//Wait for Ben's board to "restart" because of the serial connection being opened
-	SDL_Delay(200);
+	SDL_Delay(5000);
 
 	if(pthread_create(&sdthread, NULL, SerialOutThread, (void *)NULL)){
 			logger ->error("SerialSend Thread failed to spawn. Fatal Error.");
