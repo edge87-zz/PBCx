@@ -1,5 +1,6 @@
 #include "SwitchObserver.hpp"
 #include "SwitchHandler.hpp"
+#include "LightController.hpp"
 #include <time.h>
 
 class WikiMode : public SwitchObserver
@@ -13,11 +14,13 @@ public:
   
   void run();
   
+  void setLights();
+  
 private:
   int progress;
   
   bool reset;
-  
+    
   timespec endTimer;
   
 };

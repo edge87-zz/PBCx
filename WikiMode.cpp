@@ -1,9 +1,12 @@
 #include "WikiMode.hpp"
-#include "scon.hpp"
 
+namespace
+{
+  const int WikiModeBeginning = 11;
+}
 
 WikiMode::WikiMode(SwitchHandler *handler)
-{
+{  
   handler->registerObserver(16, this);
   resetMode();
 }
@@ -11,10 +14,7 @@ WikiMode::WikiMode(SwitchHandler *handler)
 void WikiMode::resetMode()
 {
   progress = 0;
-  set_light(0, 8, 5);
-  set_light(1, 8, 5);
-  set_light(2, 8, 5);
-  set_light(3, 8, 5);
+  LightController::SetStrobe(14, 3);
   reset = false;
 }
 
@@ -22,15 +22,27 @@ void WikiMode::notify(int SwitchNumber)
 {
   if(progress <= 4 && reset != true)
   {
-    set_light(progress, 8, 5);
     progress++;
-  }  
+  }   
   if(progress == 4)
   {
     //mode complete
     reset = true;
     clock_gettime(CLOCK_MONOTONIC, &endTimer);	
     endTimer.tv_sec += 5;
+  }
+  setLights();
+}
+
+void WikiMode::setLights()
+{
+  for(int i = 0; i <= progress; i++)
+  {
+    LightController::Set(WikiModeBeginning + i, 8, Solid);
+  }
+  if(!reset)
+  {
+    LightController::Set(WikiModeBeginning + progress + 1, 0, Blink);
   }
 }
 

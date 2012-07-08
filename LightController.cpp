@@ -2,16 +2,9 @@
 
 using namespace std;
 
-LightController::LightController() : lights(64)
+LightController::LightController()
 {
-  vector<Lights>::iterator iter;
-	for (iter = lights.begin(); iter != lights.end(); ++iter){
-		iter->status = false;
-		iter->level = 0;
-		iter->option = solid;
-	};
-
-	LightController::Update();
+  Reset();
 };
 
 LightController::~LightController()
@@ -21,17 +14,14 @@ LightController::~LightController()
 
 void LightController::Reset()
 {  
-  vector<Lights>::iterator iter;
-	for (iter = lights.begin(); iter != lights.end(); ++iter){
-			iter->status = false;
-			iter->level = 0;
-			iter->option = solid;
-		};
-
-	LightController::Update();
+  for(int i = 0; i < 64; i++)
+  {
+    set_light(i, Solid, 0);
+  }
 };
 
-void LightController::Set(int lightnum, bool state, int level, Light_Option option){
+void LightController::Set(int lightnum, int level, Light_Option option)
+{
 	if (lightnum > 63 || lightnum < 0)
   {
 		//Bad Log here
@@ -39,20 +29,20 @@ void LightController::Set(int lightnum, bool state, int level, Light_Option opti
 		return;
 	}
 
+  if(option == Strobe)
+  {
+    //use strobe function
+    return;
+  }
+  
 	if (level > 8 || level < 0)
   {
 		//Bad Log Here
 		//Complain about level
 		return;
-	}
-
-	lights[lightnum].status = state;
-	lights[lightnum].level = level;
-	lights[lightnum].option = option;
-
-	LightController::Update();
-
-	return;
+	}	
+  
+  set_light(lightnum, option, level);
 };
 
 void LightController::SetRange(int lightstart, int lightend, bool state, int level, Light_Option option){
@@ -70,28 +60,33 @@ void LightController::SetRange(int lightstart, int lightend, bool state, int lev
 			return;
 		}
 
+    if(option == Strobe)
+    {
+      //use set strobe function for strobe
+      return;
+    }
+    
 		if (level > 8 || level < 0)
     {
 			//Bad Log Here
 			//Complain about level
 			return;
 		}
-
-		for (int i=lightstart; i <= lightend; i++){
-			lights[i].status = false;
-			lights[i].level = 0;
-			lights[i].option = solid;
-		}
-
-		LightController::Update();
+		
+    for(int i = lightstart; i <= lightend; i++)
+    {
+      set_light(i, option, level);
+    }
 }
 
-bool LightController::Update(void)
+void LightController::SetStrobe(int lightnum, int numberAfter)
 {
-	// Send the whole Vector to ben's Board... easier said than done.
-
-
-	return true;
+  if(lightnum + numberAfter > 63)
+  {
+    //shits fucked
+    return;
+  }
+  set_light(lightnum, Strobe, numberAfter);
 }
 
 

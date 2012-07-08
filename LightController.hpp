@@ -2,12 +2,13 @@
 #define LIGHT_HPP_
 
 #include <vector>
+#include "scon.hpp"
 
 enum Light_Option{
-	solid = 0,
-	blink = 8,
-	pulse = 16,
-	rapid = 32
+	Solid = 0,
+	Blink = 8,
+	Pulse = 16,
+	Strobe = 32
 };
 
 struct Lights{
@@ -25,16 +26,16 @@ public:
 	///\brief Destructor
 	~LightController();
 
-	///\brief Resets the Light Vector back to its original construct
-	void Reset();
+	///\brief turns off all lights
+  ///\note this is time costly method as alot of serial data is sent
+	static void Reset();
 
 	///\brief Set a light. Takes 4 args (arrrgs like a pirate)
   ///\param lightnum = light number you wish to change. Valid range is 0 - 63 with anything above or below given you a error.
   ///\param state    = Either true (on) or false (off)
   ///\param level	= Level of brightness. between 0 and 8. Should avoid 0, use the state to turn it off. anything above or below range throws a error.
   ///\param option   = using our enumeration, pick solid, blink pulse or rapid. Anything else won't comple.
-
-	void Set(int lightnum, bool state, int level, Light_Option option);
+	static void Set(int lightnum, int level, Light_Option option);
 
 
 	///\brief Set Range of Lights
@@ -43,16 +44,9 @@ public:
   ///\param state    	= Either true (on) or false (off)
   ///\param level		= Level of brightness. between 0 and 8. Should avoid 0, use the state to turn it off. anything above or below range throws a error.
   ///\param option   	= using our enumeration, pick solid, blink pulse or rapid. Anything else won't comple.
-
-	void SetRange(int lightstart, int lightend, bool state, int level, Light_Option option);
-
-	///\brief Update Ben's Board
-	bool Update(void);
-
-
-private:
-	std::vector<Lights> lights;
-
+	static void SetRange(int lightstart, int lightend, bool state, int level, Light_Option option);
+  
+  static void SetStrobe(int lightnum, int numberAfter);
 };
 
 
