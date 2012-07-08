@@ -1,9 +1,3 @@
-/*
-* We need a delay after we open the serial port. I originally had it at the beginning of the threaded function just before the infinate loop.
-* the delay was about one second.
-*
-*/
-
 //Flag Definations
 #define flag0	0x01	// 0000 0001
 #define flag1	0x02	// 0000 0010

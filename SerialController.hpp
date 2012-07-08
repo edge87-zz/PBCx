@@ -16,6 +16,10 @@
 //Our files
 #include "LogController.hpp"
 
+//External Variables being Imported
+extern unsigned char switches[8];
+extern unsigned char cabinet[2];
+
 ///Constants
 //OPCODE Constants
 const int OPC_COIL = 160;
@@ -102,6 +106,9 @@ class SerialController{
 
 		//Vector Mutex for inserting or removing from queue
 		pthread_mutex_t serialqueue;
+
+		//Mutex for protecting switch state
+		pthread_mutex_t switch_lock;
 
 		//Vector for Serial Out
 		std::vector<unsigned char> serialOut;
