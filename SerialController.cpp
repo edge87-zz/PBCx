@@ -5,8 +5,9 @@ SerialController::SerialController(LogController *pnt) : serialOut(100)
 	// Link up our serial logger to our pointer.
 	logger = pnt;
 
-	// Setup our Mutex
+	// Setup our Mutexs
 	serialqueue = PTHREAD_MUTEX_INITIALIZER;
+	switch_lock = PTHREAD_MUTEX_INITIALIZER;
 
 	// Setup our options
 	struct termios options;
@@ -43,10 +44,10 @@ SerialController::SerialController(LogController *pnt) : serialOut(100)
 	};
 
 	//TODO Wait for a "we're running" opcode from Ben's board
-	unsigned char opcode = (char)0;
+	unsigned char *opcode = (char)0;
 	while(true){
 		read(fd,opcode, 1);
-		if(opcode == OPC_OK){
+		if(*opcode == OPC_OK){
 			logger -> info("Valid Serial Response from Board");
 			break;
 		}
