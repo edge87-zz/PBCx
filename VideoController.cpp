@@ -1,4 +1,3 @@
-
 #include "VideoController.hpp"
 
 VideoController::VideoController(){
@@ -9,58 +8,45 @@ VideoController::~VideoController(){
 
 };
 
-struct ctx
-	{
-	    SDL_Surface *surf;
-	    SDL_mutex *mutex;
-	};
-
-static void *lock(void *data, void **p_pixels)
-{
-    struct ctx *ctx = data;
+static void *VideoController::lock(void *data, void **p_pixels){
+    struct ctx *ctx = static_cast<struct ctx*>(data);
 
     SDL_LockMutex(ctx->mutex);
     SDL_LockSurface(ctx->surf);
     *p_pixels = ctx->surf->pixels;
     return NULL; /* picture identifier, not needed here */
 }
-
-static void unlock(ctx *data, void *id, void **p_pixels)
-{
-    struct ctx *ctx = data;
+static void VideoController::unlock(void *data, void *id, void *const *p_pixels){
+    struct ctx *ctx = static_cast<struct ctx*>(data);
 
     /* VLC just rendered the video, but we can also render stuff */
-    uint16_t *pixels = *p_pixels;
+    uint16_t *pixels = static_cast<uint16_t*>(*p_pixels);
     int x, y;
 
     for(y = 10; y < 40; y++)
         for(x = 10; x < 40; x++)
             if(x < 13 || y < 13 || x > 36 || y > 36)
-                p_pixels[y * VIDEOWIDTH + x] = 0xffff;
+                pixels[y * VIDEOWIDTH + x] = 0xffff;
             else
-                p_pixels[y * VIDEOWIDTH + x] = 0x0;
+                pixels[y * VIDEOWIDTH + x] = 0x0;
 
     SDL_UnlockSurface(ctx->surf);
     SDL_UnlockMutex(ctx->mutex);
 
     assert(id == NULL); /* picture identifier, not needed here */
 }
-
-static void display(void *data, void *id)
-{
+static void VideoController::display(void *data, void *id){
     /* VLC wants to display the video */
     (void) data;
     assert(id == NULL);
 }
 
-void VideoController::PlayVideo(std::string filename, SDL_Surface *screen){
-	{
-	    libvlc_instance_t *libvlc;
+void VideoController::Play(std::string filename, SDL_Surface *screen){
+	libvlc_instance_t *libvlc;
 	    libvlc_media_t *m;
 	    libvlc_media_player_t *mp;
 	    char const *vlc_argv[] =
 	    {
-	        "--no-audio", /* skip any audio track */
 	        "--no-xlib", /* tell VLC to not use Xlib */
 	    };
 	    int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
@@ -72,6 +58,15 @@ void VideoController::PlayVideo(std::string filename, SDL_Surface *screen){
 
 	    struct ctx ctx;
 
+	    /*
+	     *  Initialise libSDL
+	     */
+	    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD) == -1)
+	    {
+	        printf("cannot initialize SDL\n");
+	        return;
+	    }
+
 	    empty = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT,
 	                                 32, 0, 0, 0, 0);
 	    ctx.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT,
@@ -80,6 +75,13 @@ void VideoController::PlayVideo(std::string filename, SDL_Surface *screen){
 	    ctx.mutex = SDL_CreateMutex();
 
 	    int options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF;
+
+	    screen = SDL_SetVideoMode(WIDTH, HEIGHT, 0, options);
+	    if(!screen)
+	    {
+	        printf("cannot set video mode\n");
+	        return;
+	    }
 
 	    /*
 	     *  Initialise libVLC
@@ -103,7 +105,7 @@ void VideoController::PlayVideo(std::string filename, SDL_Surface *screen){
 	    {
 	        action = 0;
 
-	        // Keys: enter (fullscreen), space (pause), escape (quit) ||| We shouldn't need any of this event handling.
+	        /* Keys: enter (fullscreen), space (pause), escape (quit) */
 	        while( SDL_PollEvent( &event ) )
 	        {
 	            switch(event.type)
@@ -122,7 +124,10 @@ void VideoController::PlayVideo(std::string filename, SDL_Surface *screen){
 	        case SDLK_ESCAPE:
 	            done = 1;
 	            break;
-
+	        case SDLK_RETURN:
+	            options ^= SDL_FULLSCREEN;
+	            screen = SDL_SetVideoMode(WIDTH, HEIGHT, 0, options);
+	            break;
 	        case ' ':
 	            pause = !pause;
 	            break;
@@ -159,6 +164,11 @@ void VideoController::PlayVideo(std::string filename, SDL_Surface *screen){
 	    SDL_DestroyMutex(ctx.mutex);
 	    SDL_FreeSurface(ctx.surf);
 	    SDL_FreeSurface(empty);
-	}
+
+	    SDL_Quit();
+
+	    return;
 }
+
+
 
