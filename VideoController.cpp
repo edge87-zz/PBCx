@@ -8,7 +8,7 @@ VideoController::~VideoController(){
 
 };
 
-static void *VideoController::lock(void *data, void **p_pixels){
+void *VideoController::lock(void *data, void **p_pixels){
     struct ctx *ctx = static_cast<struct ctx*>(data);
 
     SDL_LockMutex(ctx->mutex);
@@ -16,7 +16,7 @@ static void *VideoController::lock(void *data, void **p_pixels){
     *p_pixels = ctx->surf->pixels;
     return NULL; /* picture identifier, not needed here */
 }
-static void VideoController::unlock(void *data, void *id, void *const *p_pixels){
+void VideoController::unlock(void *data, void *id, void *const *p_pixels){
     struct ctx *ctx = static_cast<struct ctx*>(data);
 
     /* VLC just rendered the video, but we can also render stuff */
@@ -35,23 +35,24 @@ static void VideoController::unlock(void *data, void *id, void *const *p_pixels)
 
     assert(id == NULL); /* picture identifier, not needed here */
 }
-static void VideoController::display(void *data, void *id){
+void VideoController::display(void *data, void *id){
     /* VLC wants to display the video */
     (void) data;
     assert(id == NULL);
 }
 
-void VideoController::Play(std::string filename, SDL_Surface *screen){
+void VideoController::Play(std::string filename, SDL_Surface *scr){
 	libvlc_instance_t *libvlc;
-	    libvlc_media_t *m;
-	    libvlc_media_player_t *mp;
-	    char const *vlc_argv[] =
+	libvlc_media_t *m;
+	libvlc_media_player_t *mp;
+
+	char const *vlc_argv[] =
 	    {
 	        "--no-xlib", /* tell VLC to not use Xlib */
 	    };
 	    int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
 
-	    SDL_Surface *empty;
+	    SDL_Surface *empty, *screen;
 	    SDL_Event event;
 	    SDL_Rect rect;
 	    int done = 0, action = 0, pause = 0, n = 0;
@@ -91,7 +92,7 @@ void VideoController::Play(std::string filename, SDL_Surface *screen){
 	    mp = libvlc_media_player_new_from_media(m);
 	    libvlc_media_release(m);
 
-	    libvlc_video_set_callbacks(mp, lock, unlock, display, &ctx);
+	    libvlc_video_set_callbacks(mp, VideoController::lock, VideoController::unlock, VideoController::display, &ctx);
 	    libvlc_video_set_format(mp, "RV16", VIDEOWIDTH, VIDEOHEIGHT, VIDEOWIDTH*2);
 	    libvlc_media_player_play(mp);
 
