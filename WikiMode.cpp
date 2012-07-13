@@ -5,10 +5,13 @@ namespace
   const int WikiModeBeginning = 27;
 }
 
-WikiMode::WikiMode(SwitchHandler *handler)
+WikiMode::WikiMode(SwitchHandler *handler, VideoController *pnt)
 {  
   handler->registerObserver(16, this);
   resetMode();
+
+  Video = pnt;
+
 }
 
 void WikiMode::resetMode()
@@ -39,6 +42,7 @@ void WikiMode::setLights()
   if(progress == 1)
   {
     LightController::Set(WikiModeBeginning, 0, Solid);
+    Video->Play("lac.mp4")
   }
   for(int i = 0; i <= progress; i++)
   {

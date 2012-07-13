@@ -1,7 +1,8 @@
 #include "VideoController.hpp"
 
-VideoController::VideoController(){
-
+VideoController::VideoController(LogController *pnt, SDL_Surface *scr){
+	logger = pnt;
+	screen = scr;
 };
 
 VideoController::~VideoController(){
@@ -16,6 +17,7 @@ void *VideoController::lock(void *data, void **p_pixels){
     *p_pixels = ctx->surf->pixels;
     return NULL; /* picture identifier, not needed here */
 }
+
 void VideoController::unlock(void *data, void *id, void *const *p_pixels){
     struct ctx *ctx = static_cast<struct ctx*>(data);
 
@@ -35,13 +37,14 @@ void VideoController::unlock(void *data, void *id, void *const *p_pixels){
 
     assert(id == NULL); /* picture identifier, not needed here */
 }
+
 void VideoController::display(void *data, void *id){
     /* VLC wants to display the video */
     (void) data;
     assert(id == NULL);
 }
 
-void VideoController::Play(std::string filename, SDL_Surface *scr){
+void VideoController::Play(std::string filename){
 	libvlc_instance_t *libvlc;
 	libvlc_media_t *m;
 	libvlc_media_player_t *mp;
@@ -52,21 +55,12 @@ void VideoController::Play(std::string filename, SDL_Surface *scr){
 	    };
 	    int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
 
-	    SDL_Surface *empty, *screen;
+	    SDL_Surface *empty;
 	    SDL_Event event;
 	    SDL_Rect rect;
 	    int done = 0, action = 0, pause = 0, n = 0;
 
 	    struct ctx ctx;
-
-	    /*
-	     *  Initialise libSDL
-	     */
-	    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD) == -1)
-	    {
-	        printf("cannot initialize SDL\n");
-	        return;
-	    }
 
 	    empty = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT,
 	                                 32, 0, 0, 0, 0);
@@ -76,13 +70,6 @@ void VideoController::Play(std::string filename, SDL_Surface *scr){
 	    ctx.mutex = SDL_CreateMutex();
 
 	    int options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF;
-
-	    screen = SDL_SetVideoMode(WIDTH, HEIGHT, 0, options);
-	    if(!screen)
-	    {
-	        printf("cannot set video mode\n");
-	        return;
-	    }
 
 	    /*
 	     *  Initialise libVLC
@@ -125,13 +112,6 @@ void VideoController::Play(std::string filename, SDL_Surface *scr){
 	        case SDLK_ESCAPE:
 	            done = 1;
 	            break;
-	        case SDLK_RETURN:
-	            options ^= SDL_FULLSCREEN;
-	            screen = SDL_SetVideoMode(WIDTH, HEIGHT, 0, options);
-	            break;
-	        case ' ':
-	            pause = !pause;
-	            break;
 	        }
 
 	        rect.x = (int)((1. + .5 * sin(0.03 * n)) * (WIDTH - VIDEOWIDTH) / 2);
@@ -149,6 +129,7 @@ void VideoController::Play(std::string filename, SDL_Surface *scr){
 	        SDL_Flip(screen);
 	        SDL_Delay(10);
 
+	        //Clean the screen for the next frame
 	        SDL_BlitSurface(empty, NULL, screen, &rect);
 	    }
 
@@ -166,7 +147,7 @@ void VideoController::Play(std::string filename, SDL_Surface *scr){
 	    SDL_FreeSurface(ctx.surf);
 	    SDL_FreeSurface(empty);
 
-	    SDL_Quit();
+	   // SDL_Quit();
 
 	    return;
 }

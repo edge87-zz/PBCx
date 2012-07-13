@@ -1,6 +1,6 @@
 #include "SerialController.hpp"
 
-SerialController::SerialController(LogController *pnt) : serialOut(100)
+SerialController::SerialController(LogController *pnt) : serialOut(100), p_switches(64), c_switches(2)
 {
 	// Link up our serial logger to our pointer.
 	logger = pnt;
@@ -40,15 +40,14 @@ SerialController::SerialController(LogController *pnt) : serialOut(100)
 
 		tcsetattr(fd, TCSANOW, &options);			//Set the new options for the port "NOW"
 
-		logger->info("Serial Port is open and configured.");
+		logger->info("Serial Port is open and configured. Waiting for Ben's Board..");
 	};
 
-	//TODO Wait for a "we're running" opcode from Ben's board
 	unsigned char *opcode = (char)0;
 	while(true){
 		read(fd,opcode, 1);
 		if(*opcode == OPC_OK){
-			logger -> info("Valid Serial Response from Board");
+			logger -> info("Valid Serial Response from Board.");
 			break;
 		}
 	};
@@ -139,11 +138,11 @@ void SerialController::RecieveData(){
 
 	    pthread_mutex_lock(&switch_lock);
 			for(int j = 0; j < 8; j++){
-				switches[j] = buffer[j];
+				p_switches[j] = buffer[j];
 			};
 
-		cabinet[0] = buffer[8];
-		cabinet[1] = buffer[9];
+		c_switches[0] = buffer[8];
+		c_switches[1] = buffer[9];
 
 		pthread_mutex_unlock(&switch_lock);
 	}

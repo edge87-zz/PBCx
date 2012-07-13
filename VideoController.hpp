@@ -10,6 +10,7 @@
 
 #include "SDL/SDL.h"
 #include "SDL/SDL_mutex.h"
+#include "LogController.hpp"
 
 #include <vlc/vlc.h>
 
@@ -21,10 +22,10 @@
 
 class VideoController{
 	public:
-		VideoController();
+		VideoController(LogController *pnt, SDL_Surface *scr);
 		~VideoController();
 
-		void Play(std::string filename, SDL_Surface *screen);
+		void Play(std::string filename);
 
 	private:
 		struct ctx
@@ -37,6 +38,11 @@ class VideoController{
 		static void unlock(void *data, void *id, void *const *p_pixels);
 		static void display(void *data, void *id);
 
+		//Logger has nothing until set
+		LogController* logger;
+
+		//Our GOOD surface
+		SDL_Surface * screen;
 
 
 };

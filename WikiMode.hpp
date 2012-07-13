@@ -1,12 +1,13 @@
 #include "SwitchObserver.hpp"
 #include "SwitchHandler.hpp"
 #include "LightController.hpp"
+#include "VideoController.hpp"
 #include <time.h>
 
 class WikiMode : public SwitchObserver
 {
 public:
-  WikiMode(SwitchHandler *handler);
+  WikiMode(SwitchHandler *handler, VideoController *pnt);
   
   void resetMode();
   
@@ -23,4 +24,6 @@ private:
     
   timespec endTimer;
   
+  VideoController *Video;
+
 };

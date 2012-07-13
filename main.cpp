@@ -27,12 +27,14 @@
 #include </usr/include/SDL/SDL_ttf.h>
 
 //My includes
-#include "scon.hpp"
+//#include "scon.hpp"
 #include "audio.hpp"
 #include "LogController.hpp"
 #include "WikiMode.hpp"
 #include "SwitchHandler.hpp"
 #include "Game.hpp"
+//#include "SerialController.hpp"
+#include "VideoController.hpp"
 
 extern pthread_mutex_t switch_lock;
 extern int fd;
@@ -58,12 +60,25 @@ unsigned char cabinet[2] = {(char)0};
 
 //Video Stuff
 bool displayRunning = false;
+
+//MAIN Screen
 SDL_Surface*	Surf_Display;
+
+//Drawing Surface
 SDL_Surface*	Surf_Background;
+
+//Events needed for development so we can kill the screen.
 SDL_Event Event;
 
 //Load Logger
-LogController *logger = new LogController();
+	LogController *logger = new LogController();
+
+//load VideoController
+	VideoController *Video = new VideoController(logger, Surf_Display);
+
+//Load Serial
+	//NEW Serial Object
+	//SerialController *Serial = new SerialController(logger);
 
 int main (){
 	//Log that we can log. (so we know when we can't)
@@ -73,7 +88,8 @@ int main (){
 	open_port(logger);
 	
 	//Wait for Ben's board to "restart" because of the serial connection being opened
-	SDL_Delay(5000);
+	//** NOT NEEDED with new SerialController
+	//SDL_Delay(5000);
 
 	if(pthread_create(&sdthread, NULL, SerialOutThread, (void *)NULL)){
 			logger ->error("SerialSend Thread failed to spawn. Fatal Error.");
@@ -132,7 +148,7 @@ int main (){
 
   Game tehGame;
   SwitchHandler switchHandler(&tehGame);
-  WikiMode wikiMode(&switchHandler);
+  WikiMode wikiMode(&switchHandler, Video);
   
 	std::string sswitches;
 	std::string scabinet;
@@ -169,6 +185,7 @@ int main (){
 
 	//Call the destructor of our object and close the file.
 	delete logger;
+	//delete Serial;
 
 	//Release the TTF fonts and their resources
 	TTF_Quit;
@@ -178,14 +195,14 @@ int main (){
 };
 
 void* read_switches_thread(void *){
-	//Need a sleep function here
-	while(true){
-		//need a MUTEX lock here
-		read_switches();
-		//need a MUTEX unlock here
-	}
 
-	//return void*; //Compiler is pissed off i'm not returning anything but i didn't know a void* could return?
+	while(true){
+		//old read
+		read_switches();
+
+		//TODO Need a sleep function here
+		//Serial->RecieveData();
+	}
 };
 
 SDL_Surface* OnLoad(char* File){
