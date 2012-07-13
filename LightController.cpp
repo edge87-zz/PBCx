@@ -2,9 +2,13 @@
 
 using namespace std;
 
-LightController::LightController()
+LightController::LightController(LogController *pnt)
 {
-  Reset();
+	// Link up our serial logger to our pointer.
+	logger = pnt;
+
+	//Rest our light state
+	Reset();
 };
 
 LightController::~LightController()
@@ -24,8 +28,7 @@ void LightController::Set(int lightnum, int level, Light_Option option)
 {
 	if (lightnum > 63 || lightnum < 0)
   {
-		//Bad Log here
-		//Complain that we've been lied to about the cake
+		logger->warn("LightController::Set - Invalid Light to set. ");
 		return;
 	}
 
@@ -37,8 +40,7 @@ void LightController::Set(int lightnum, int level, Light_Option option)
   
 	if (level > 8 || level < 0)
   {
-		//Bad Log Here
-		//Complain about level
+		logger->warn("LightController::Set - Invalid Light Level");
 		return;
 	}	
   
@@ -48,15 +50,13 @@ void LightController::Set(int lightnum, int level, Light_Option option)
 void LightController::SetRange(int lightstart, int lightend, bool state, int level, Light_Option option){
 		if (lightstart > 63 || lightstart < 0 || lightstart >= lightend)
     {
-			//Bad Log here
-			//Complain that we've been lied to about the cake
+			logger->warn("LightController::SetRange - Invalid LightStart Range. Not Setting.");
 			return;
 		}
 
 		if(lightend > 63 || lightend < 0 || lightend <= lightstart)
     {
-			//Bad Log Here
-			//Complain about lightend
+			logger->warn("LightController::SetRange - Invalid LightEnd Range. Not Setting.");
 			return;
 		}
 
@@ -68,8 +68,7 @@ void LightController::SetRange(int lightstart, int lightend, bool state, int lev
     
 		if (level > 8 || level < 0)
     {
-			//Bad Log Here
-			//Complain about level
+			logger->warn("LightController::SetRange - Invalid Level");
 			return;
 		}
 		
@@ -83,7 +82,7 @@ void LightController::SetStrobe(int lightnum, int numberAfter)
 {
   if(lightnum + numberAfter > 63)
   {
-    //shits fucked
+    logger->warn("LightController::SetStrobe - Invalid Range. Went Over 63");
     return;
   }
   set_light(lightnum, Strobe, numberAfter);

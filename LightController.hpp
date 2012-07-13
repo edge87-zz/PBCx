@@ -21,7 +21,7 @@ class LightController {
 
 public:
 	///\brief Constructor
-	LightController();
+	LightController(LogController *pnt);
 
 	///\brief Destructor
 	~LightController();
@@ -47,6 +47,11 @@ public:
 	static void SetRange(int lightstart, int lightend, bool state, int level, Light_Option option);
   
   static void SetStrobe(int lightnum, int numberAfter);
+
+private:
+  //Logger has nothing until set
+  LogController* logger;
+
 };
 
 
