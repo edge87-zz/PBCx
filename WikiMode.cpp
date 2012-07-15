@@ -42,7 +42,9 @@ void WikiMode::setLights()
   if(progress == 1)
   {
     LightController::Set(WikiModeBeginning, 0, Solid);
-    Video->Play("lac.mp4")
+
+    // Seg faults hard. Tries to flip the screen and render to it while others are. bad move.
+    //Video->Play("lac.mp4");
   }
   for(int i = 0; i <= progress; i++)
   {

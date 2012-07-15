@@ -28,7 +28,7 @@ void LightController::Set(int lightnum, int level, Light_Option option)
 {
 	if (lightnum > 63 || lightnum < 0)
   {
-		logger->warn("LightController::Set - Invalid Light to set. ");
+//		logger->warn("LightController::Set - Invalid Light to set. ");
 		return;
 	}
 
@@ -40,7 +40,7 @@ void LightController::Set(int lightnum, int level, Light_Option option)
   
 	if (level > 8 || level < 0)
   {
-		logger->warn("LightController::Set - Invalid Light Level");
+	//	logger->warn("LightController::Set - Invalid Light Level");
 		return;
 	}	
   
@@ -50,13 +50,13 @@ void LightController::Set(int lightnum, int level, Light_Option option)
 void LightController::SetRange(int lightstart, int lightend, bool state, int level, Light_Option option){
 		if (lightstart > 63 || lightstart < 0 || lightstart >= lightend)
     {
-			logger->warn("LightController::SetRange - Invalid LightStart Range. Not Setting.");
+		//	logger->warn("LightController::SetRange - Invalid LightStart Range. Not Setting.");
 			return;
 		}
 
 		if(lightend > 63 || lightend < 0 || lightend <= lightstart)
     {
-			logger->warn("LightController::SetRange - Invalid LightEnd Range. Not Setting.");
+		//	logger->warn("LightController::SetRange - Invalid LightEnd Range. Not Setting.");
 			return;
 		}
 
@@ -68,7 +68,7 @@ void LightController::SetRange(int lightstart, int lightend, bool state, int lev
     
 		if (level > 8 || level < 0)
     {
-			logger->warn("LightController::SetRange - Invalid Level");
+		//	logger->warn("LightController::SetRange - Invalid Level");
 			return;
 		}
 		
@@ -82,7 +82,7 @@ void LightController::SetStrobe(int lightnum, int numberAfter)
 {
   if(lightnum + numberAfter > 63)
   {
-    logger->warn("LightController::SetStrobe - Invalid Range. Went Over 63");
+    //logger->warn("LightController::SetStrobe - Invalid Range. Went Over 63");
     return;
   }
   set_light(lightnum, Strobe, numberAfter);

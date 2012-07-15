@@ -33,7 +33,7 @@
 #include "WikiMode.hpp"
 #include "SwitchHandler.hpp"
 #include "Game.hpp"
-//#include "SerialController.hpp"
+#include "SerialController.hpp"
 #include "VideoController.hpp"
 
 extern pthread_mutex_t switch_lock;
@@ -46,6 +46,9 @@ SDL_Surface* OnLoad(char* File);
 bool OnDraw(SDL_Surface* Surf_Dest, SDL_Surface* Surf_Src, int X, int Y);
 void OnEvent(SDL_Event* Event);
 void * SerialOutThread(void *args);
+
+//SUPER TEMP sorry
+std::string cabinetString();
 
 //Global Threads
 pthread_t readSwitchesThread;
@@ -78,14 +81,14 @@ SDL_Event Event;
 
 //Load Serial
 	//NEW Serial Object
-	//SerialController *Serial = new SerialController(logger);
+	SerialController *Serial = new SerialController(logger);
 
 int main (){
 	//Log that we can log. (so we know when we can't)
 	logger->info("Log Object Created");
 
 	//Open our Serial Port
-	open_port(logger);
+	//open_port(logger);
 	
 	//Wait for Ben's board to "restart" because of the serial connection being opened
 	//** NOT NEEDED with new SerialController
@@ -143,17 +146,15 @@ int main (){
   }
 
   // Write text to surface
-  SDL_Surface *text;
+  SDL_Surface *switchText, *cabinetText;
   SDL_Color text_color = {255, 255, 255};
 
   Game tehGame;
   SwitchHandler switchHandler(&tehGame);
   WikiMode wikiMode(&switchHandler, Video);
   
-	std::string sswitches;
-	std::string scabinet;
 
-	while(displayRunning)
+  while(displayRunning)
   { //game loop
     OnDraw(Surf_Display, Surf_Background, 0, 0);
 
@@ -164,10 +165,21 @@ int main (){
       //pthread_mutex_unlock(&switch_lock);
     }
 
-    text = TTF_RenderText_Solid(font,
+    switchText = TTF_RenderText_Solid(font,
       switchHandler.getSwitchString().c_str(),
       text_color);
-    SDL_BlitSurface(text, NULL, Surf_Display, NULL);
+
+    cabinetText = TTF_RenderText_Solid(font,
+    		cabinetString().c_str(),
+    	      text_color);
+
+    SDL_Rect DestR;
+
+    DestR.x = 0;
+    DestR.y = 30;
+
+    SDL_BlitSurface(switchText, NULL, Surf_Display, NULL);
+    SDL_BlitSurface(cabinetText, NULL, Surf_Display, &DestR);
 
     wikiMode.run();
     
@@ -198,10 +210,10 @@ void* read_switches_thread(void *){
 
 	while(true){
 		//old read
-		read_switches();
+		//read_switches();
 
 		//TODO Need a sleep function here
-		//Serial->RecieveData();
+		Serial->RecieveData();
 	}
 };
 
@@ -249,6 +261,78 @@ void * SerialOutThread(void *args){
 	//call SerialController.
 	return NULL;
 };
+
+std::string cabinetString(){
+	std::string rstring;
+	for (int i = 0; i < 2; i++){
+
+			if(bit0(cabinet[i])) {
+				rstring += '1';
+			}
+
+			else{
+				rstring += '0';
+			}
+
+			if(bit1(cabinet[i])) {
+				rstring += '1';
+			}
+
+			else{
+				rstring += '0';
+			}
+
+			if(bit2(cabinet[i])) {
+				rstring += '1';
+				}
+
+			else{
+				rstring += '0';
+			}
+
+			if(bit3(cabinet[i])) {
+				rstring += '1';
+			}
+
+			else{
+				rstring += '0';
+			}
+
+			if(bit4(cabinet[i])) {
+				rstring += '1';
+			}
+
+			else{
+				rstring += '0';
+			}
+
+			if(bit5(cabinet[i])) {
+				rstring += '1';
+			}
+
+			else{
+				rstring += '0';
+			}
+
+			if(bit6(cabinet[i])) {
+				rstring += '1';
+			}
+
+			else{
+				rstring += '0';
+			}
+
+			if(bit7(cabinet[i])) {
+				rstring += '1';
+			}
+
+			else{
+				rstring += '0';
+			}
+		rstring += " ";
+	}
+	return rstring;
+}
 
 
 

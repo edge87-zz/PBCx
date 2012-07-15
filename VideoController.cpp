@@ -152,5 +152,11 @@ void VideoController::Play(std::string filename){
 	    return;
 }
 
+void VideoController::Start(){
 
+}
+
+void VideoController::Reset(){
+
+}
 

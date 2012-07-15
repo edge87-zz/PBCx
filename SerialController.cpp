@@ -42,15 +42,26 @@ SerialController::SerialController(LogController *pnt) : serialOut(100), p_switc
 
 		logger->info("Serial Port is open and configured. Waiting for Ben's Board..");
 	};
+	unsigned char *opcode = new unsigned char;
+	int done = 1;
 
-	unsigned char *opcode = (char)0;
-	while(true){
+	while(done == 1){
+		SDL_Delay(20);
 		read(fd,opcode, 1);
+
 		if(*opcode == OPC_OK){
-			logger -> info("Valid Serial Response from Board.");
-			break;
+			logger -> info("Valid Serial Response 1 from Board.");
+
+			while(done == 1){
+				read(fd,opcode, 1);
+				if(*opcode == OPC_OK2){
+					logger -> info("Valid Serial Response 2 from Board.");
+					done = 0;
+				}
+			}
 		}
-	};
+	}
+	delete opcode;
 };
 
 SerialController::~SerialController(){
@@ -138,11 +149,16 @@ void SerialController::RecieveData(){
 
 	    pthread_mutex_lock(&switch_lock);
 			for(int j = 0; j < 8; j++){
-				p_switches[j] = buffer[j];
+				//p_switches[j] = buffer[j];
+				switches[j] = buffer[j];
 			};
 
-		c_switches[0] = buffer[8];
-		c_switches[1] = buffer[9];
+		//c_switches[0] = buffer[8];
+		//c_switches[1] = buffer[9];
+
+		cabinet[0] = buffer[8];
+		cabinet[1] = buffer[9];
+
 
 		pthread_mutex_unlock(&switch_lock);
 	}

@@ -15,6 +15,7 @@
 
 //Our files
 #include "LogController.hpp"
+#include "SDL/SDL.h"
 
 //External Variables being Imported
 extern unsigned char switches[8];
@@ -33,6 +34,7 @@ const unsigned char OPC_RQCABINET = (char)61;
 const unsigned char OPC_SENDRGB = (char)60;
 const unsigned char OPC_AUTOCOIL = (char)59;
 const unsigned char OPC_OK = (char)55;
+const unsigned char OPC_OK2 = (char)85;
 
 //Light Constant options
 const int PULSATE = 32;

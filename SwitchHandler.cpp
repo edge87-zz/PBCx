@@ -6,6 +6,7 @@ using namespace std;
 namespace
 {
   const int maxSwitches = 64;
+  const int maxCabinet = 2;
 }
 
 SwitchHandler::SwitchHandler(Game *game)
@@ -44,6 +45,20 @@ string SwitchHandler::getSwitchString()
   for(int i = 0; i < maxSwitches; i++)
   {
     switchString += switches[i]->getSwitchValue()?'1':'0';
+
+    if (i == 7 || i == 15 || i == 23 || i == 31 || i == 39 || i == 47 || i == 55 || i == 63){
+    	switchString += " ";
+    }
   }
   return switchString;
+}
+
+string SwitchHandler::getCabinetString(){
+	string switchString = "a";
+
+	//for (int i =0; i < maxCabinet; i++){
+	//	switchString += (cabinet[i] == 1)? '1' : '0';
+	//}
+
+	return switchString;
 }

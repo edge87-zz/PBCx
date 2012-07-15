@@ -21,6 +21,8 @@ public:
   
   std::string getSwitchString();
   
+  std::string getCabinetString();
+
 private:
 	vector<Switch*> switches;
 };

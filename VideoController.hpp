@@ -27,6 +27,12 @@ class VideoController{
 
 		void Play(std::string filename);
 
+		//\ brief Start a video thread that will keep flipping our screen.
+		void Start();
+
+		//\ brief This will reset our thread static variables and call start afterwards.
+		void Reset();
+
 	private:
 		struct ctx
 		{
