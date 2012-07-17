@@ -8,6 +8,8 @@ Release/*
 *.exe
 *.o
 *.so
+*.mp4
+
 pbcx
 
 # Packages #

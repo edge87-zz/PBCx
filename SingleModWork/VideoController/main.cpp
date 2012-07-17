@@ -1,11 +1,9 @@
-
 #include "LogController.hpp"
 #include "VideoController.hpp"
 
-
+bool programRunning = true;
 
 LogController *logger = new LogController();
-
 
 int main(){
 	logger->info("Up and Running");
@@ -15,7 +13,14 @@ int main(){
 		return -1; //die
 	}
 
-	VideoController::Play("demo.mkv", 1);
+	VideoController::Play("las.mp4", 1);
+
+
+	while(programRunning == true){
+
+	}
+
+
 
 	return 0;
 }
