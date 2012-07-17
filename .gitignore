@@ -9,8 +9,14 @@ Release/*
 *.o
 *.so
 *.mp4
+*.mkv
+*.mpg
+*.mpeg
 
+SingleModWork/VideoController/Video
 pbcx
+
+
 
 # Packages #
 ############
