@@ -15,7 +15,7 @@
 #include <vlc/vlc.h>
 
 //threads
-pthread_t videorefresht;
+static pthread_t videorefreshthread, videorenderingthread;
 
 extern bool programRunning;
 
@@ -40,12 +40,19 @@ extern bool programRunning;
 #define PLAYER4X 1370
 #define PLAYER4Y 820
 
+enum videosize{
+	small = 1,
+	full = 2,
+};
+
+
 static SDL_Surface *screen, *background, *scorebackground;
 
 struct players{
 	SDL_Surface* surf;
 	SDL_Rect rect;
 	bool status;
+
 };
 
 struct ctx
@@ -54,6 +61,7 @@ struct ctx
     SDL_mutex *mutex;
     SDL_Rect rect;
     bool status;
+	int priority;
 };
 
 static struct ctx smallvideo, fullvideo;
@@ -69,7 +77,7 @@ class VideoController{
 		// Destroys Video
 		static bool destroy();
 
-		static void Play(std::string filename, int priority);
+
 
 		//\ brief This will reset our thread static variables and call start afterwards.
 		static void Reset();
@@ -82,6 +90,8 @@ class VideoController{
 		//\ Constantly refreshing our display. This is the threaded part
 		static void* RefreshDisplay(void* args);
 
+		static void VideoController::PlayVideo(std::string filename, int priority, videosize vs);
+
 
 	private:
 
@@ -89,14 +99,10 @@ class VideoController{
 		static void *lock(void *data, void **p_pixels);
 		static void unlock(void *data, void *id, void *const *p_pixels);
 		static void display(void *data, void *id);
+		static void Play(std::string filename);
 
 		//Logger has nothing until set
 		//LogController* logger;
-
-
-
-
-
 };
 
 

@@ -13,7 +13,8 @@ int main(){
 		return -1; //die
 	}
 
-	VideoController::Play("las.mp4", 1);
+
+	VideoController::PlayVideo("video_0.mpg",1,small);
 
 
 	while(programRunning == true){

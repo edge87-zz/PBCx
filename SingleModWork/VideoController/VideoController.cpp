@@ -1,31 +1,41 @@
+/*
+ * currenly working on getting PlayVideo() to determin if it should play video. Then it should clean up thread if it has to. Then it should start the thread again only this time with new perameters.
+ *
+ * Play() will need a refit to know which (fullvideo, smallvideo) it should be playing on. Perhaps we'll pass the pointer it needs.
+ *
+ * Check to make sure we have to keep rebuilding the libs for VLC. Maybe we only need to re-create the player and can destroy it only.
+ */
+
 #include "VideoController.hpp"
 
 bool VideoController::init(){
-	//setup small video - location
-    smallvideo.rect.x = 504;
-    smallvideo.rect.y = 283;
-    smallvideo.status = false;
-
-    smallvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT,
-    	                                    16, 0x001f, 0x07e0, 0xf800, 0);
-
-    smallvideo.mutex = SDL_CreateMutex();
-
+	//init SDL
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		return false;
 	};
 
+	//Setup our main screen
 	if((screen = SDL_SetVideoMode(1920, 1080, 32, SDL_HWSURFACE | SDL_DOUBLEBUF)) == NULL) {
 			return false;
 	};
 
-	SDL_Flip(screen);
+	//setup  video - location, status, and build the surfaces
+    smallvideo.rect.x = 504;
+    smallvideo.rect.y = 283;
+    smallvideo.status = false;
+    smallvideo.priority = -1;
+    smallvideo.mutex = SDL_CreateMutex();
+    smallvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT, 16, 0x001f, 0x07e0, 0xf800, 0);
 
-	if((background = SDL_SetVideoMode(1920, 1080, 32, SDL_HWSURFACE | SDL_DOUBLEBUF)) == NULL) {
-				return false;
-	};
+    fullvideo.rect.x = 0;
+    fullvideo.rect.y = 0;
+    fullvideo.status = false;
+    fullvideo.priority = -1;
+    fullvideo.mutex = SDL_CreateMutex();
+    fullvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 1920, 1080, 16, 0x001f, 0x07e0, 0xf800, 0);
 
-	//Load Images
+    //Setup our background
+    //TODO Background
 
 	//Set Player Score board locations
 	player[0].rect.x = PLAYER1X;
@@ -52,7 +62,7 @@ bool VideoController::init(){
 	 SDL_Flip(screen);
 
 	 //kick off display thread and go back
-	 if(pthread_create(&videorefresht, NULL, RefreshDisplay, NULL)){
+	 if(pthread_create(&videorefreshthread, NULL, RefreshDisplay, NULL)){
 		 //Thread didn't launch
 	 }
 
@@ -102,7 +112,30 @@ void VideoController::display(void *data, void *id){
     assert(id == NULL);
 }
 
-void VideoController::Play(std::string filename, int priority){
+void VideoController::PlayVideo(std::string filename, int priority, videosize vs){
+	if(smallvideo.status && vs == small){
+		if(priority > smallvideo.priority){
+			//TODO Play Incomming Small Video
+		}
+		else{
+			//Log Rejected to play small video as video with higher priority was in progress.
+			return;
+		}
+
+	}
+
+	if(smallvideo.status && vs == full){
+		//TODO Play Incoming Large video
+		//Kill current video and clean it up
+		return;
+	}
+
+	//Play large video
+	return;
+}
+
+
+void VideoController::Play(std::string filename){
 	// TODO If we're already playing and a lower priority wants to play. No.
 
 	libvlc_instance_t *libvlc;
@@ -116,12 +149,6 @@ void VideoController::Play(std::string filename, int priority){
 	    };
 
 	    int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
-
-	    SDL_Surface *empty;
-
-	    empty = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT,
-	                                 32, 0, 0, 0, 0);
-
 
 	    int options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF;
 
@@ -140,13 +167,20 @@ void VideoController::Play(std::string filename, int priority){
 		//Main loop
 
 	    smallvideo.status = true;
-	    while(smallvideo.status){
 
+	    //Takes the player a bit of time to get "up and running" so that it reports a "1" thats its playing. So we wait till it does.
+	    while(libvlc_media_player_is_playing(mp) == 0){
+	    	SDL_Delay(100);
 	    }
 
-	    /*
-	     * Stop stream and clean up libVLC
-	     */
+	    while(smallvideo.status){
+	    	if(libvlc_media_player_is_playing(mp) == 0){
+	    		smallvideo.status = false;
+	    	}
+	    }
+
+	   //Stop stream and clean up libVLC
+
 	    libvlc_media_player_stop(mp);
 	    libvlc_media_player_release(mp);
 	    libvlc_release(libvlc);
@@ -190,7 +224,7 @@ void *VideoController::RefreshDisplay(void* args){
 					action = event.key.keysym.sym;
 
 			        if(action == SDLK_ESCAPE){
-			        programRunning = false;
+			        	programRunning = false;
 			        }
 			        break;
 			}
@@ -202,8 +236,7 @@ void *VideoController::RefreshDisplay(void* args){
 		 SDL_UnlockMutex(smallvideo.mutex);
 
 		 SDL_Flip(screen);
-		 SDL_Delay(10);
-		 //redraw our background if not in full screen mode
+		 SDL_Delay(12);
 	}
 	return NULL;//Shuts the editor up. "oh you didn't return anything, you must be an ahole"
 }
