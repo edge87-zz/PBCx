@@ -14,7 +14,7 @@ int main(){
 	}
 
 
-	VideoController::PlayVideo("video_0.mpg",1,small);
+	VideoController::PlayVideo("video_0.mpg",1,full);
 
 
 	while(programRunning == true){
@@ -22,6 +22,6 @@ int main(){
 	}
 
 
-
+	VideoController::Stop();
 	return 0;
 }

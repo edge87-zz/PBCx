@@ -9,6 +9,7 @@
 #include <pthread.h>
 
 #include "SDL/SDL.h"
+#include "SDL/SDL_ttf.h"
 #include "SDL/SDL_mutex.h"
 #include "LogController.hpp"
 
@@ -17,44 +18,62 @@
 //threads
 static pthread_t videorefreshthread, videorenderingthread;
 
+//We set this to false when SDL receives a escape key, or the window is closed. This should STOP our application too
 extern bool programRunning;
 
-#define WIDTH 640
-#define HEIGHT 480
-
+//Small Video WxH
 #define VIDEOWIDTH 912
 #define VIDEOHEIGHT 513
 
-#define PLAYERSCOREWIDTH 250
-#define PLAYERSCOREHEIGHT 75
+#define PLAYERSCOREWIDTH 470
+#define PLAYERSCOREHEIGHT 110
 
-#define PLAYER1X 100
-#define PLAYER1Y 100
+#define SCOREBOARDWIDTH 1920
+#define SCOREBOARDHEIGHT 480
 
-#define PLAYER2X 1370
-#define PLAYER2Y 100
+#define CURRENTPLAYERWIDTH 1900
+#define CURRENTPLAYERHEIGHT 270
 
-#define PLAYER3X 100
-#define PLAYER3Y 820
+//Play 1 - 4 (x,y) grid location on screen. Set top left corner where you want the square to start
+#define PLAYER1X 10
+#define PLAYER1Y 10
 
-#define PLAYER4X 1370
-#define PLAYER4Y 820
+#define PLAYER2X 1440
+#define PLAYER2Y 10
 
+#define PLAYER3X 10
+#define PLAYER3Y 360
+
+#define PLAYER4X 1440
+#define PLAYER4Y 360
+
+//used for selecting a small screen to play a video on or full screen
 enum videosize{
 	small = 1,
 	full = 2,
 };
 
+//Fonts
+// Score Fonts =
+static TTF_Font* scorefont, *largescorefont;
+static SDL_Color scorefontcolor;
 
-static SDL_Surface *screen, *background, *scorebackground;
+//Our surfaces.
+// screen = main surface that we flip
+// background = what is the first layer applied and over written with other surfaces.
+// scorebackground = the background image applied to score zones each time around to remove text reminents
 
+static SDL_Surface *screen, *background, *smallplayerscore, *currentplayerscore;
+
+// Keep the players scores and locations and everything sane and stored here.
 struct players{
 	SDL_Surface* surf;
 	SDL_Rect rect;
 	bool status;
-
+	bool iscurrent;
 };
 
+//Video rendindering surfaces.
 struct ctx
 {
     SDL_Surface *surf;
@@ -62,9 +81,12 @@ struct ctx
     SDL_Rect rect;
     bool status;
 	int priority;
+	pthread_t thread;
+	int width;
+	int height;
 };
 
-static struct ctx smallvideo, fullvideo;
+static struct ctx smallvideo, fullvideo, scoreboard, currentplayersb;
 
 static struct players player[4];
 
@@ -77,8 +99,6 @@ class VideoController{
 		// Destroys Video
 		static bool destroy();
 
-
-
 		//\ brief This will reset our thread static variables and call start afterwards.
 		static void Reset();
 
@@ -90,7 +110,10 @@ class VideoController{
 		//\ Constantly refreshing our display. This is the threaded part
 		static void* RefreshDisplay(void* args);
 
-		static void VideoController::PlayVideo(std::string filename, int priority, videosize vs);
+		static void PlayVideo(std::string filename, int priority, videosize vs);
+
+		//Stops all threads, unloads all resources
+		static void Stop();
 
 
 	private:
@@ -99,7 +122,7 @@ class VideoController{
 		static void *lock(void *data, void **p_pixels);
 		static void unlock(void *data, void *id, void *const *p_pixels);
 		static void display(void *data, void *id);
-		static void Play(std::string filename);
+		static void* Play(std::string filename, ctx* ctx);
 
 		//Logger has nothing until set
 		//LogController* logger;
