@@ -14,11 +14,11 @@ int main(){
 	}
 
 
-	VideoController::PlayVideo("video_0.mpg",1,full);
+	//VideoController::PlayVideo("video_0.mpg",1,full);
 
 
 	while(programRunning == true){
-
+		SDL_Delay(100);
 	}
 
 

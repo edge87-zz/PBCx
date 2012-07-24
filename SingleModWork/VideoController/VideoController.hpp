@@ -63,7 +63,7 @@ static SDL_Color scorefontcolor;
 // background = what is the first layer applied and over written with other surfaces.
 // scorebackground = the background image applied to score zones each time around to remove text reminents
 
-static SDL_Surface *screen, *background, *smallplayerscore, *currentplayerscore;
+static SDL_Surface *screen, *background, *smallplayerscore, *currentplayerscore, *FPS_SURF;
 
 // Keep the players scores and locations and everything sane and stored here.
 struct players{
@@ -85,6 +85,9 @@ struct ctx
 	int width;
 	int height;
 };
+
+static SDL_Rect fpsr;
+
 
 static struct ctx smallvideo, fullvideo, scoreboard, currentplayersb;
 

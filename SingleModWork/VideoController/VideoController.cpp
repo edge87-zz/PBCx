@@ -97,6 +97,16 @@ bool VideoController::init(){
 	smallplayerscore = SDL_CreateRGBSurface(SDL_SWSURFACE, SCOREBOARDHEIGHT, SCOREBOARDWIDTH, 16, 0x001f, 0x07e0, 0xf800, 0);
 	currentplayerscore = SDL_CreateRGBSurface(SDL_SWSURFACE, SCOREBOARDHEIGHT, SCOREBOARDWIDTH, 16, 0x001f, 0x07e0, 0xf800, 0);
 
+	//Debug FPS
+	FPS_SURF = SDL_CreateRGBSurface(SDL_SWSURFACE, 100, 600, 16, 0x001f, 0x07e0, 0xf800, 0);
+
+
+	fpsr.x = 650;
+	fpsr.y = 900;
+
+
+	SDL_BlitSurface(smallplayerscore, NULL, scoreboard.surf, &fpsr);
+
 	SDL_Flip(screen);
 
 	 //kick off display thread and go back
@@ -227,9 +237,10 @@ void* VideoController::Play(std::string filename, ctx* ctx){
 
 	    //Takes the player a bit of time to get "up and running" so that it reports a "1" thats its playing. So we wait till it does.
 	    while(libvlc_media_player_is_playing(mp) == 0){
-	    	SDL_Delay(100);
+	    	SDL_Delay(10);
 	    }
 
+	    std::cout << "video started";
 	    bool videoplaying = true;
 	    while(videoplaying && ctx->status){
 	    	if(libvlc_media_player_is_playing(mp) == 0){
@@ -237,6 +248,7 @@ void* VideoController::Play(std::string filename, ctx* ctx){
 	    	}
 	    }
 
+	    std::cout << "Video dead";
 	   //Stop stream and clean up libVLC
 
 	    libvlc_media_player_stop(mp);
@@ -260,9 +272,16 @@ void *VideoController::RefreshDisplay(void* args){
 
 	SDL_Rect temprec;
 
+	int FPS, last, current = 0;
+
+	last = SDL_GetTicks();
+
 //Main Looping
 	while(true){
 		//Blit Our background
+
+		//increment our FPS
+		FPS++;
 
 		for(int i=0; i<4; i++){
 			if(player[i].status){
@@ -305,7 +324,6 @@ void *VideoController::RefreshDisplay(void* args){
 			}
 		}
 
-		//Do our FPS calculations and display them IF we're debugging. Which we are.
 		while( SDL_PollEvent( &event ) ){
 			switch(event.type){
 				case SDL_QUIT:
@@ -321,8 +339,12 @@ void *VideoController::RefreshDisplay(void* args){
 			}
 		}
 
-
 		//if our small video is enabled
+		//render our scores to the screen
+		SDL_BlitSurface(scoreboard.surf, NULL, screen, &scoreboard.rect);
+
+		//put current player up to screen
+		SDL_BlitSurface(currentplayersb.surf, NULL, screen, &currentplayersb.rect);
 
 		if(fullvideo.status){
 			 SDL_LockMutex(fullvideo.mutex);
@@ -330,16 +352,14 @@ void *VideoController::RefreshDisplay(void* args){
 			 SDL_UnlockMutex(fullvideo.mutex);
 		}
 
-		//render our scores to the screen
-		SDL_BlitSurface(scoreboard.surf, NULL, screen, &scoreboard.rect);
+		current = SDL_GetTicks();
 
-		//put current player up to screen
-		//SDL_BlitSurface(currentplayersb.surf, NULL, screen, &currentplayersb.rect);
+		std::cout << FPS << std::endl;
 
-
+		last = current;
 
 		 SDL_Flip(screen);
-		 //SDL_Delay(5);
+		 SDL_Delay(10);
 	}
 	return NULL;//Shuts the editor up. "oh you didn't return anything, you must be an ahole"
 }
