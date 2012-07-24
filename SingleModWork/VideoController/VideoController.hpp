@@ -122,7 +122,7 @@ class VideoController{
 		static void *lock(void *data, void **p_pixels);
 		static void unlock(void *data, void *id, void *const *p_pixels);
 		static void display(void *data, void *id);
-		static void* Play(std::string filename, ctx* ctx);
+		static void* Play(std::string filename, videosize vs);
 
 		//Logger has nothing until set
 		//LogController* logger;
