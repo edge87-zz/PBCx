@@ -14,13 +14,12 @@ int main(){
 	}
 
 
-
 	VideoController::PlayVideo("video_0.mpg",1,full);
 
+
 	while(programRunning == true){
+
 	}
-
-
 
 
 	VideoController::Stop();
