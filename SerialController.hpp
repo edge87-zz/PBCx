@@ -44,7 +44,7 @@ const int BLINK = 8;
 class SerialController{
 	public:
 		//Constructor
-		SerialController(LogController *pnt);
+		SerialController();
 
 		//Deconstructor
 		~SerialController();
@@ -106,9 +106,6 @@ class SerialController{
 		std::vector<unsigned char> c_switches;
 
 	private:
-		//Logger has nothing until set
-		LogController* logger;
-
 		//File Descriptor
 		int fd;
 

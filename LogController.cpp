@@ -2,6 +2,14 @@
 
 #include "LogController.hpp"
 
+LogController* LogController::Instance(){
+	if(!pinstance){
+		pinstance = new LogController;
+	}
+
+	return pinstance;
+};
+
 LogController::LogController(){
 	//Setup our time
 	seconds = time(NULL);
@@ -14,7 +22,6 @@ LogController::LogController(){
 
 	//Open our log
 	logfile.open(filename.c_str());
-
 };
 
 LogController::~LogController(){

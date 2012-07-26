@@ -7,7 +7,7 @@
 class WikiMode : public SwitchObserver
 {
 public:
-  WikiMode(SwitchHandler *handler, VideoController *pnt);
+  WikiMode(SwitchHandler *handler);
   
   void resetMode();
   
@@ -23,7 +23,5 @@ private:
   bool reset;
     
   timespec endTimer;
-  
-  VideoController *Video;
 
 };

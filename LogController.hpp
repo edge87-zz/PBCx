@@ -1,3 +1,13 @@
+// Useage :
+/*
+	LogController::Instance()->warn("You're Warning Message");
+
+	LogController::Instance()->info("You're Info Message");
+
+	LogController::Instance()->error("You're Fatal Error Message");
+
+*/
+
 #ifndef LOGCONTROLLER_HPP_
 #define LOGCONTROLLER_HPP_
 
@@ -11,11 +21,10 @@
 class LogController{
 
 	public:
-		// \ Setups our file with a name and the UTC time.
-		LogController();
+		// \ Starts an instance of logger if required. Returns pointer to only running instance.
+		static LogController* Instance();
 
-		// \ Logs that we're closing the file and then closes it.
-		~LogController();
+		static LogController* pinstance;
 
 		// \ Takes a string and appends the warning header to it and logs it.
 		void warn(std::string warning);
@@ -27,6 +36,11 @@ class LogController{
 		void error(std::string error);
 
 	private:
+		// \ Setups our file with a name and the UTC time.
+		LogController();
+
+		// \ Logs that we're closing the file and then closes it.
+		~LogController();
 		// \ Our Time type
 		time_t seconds;
 

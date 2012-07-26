@@ -1,0 +1,7 @@
+#ifndef AUDIOCONTROLLER_HPP_
+#define AUDIOCONTROLLER_HPP_
+
+
+
+
+#endif /* AUDIOCONTROLLER_HPP_ */
