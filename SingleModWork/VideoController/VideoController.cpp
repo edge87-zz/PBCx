@@ -37,7 +37,7 @@ bool VideoController::init(){
     smallvideo.status = false;
     smallvideo.priority = -1;
     smallvideo.mutex = SDL_CreateMutex();
-    smallvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT, 16, 0x001f, 0x07e0, 0xf800, 0);
+    smallvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT, 32, 0, 0, 0, 0);
 
     fullvideo.rect.x = 0;
     fullvideo.rect.y = 0;
@@ -46,7 +46,7 @@ bool VideoController::init(){
     fullvideo.status = false;
     fullvideo.priority = -1;
     fullvideo.mutex = SDL_CreateMutex();
-    fullvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 1920, 1080, 16, 0x001f, 0x07e0, 0xf800, 0);
+    fullvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 1920, 1080, 32, 0, 0, 0, 0);
 
     //Setup our background
     //TODO Background
@@ -56,49 +56,34 @@ bool VideoController::init(){
 	//Set Player Score board locations
 	player[0].rect.x = PLAYER1X;
 	player[0].rect.y = PLAYER1Y;
-	player[0].surf   = SDL_CreateRGBSurface(SDL_SWSURFACE, PLAYERSCOREWIDTH, PLAYERSCOREHEIGHT, 16, 0x001f, 0x07e0, 0xf800, 0);
 	player[0].surf	 = TTF_RenderText_Blended(scorefont, "999,999,999", scorefontcolor);
 	player[0].status = true;
 	player[0].iscurrent = false;
 
 	player[1].rect.x = PLAYER2X;
 	player[1].rect.y = PLAYER2Y;
-	player[1].surf   = SDL_CreateRGBSurface(SDL_SWSURFACE, PLAYERSCOREWIDTH, PLAYERSCOREHEIGHT, 16, 0x001f, 0x07e0, 0xf800, 0);
 	player[1].surf	 = TTF_RenderText_Blended(scorefont, "999,999,999", scorefontcolor);
 	player[1].status = true;
 	player[1].iscurrent = false;
 
 	player[2].rect.x = PLAYER3X;
 	player[2].rect.y = PLAYER3Y;
-	player[2].surf   = SDL_CreateRGBSurface(SDL_SWSURFACE, PLAYERSCOREWIDTH, PLAYERSCOREHEIGHT, 16, 0x001f, 0x07e0, 0xf800, 0);
 	player[2].surf	 = TTF_RenderText_Blended(scorefont, "999,999,999", scorefontcolor);
 	player[2].status = true;
 	player[2].iscurrent = true;
 
 	player[3].rect.x = PLAYER4X;
 	player[3].rect.y = PLAYER4Y;
-	player[3].surf   = SDL_CreateRGBSurface(SDL_SWSURFACE, PLAYERSCOREWIDTH, PLAYERSCOREHEIGHT, 16, 0x001f, 0x07e0, 0xf800, 0);
 	player[3].surf	 = TTF_RenderText_Blended(scorefont, "999,999,999", scorefontcolor);
 	player[3].status = true;
 	player[3].iscurrent = false;
 
-	//Scoreboard init
-	scoreboard.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, SCOREBOARDHEIGHT, SCOREBOARDWIDTH, 16, 0x001f, 0x07e0, 0xf800, 0);
-	scoreboard.rect.x = 0;
-	scoreboard.rect.y = 600;
-	scoreboard.surf = SDL_DisplayFormat(SDL_LoadBMP("scoreboard.bmp"));
-
 	//Current Player Score board
-	currentplayersb.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, CURRENTPLAYERHEIGHT, CURRENTPLAYERWIDTH, 16, 0x001f, 0x07e0, 0xf800, 0);
 	currentplayersb.rect.x = 10;
 	currentplayersb.rect.y = 720;
 
-	//Temp Surfaces
-	smallplayerscore = SDL_CreateRGBSurface(SDL_SWSURFACE, SCOREBOARDHEIGHT, SCOREBOARDWIDTH, 16, 0x001f, 0x07e0, 0xf800, 0);
-	currentplayerscore = SDL_CreateRGBSurface(SDL_SWSURFACE, SCOREBOARDHEIGHT, SCOREBOARDWIDTH, 16, 0x001f, 0x07e0, 0xf800, 0);
-
 	//Debug FPS
-	FPS_SURF = SDL_CreateRGBSurface(SDL_SWSURFACE, 100, 600, 16, 0x001f, 0x07e0, 0xf800, 0);
+	FPS_SURF = SDL_CreateRGBSurface(SDL_SWSURFACE, 100, 600, 16, 0, 0, 0, 0);
 
 
 	fpsr.x = 650;
