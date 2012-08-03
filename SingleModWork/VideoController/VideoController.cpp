@@ -15,9 +15,15 @@ bool VideoController::init(){
 	};
 
 	//Setup our main screen
-	if((screen = SDL_SetVideoMode(1920, 1080, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) == NULL) {
-		return false;
-	};
+//	if((screen = SDL_SetVideoMode(1920, 1080, 16, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) == NULL) {
+//		return false;
+//	};
+
+	screen = SDL_SetVideoMode(SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h, 32, SDL_DOUBLEBUF|SDL_HWSURFACE|SDL_FULLSCREEN);
+
+	//Get our blank screen
+	blank = SDL_CreateRGBSurface(SDL_HWSURFACE, SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h, 32, 0, 0, 0, 0);
+	SDL_FillRect(blank, NULL, 0x5BB135);
 
 	//init TTF Fonts
 	if (TTF_Init() < 0) {
@@ -26,8 +32,8 @@ bool VideoController::init(){
 	}
 
 	//Load Fonts
-	scorefont = TTF_OpenFontIndex("nrkis.ttf", 100, 0);
-	largescorefont = TTF_OpenFontIndex("nrkis.ttf", 300, 0);
+	scorefont = TTF_OpenFontIndex("nrkis.ttf", OTHERSCORESIZE, 0);
+	largescorefont = TTF_OpenFontIndex("nrkis.ttf", CURRENTSCORESIZE, 0);
 
 	//setup  video - location, status, and build the surfaces
     smallvideo.rect.x = 504;
@@ -82,15 +88,11 @@ bool VideoController::init(){
 	currentplayersb.rect.x = 10;
 	currentplayersb.rect.y = 720;
 
-	//Debug FPS
-	FPS_SURF = SDL_CreateRGBSurface(SDL_SWSURFACE, 100, 600, 16, 0, 0, 0, 0);
+	//Debug FPS placement. We're going to try to be dynamic with where we put this based on the resolution. Might be better
+	// To store this information in a variable and not keep calling the function.
 
-
-	fpsr.x = 650;
-	fpsr.y = 900;
-
-
-	SDL_BlitSurface(smallplayerscore, NULL, scoreboard.surf, &fpsr);
+	fpsr.x = SDL_GetVideoInfo()->current_w - 100;
+	fpsr.y = SDL_GetVideoInfo()->current_h - 100;
 
 	SDL_Flip(screen);
 
@@ -253,25 +255,46 @@ void VideoController::Reset(){
 void *VideoController::RefreshDisplay(void* args){
 	//Init
 	SDL_Event event;
-	int action = 0;
 
 	SDL_Rect temprec;
 
-	int FPS, last, current = 0;
-
-	last = SDL_GetTicks();
+	Uint32 target = SDL_GetTicks() + TICK_INTERVAL;
+	int framerate, action = 0;
+	std::string sframerate;
+	std::stringstream out;
 
 //Main Looping
 	while(true){
 		//Blit Our background
+		SDL_BlitSurface(blank, NULL, screen, NULL);
 
 		//increment our FPS
-		FPS++;
+		framerate++;
+
+		if(target < SDL_GetTicks()){
+			//display text
+			//Convert Int to SS
+			out.str(std::string());
+			framerate *= 120;
+
+			out << framerate;
+			//Convert SS to String
+			sframerate = out.str();
+
+			FPS_SURF = TTF_RenderText_Solid(scorefont, sframerate.c_str(), scorefontcolor);
+
+			//SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
+
+			//reset frame rate and string stream
+			framerate = 0;
+			out.str(std::string());
+
+			//Jump another X ms in the future
+			target = SDL_GetTicks() + TICK_INTERVAL;
+		}
 
 		for(int i=0; i<4; i++){
 			if(player[i].status){
-			//update this players score
-
 				if(player[i].iscurrent == true){
 					currentplayerscore = TTF_RenderText_Blended(largescorefont, "50,000", scorefontcolor);
 
@@ -282,29 +305,25 @@ void *VideoController::RefreshDisplay(void* args){
 					if (SCOREBOARDHEIGHT > currentplayerscore->h){
 						temprec.y = ((SCOREBOARDHEIGHT - currentplayerscore->h)/2);
 										}
-					SDL_BlitSurface(currentplayerscore, NULL, scoreboard.surf, &temprec);
+					SDL_BlitSurface(currentplayerscore, NULL, screen, &temprec);
 				}
 
 				else{
-					smallplayerscore = TTF_RenderText_Solid(scorefont, "200", scorefontcolor);
+					currentplayerscore = TTF_RenderText_Solid(scorefont, "200", scorefontcolor);
 
 					if (i == 3){
-						smallplayerscore = TTF_RenderText_Solid(scorefont, "99,999", scorefontcolor);
+						currentplayerscore = TTF_RenderText_Solid(scorefont, "99,999", scorefontcolor);
 					}
 
-					if (PLAYERSCOREWIDTH > smallplayerscore->w){
-						temprec.x = ((PLAYERSCOREWIDTH - smallplayerscore->w)/2) + player[i].rect.x;
+					if (PLAYERSCOREWIDTH > currentplayerscore->w){
+						temprec.x = ((PLAYERSCOREWIDTH - currentplayerscore->w)/2) + player[i].rect.x;
 					}
 
-					if (PLAYERSCOREHEIGHT > smallplayerscore->h){
-						temprec.y = ((PLAYERSCOREHEIGHT - smallplayerscore->h)/2) + player[i].rect.y;
+					if (PLAYERSCOREHEIGHT > currentplayerscore->h){
+						temprec.y = ((PLAYERSCOREHEIGHT - currentplayerscore->h)/2) + player[i].rect.y;
 					}
 
-					SDL_BlitSurface(smallplayerscore, NULL, scoreboard.surf, &temprec);
-			//add score text
-			//lock screen
-				//blit scorebox to screen
-			//unlock screen
+					SDL_BlitSurface(currentplayerscore, NULL, screen, &temprec);
 				}
 			}
 		}
@@ -336,15 +355,9 @@ void *VideoController::RefreshDisplay(void* args){
 			 SDL_BlitSurface(fullvideo.surf, NULL, screen, &fullvideo.rect);
 			 SDL_UnlockMutex(fullvideo.mutex);
 		}
-
-		current = SDL_GetTicks();
-
-		std::cout << FPS << std::endl;
-
-		last = current;
-
-		 SDL_Flip(screen);
-		 SDL_Delay(10);
+		SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
+		SDL_Flip(screen);
+		SDL_Delay(10);
 	}
 	return NULL;//Shuts the editor up. "oh you didn't return anything, you must be an ahole"
 }

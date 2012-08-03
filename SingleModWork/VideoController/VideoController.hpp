@@ -14,6 +14,9 @@
 #include "LogController.hpp"
 
 #include <vlc/vlc.h>
+#include <sstream>
+
+#define TICK_INTERVAL 500 // half a second
 
 //threads
 static pthread_t videorefreshthread, videorenderingthread;
@@ -28,24 +31,34 @@ extern bool programRunning;
 #define PLAYERSCOREWIDTH 470
 #define PLAYERSCOREHEIGHT 110
 
-#define SCOREBOARDWIDTH 1920
-#define SCOREBOARDHEIGHT 480
+//Defines where the current player score goes
+#define SCOREBOARDWIDTH 1200
+#define SCOREBOARDHEIGHT 1400
 
+//helps define where the other player scores go
 #define CURRENTPLAYERWIDTH 1900
 #define CURRENTPLAYERHEIGHT 270
 
 //Play 1 - 4 (x,y) grid location on screen. Set top left corner where you want the square to start
 #define PLAYER1X 10
-#define PLAYER1Y 10
+#define PLAYER1Y 600
 
-#define PLAYER2X 1440
-#define PLAYER2Y 10
+#define PLAYER2X 700
+#define PLAYER2Y 600
 
 #define PLAYER3X 10
-#define PLAYER3Y 360
+#define PLAYER3Y 700
 
-#define PLAYER4X 1440
-#define PLAYER4Y 360
+#define PLAYER4X 700
+#define PLAYER4Y 700
+
+//For our bigger screen
+//#define OTHERSCORESIZE 100
+//#define CURRENTSCORESIZE 300
+
+//Development laptop
+#define OTHERSCORESIZE 20
+#define CURRENTSCORESIZE 50
 
 //used for selecting a small screen to play a video on or full screen
 enum videosize{
@@ -63,7 +76,7 @@ static SDL_Color scorefontcolor;
 // background = what is the first layer applied and over written with other surfaces.
 // scorebackground = the background image applied to score zones each time around to remove text reminents
 
-static SDL_Surface *screen, *background, *smallplayerscore, *currentplayerscore, *FPS_SURF;
+static SDL_Surface *screen, *background, *currentplayerscore, *FPS_SURF, *blank;
 
 // Keep the players scores and locations and everything sane and stored here.
 struct players{
