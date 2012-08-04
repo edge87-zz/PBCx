@@ -47,12 +47,12 @@ bool VideoController::init(){
 
     fullvideo.rect.x = 0;
     fullvideo.rect.y = 0;
-    fullvideo.width = 1920;
-    fullvideo.height = 1080;
+    fullvideo.width = SDL_GetVideoInfo()->current_w;
+    fullvideo.height = SDL_GetVideoInfo()->current_h;
     fullvideo.status = false;
     fullvideo.priority = -1;
     fullvideo.mutex = SDL_CreateMutex();
-    fullvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, 1920, 1080, 32, 0, 0, 0, 0);
+    fullvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h, 16, 0x001f, 0x07e0, 0xf800, 0);
 
     //Setup our background
     //TODO Background
@@ -268,6 +268,12 @@ void *VideoController::RefreshDisplay(void* args){
 		//Blit Our background
 		SDL_BlitSurface(blank, NULL, screen, NULL);
 
+		if(fullvideo.status){
+			SDL_LockMutex(fullvideo.mutex);
+			SDL_BlitSurface(fullvideo.surf, NULL, screen, &fullvideo.rect);
+			SDL_UnlockMutex(fullvideo.mutex);
+		}
+
 		//increment our FPS
 		framerate++;
 
@@ -350,11 +356,7 @@ void *VideoController::RefreshDisplay(void* args){
 		//put current player up to screen
 		SDL_BlitSurface(currentplayersb.surf, NULL, screen, &currentplayersb.rect);
 
-		if(fullvideo.status){
-			 SDL_LockMutex(fullvideo.mutex);
-			 SDL_BlitSurface(fullvideo.surf, NULL, screen, &fullvideo.rect);
-			 SDL_UnlockMutex(fullvideo.mutex);
-		}
+
 		SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
 		SDL_Flip(screen);
 		SDL_Delay(10);
