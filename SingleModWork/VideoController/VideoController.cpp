@@ -31,9 +31,15 @@ bool VideoController::init(){
 		return false;
 	}
 
-	//Load Fonts
+	////Load Fonts
+
+	//Font files
 	scorefont = TTF_OpenFontIndex("nrkis.ttf", OTHERSCORESIZE, 0);
 	largescorefont = TTF_OpenFontIndex("nrkis.ttf", CURRENTSCORESIZE, 0);
+
+	//Font Colors
+	scorefontcolor= {255,255,255};
+	scoreshadowcolor = {0,0,0};
 
 	//setup  video - location, status, and build the surfaces
     smallvideo.rect.x = 504;
@@ -205,9 +211,6 @@ void* VideoController::Play(std::string filename, ctx* ctx){
 
 	    int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
 
-	    int options = SDL_ANYFORMAT | SDL_HWSURFACE | SDL_DOUBLEBUF;
-
-
 	    //Initialise libVLC
 
 	    libvlc = libvlc_new(vlc_argc, vlc_argv);
@@ -368,3 +371,33 @@ void VideoController::Stop(){
 	void TTF_Quit();
 	SDL_Quit();
 };
+
+SDL_Surface* ShadowText(std::string score){
+	SDL_Surface *final, *foreground, *shadow;
+	SDL_Rect rshadow, rforeground;
+
+	//Build our surface that we'll return
+	final = SDL_CreateRGBSurface(SDL_HWSURFACE, 200, 100, 32, 0, 0, 0, 0);
+
+	//Build our White Text
+	foreground = TTF_RenderText_Solid(scorefont, score.c_str(), scorefontcolor);
+
+	//Build our Black Shadow
+	shadow = TTF_RenderText_Solid(scorefont, score.c_str(), scorefontcolor);
+
+	//Find out offsets
+	rforeground.x (final->w - foreground->w) /2;
+	rshadow.x = rforeground.x + 3;
+
+	rforeground.y (final->h - foreground->h) /2;
+	rshadow.y = rforeground.y + 3;
+
+	//Blit shadow with offset + center offset
+	SDL_BlitSurface(shadow, NULL, final, &rshadow);
+
+	//Blit forground with center offset
+	SDL_BlitSurface(foreground, NULL, final, &rshadow);
+
+	return final;
+
+}

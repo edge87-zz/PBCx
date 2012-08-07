@@ -69,7 +69,7 @@ enum videosize{
 //Fonts
 // Score Fonts =
 static TTF_Font* scorefont, *largescorefont;
-static SDL_Color scorefontcolor;
+static SDL_Color scorefontcolor, scoreshadowcolor;
 
 //Our surfaces.
 // screen = main surface that we flip
@@ -130,6 +130,9 @@ class VideoController{
 
 		//Stops all threads, unloads all resources
 		static void Stop();
+
+		//\ Render us some shadowed text. Return SDL_Surface* and ask for nothing but a string
+		static SDL_Surface* ShadowText(std::string);
 
 
 	private:
