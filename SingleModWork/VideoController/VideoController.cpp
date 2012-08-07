@@ -386,10 +386,10 @@ SDL_Surface* ShadowText(std::string score){
 	shadow = TTF_RenderText_Solid(scorefont, score.c_str(), scorefontcolor);
 
 	//Find out offsets
-	rforeground.x (final->w - foreground->w) /2;
+	rforeground.x = (final->w - foreground->w) /2;
 	rshadow.x = rforeground.x + 3;
 
-	rforeground.y (final->h - foreground->h) /2;
+	rforeground.y = (final->h - foreground->h) /2;
 	rshadow.y = rforeground.y + 3;
 
 	//Blit shadow with offset + center offset
