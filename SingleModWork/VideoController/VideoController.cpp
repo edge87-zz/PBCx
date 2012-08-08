@@ -404,7 +404,7 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 	SDL_BlitSurface(shadow, NULL, final, &rshadow);
 
 	//Blit forground with center offset
-	SDL_BlitSurface(foreground, NULL, final, &rshadow);
+	SDL_BlitSurface(foreground, NULL, final, &rforeground);
 
 	return final;
 
