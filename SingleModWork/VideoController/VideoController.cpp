@@ -381,14 +381,11 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 	//Build our surface that we'll return. Needs Alpha
 	final = SDL_AllocSurface(SDL_HWSURFACE|SDL_SRCALPHA, 200, 100, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
 
-	//Setup transparency in it
-	//SDL_SetColorKey(final, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(final->format, 222, 222, 222));
-
 	//Build our White Text
 	foreground = TTF_RenderText_Blended(scorefont, score.c_str(), scorefontcolor);
 
 	//Build our Black Shadow
-	shadow = TTF_RenderText_Solid(scorefont, score.c_str(), scoreshadowcolor);
+	shadow = TTF_RenderText_Blended(scorefont, score.c_str(), scoreshadowcolor);
 
 	//Find out offsets
 	rforeground.x = (final->w - foreground->w) /2;
@@ -398,9 +395,11 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 	rshadow.y = rforeground.y + 3;
 
 	//Blit shadow with offset + center offset
+	SDL_SetAlpha(shadow,0,0);
 	SDL_BlitSurface(shadow, NULL, final, &rshadow);
 
 	//Blit forground with center offset
+	SDL_SetAlpha(foreground,0,0);
 	SDL_BlitSurface(foreground, NULL, final, &rforeground);
 
 	return final;
