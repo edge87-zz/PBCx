@@ -381,6 +381,12 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 	//Build our surface that we'll return
 	final = SDL_CreateRGBSurface(SDL_HWSURFACE, 200, 100, 32, 0, 0, 0, 0);
 
+	//Setup Final as a pink background
+	SDL_FillRect(blank, NULL, SDL_MapRGB(final->format, 255, 0, 255));
+
+	//Setup transparency in it
+	SDL_SetColorKey(final, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(final->format, 255, 0, 255));
+
 	//Build our White Text
 	foreground = TTF_RenderText_Solid(scorefont, score.c_str(), scorefontcolor);
 
@@ -395,12 +401,10 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 	rshadow.y = rforeground.y + 3;
 
 	//Blit shadow with offset + center offset
-	//SDL_BlitSurface(shadow, NULL, final, &rshadow);
+	SDL_BlitSurface(shadow, NULL, final, &rshadow);
 
 	//Blit forground with center offset
-	//SDL_BlitSurface(foreground, NULL, final, &rshadow);
-
-	SDL_BlitSurface(foreground, NULL, shadow, &rshadow);
+	SDL_BlitSurface(foreground, NULL, final, &rshadow);
 
 	return final;
 
