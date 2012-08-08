@@ -395,10 +395,10 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 
 	//Find out offsets
 	rforeground.x = (final->w - foreground->w) /2;
-	rshadow.x = rforeground.x + 10;
+	rshadow.x = rforeground.x + 3;
 
 	rforeground.y = (final->h - foreground->h) /2;
-	rshadow.y = rforeground.y + 10;
+	rshadow.y = rforeground.y + 3;
 
 	//Blit shadow with offset + center offset
 	SDL_BlitSurface(shadow, NULL, final, &rshadow);
