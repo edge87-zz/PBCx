@@ -391,7 +391,7 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 	foreground = TTF_RenderText_Solid(scorefont, score.c_str(), scorefontcolor);
 
 	//Build our Black Shadow
-	shadow = TTF_RenderText_Solid(scorefont, score.c_str(), scorefontcolor);
+	shadow = TTF_RenderText_Solid(scorefont, score.c_str(), scoreshadowcolor);
 
 	//Find out offsets
 	rforeground.x = (final->w - foreground->w) /2;
