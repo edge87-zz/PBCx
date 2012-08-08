@@ -382,7 +382,7 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 	final = SDL_CreateRGBSurface(SDL_HWSURFACE, 200, 100, 32, 0, 0, 0, 0);
 
 	//Setup Final as a pink background
-	SDL_FillRect(blank, NULL, SDL_MapRGB(final->format, 255, 0, 255));
+	SDL_FillRect(final, NULL, SDL_MapRGB(final->format, 255, 0, 255));
 
 	//Setup transparency in it
 	SDL_SetColorKey(final, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(final->format, 255, 0, 255));
