@@ -318,7 +318,7 @@ void *VideoController::RefreshDisplay(void* args){
 				}
 
 				else{
-					currentplayerscore = TTF_RenderText_Solid(scorefont, "200", scorefontcolor);
+					currentplayerscore = ShadowText("90,000");
 
 					if (i == 3){
 						currentplayerscore = TTF_RenderText_Solid(scorefont, "99,999", scorefontcolor);
