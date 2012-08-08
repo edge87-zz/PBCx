@@ -263,8 +263,10 @@ void *VideoController::RefreshDisplay(void* args){
 
 	Uint32 target = SDL_GetTicks() + TICK_INTERVAL;
 	int framerate, action = 0;
-	std::string sframerate;
+	std::string sframerate, ranscore;
 	std::stringstream out;
+
+	ranscore = "90,000";
 
 //Main Looping
 	while(true){
@@ -372,7 +374,7 @@ void VideoController::Stop(){
 	SDL_Quit();
 };
 
-SDL_Surface* ShadowText(std::string score){
+SDL_Surface* VideoController::ShadowText(std::string score){
 	SDL_Surface *final, *foreground, *shadow;
 	SDL_Rect rshadow, rforeground;
 
