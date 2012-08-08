@@ -57,8 +57,8 @@ extern bool programRunning;
 //#define CURRENTSCORESIZE 300
 
 //Development laptop
-#define OTHERSCORESIZE 20
-#define CURRENTSCORESIZE 50
+#define OTHERSCORESIZE 50
+#define CURRENTSCORESIZE 90
 
 //used for selecting a small screen to play a video on or full screen
 enum videosize{
