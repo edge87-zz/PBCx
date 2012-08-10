@@ -41,16 +41,6 @@ bool VideoController::init(){
 	scorefontcolor= {255,255,255};
 	scoreshadowcolor = {0,0,0};
 
-	//setup  video - location, status, and build the surfaces
-    smallvideo.rect.x = 504;
-    smallvideo.rect.y = 283;
-    smallvideo.width = 912;
-    smallvideo.height = 513;
-    smallvideo.status = false;
-    smallvideo.priority = -1;
-    smallvideo.mutex = SDL_CreateMutex();
-    smallvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT, 32, 0, 0, 0, 0);
-
     fullvideo.rect.x = 0;
     fullvideo.rect.y = 0;
     fullvideo.width = SDL_GetVideoInfo()->current_w;
@@ -63,32 +53,21 @@ bool VideoController::init(){
     //Setup our background
     //TODO Background
 
-    scorefontcolor= {255,255,255};
-
 	//Set Player Score board locations
 	player[0].rect.x = PLAYER1X;
 	player[0].rect.y = PLAYER1Y;
-	player[0].surf	 = TTF_RenderText_Blended(scorefont, "999,999,999", scorefontcolor);
-	player[0].status = true;
-	player[0].iscurrent = false;
-
 	player[1].rect.x = PLAYER2X;
 	player[1].rect.y = PLAYER2Y;
-	player[1].surf	 = TTF_RenderText_Blended(scorefont, "999,999,999", scorefontcolor);
-	player[1].status = true;
-	player[1].iscurrent = false;
-
 	player[2].rect.x = PLAYER3X;
 	player[2].rect.y = PLAYER3Y;
-	player[2].surf	 = TTF_RenderText_Blended(scorefont, "999,999,999", scorefontcolor);
-	player[2].status = true;
-	player[2].iscurrent = true;
-
 	player[3].rect.x = PLAYER4X;
 	player[3].rect.y = PLAYER4Y;
-	player[3].surf	 = TTF_RenderText_Blended(scorefont, "999,999,999", scorefontcolor);
-	player[3].status = true;
-	player[3].iscurrent = false;
+
+	for(int i=0; i<4; i++){
+		player[i].surf	 = VideoController::ShadowText("0");
+		player[i].status = false;
+		player[i].iscurrent = false;
+	}
 
 	//Current Player Score board
 	currentplayersb.rect.x = 10;
@@ -100,7 +79,6 @@ bool VideoController::init(){
 	fpsr.x = SDL_GetVideoInfo()->current_w - 100;
 	fpsr.y = SDL_GetVideoInfo()->current_h - 100;
 
-	SDL_Flip(screen);
 
 	 //kick off display thread and go back
 	 if(pthread_create(&videorefreshthread, NULL, RefreshDisplay, NULL)){
@@ -307,34 +285,11 @@ void *VideoController::RefreshDisplay(void* args){
 		for(int i=0; i<4; i++){
 			if(player[i].status){
 				if(player[i].iscurrent == true){
-					currentplayerscore = TTF_RenderText_Blended(largescorefont, "50,000", scorefontcolor);
-
-					if (SCOREBOARDWIDTH > currentplayerscore->w){
-						temprec.x = ((SCOREBOARDWIDTH - currentplayerscore->w)/2);
-					}
-
-					if (SCOREBOARDHEIGHT > currentplayerscore->h){
-						temprec.y = ((SCOREBOARDHEIGHT - currentplayerscore->h)/2);
-										}
-					SDL_BlitSurface(currentplayerscore, NULL, screen, &temprec);
+					SDL_BlitSurface(player[i].surf, NULL, screen, &player[i].rect);
 				}
 
 				else{
-					currentplayerscore = ShadowText("90,000");
-
-					if (i == 3){
-						currentplayerscore = TTF_RenderText_Solid(scorefont, "99,999", scorefontcolor);
-					}
-
-					if (PLAYERSCOREWIDTH > currentplayerscore->w){
-						temprec.x = ((PLAYERSCOREWIDTH - currentplayerscore->w)/2) + player[i].rect.x;
-					}
-
-					if (PLAYERSCOREHEIGHT > currentplayerscore->h){
-						temprec.y = ((PLAYERSCOREHEIGHT - currentplayerscore->h)/2) + player[i].rect.y;
-					}
-
-					SDL_BlitSurface(currentplayerscore, NULL, screen, &temprec);
+					SDL_BlitSurface(player[i].surf, NULL, screen, &temprec);
 				}
 			}
 		}
@@ -382,10 +337,10 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 	final = SDL_AllocSurface(SDL_HWSURFACE|SDL_SRCALPHA, 200, 100, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
 
 	//Build our White Text
-	foreground = TTF_RenderText_Blended(scorefont, score.c_str(), scorefontcolor);
+	foreground = TTF_RenderText_Solid(scorefont, score.c_str(), scorefontcolor);
 
 	//Build our Black Shadow
-	shadow = TTF_RenderText_Blended(scorefont, score.c_str(), scoreshadowcolor);
+	shadow = TTF_RenderText_Solid(scorefont, score.c_str(), scoreshadowcolor);
 
 	//Find out offsets
 	rforeground.x = (final->w - foreground->w) /2;
@@ -395,13 +350,53 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 	rshadow.y = rforeground.y + 3;
 
 	//Blit shadow with offset + center offset
-	SDL_SetAlpha(shadow,0,0);
+	//SDL_SetAlpha(shadow,0,0);
 	SDL_BlitSurface(shadow, NULL, final, &rshadow);
 
 	//Blit forground with center offset
-	SDL_SetAlpha(foreground,0,0);
+	//SDL_SetAlpha(foreground,0,0);
 	SDL_BlitSurface(foreground, NULL, final, &rforeground);
 
 	return final;
 
 }
+
+void VideoController::UpdateScore(int playernum, std::string score){
+	//index offset
+	playernum--;
+
+	//Check inputs
+	if(playernum < 4 || playernum >= 0){
+		//Handle this error..
+		return;
+	}
+
+	//disable the player's score
+	VideoController::DisablePlayerScore(playernum +1);
+
+	//Find a clever way of knowing how man characters we're expected to kick out.
+
+	SDL_Surface * temp;
+
+	//build our text
+	temp = VideoController::ShadowText(score);
+
+	//free surface
+	SDL_FreeSurface(player[playernum].surf);
+
+	//assign surface
+	player[playernum].surf = temp;
+
+	//reenable player's score
+	VideoController::EnablePlayerScore(playernum +1);
+
+	//leave
+	return;
+}
+
+
+
+
+
+
+

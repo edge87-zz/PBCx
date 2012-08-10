@@ -118,6 +118,8 @@ class VideoController{
 		//\ brief This will reset our thread static variables and call start afterwards.
 		static void Reset();
 
+		static void UpdateScore(int player, std::string score);
+
 		static void EnablePlayerScore(int player_number);
 		static void DisablePlayerScore(int player_number);
 
