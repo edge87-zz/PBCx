@@ -69,6 +69,9 @@ bool VideoController::init(){
 		player[i].iscurrent = false;
 	}
 
+	currentplayerscore = TTF_RenderText_Blended(largescorefont, "0", scorefontcolor);
+	bcurrentplayerscore = false;
+
 	//Current Player Score board
 	currentplayersb.rect.x = 10;
 	currentplayersb.rect.y = 720;
@@ -94,6 +97,14 @@ void VideoController::EnablePlayerScore(int player_number){
 
 void VideoController::DisablePlayerScore(int player_number){
 	player[player_number - 1].status = false;
+}
+
+void VideoController::DisableCurrentPlayerScore(){
+	bcurrentplayerscore = false;
+}
+
+void VideoController::EnableCurrentPlayerScore(){
+	bcurrentplayerscore = true;
 }
 
 void *VideoController::lock(void *data, void **p_pixels){
@@ -244,8 +255,6 @@ void *VideoController::RefreshDisplay(void* args){
 
 			FPS_SURF = TTF_RenderText_Solid(scorefont, sframerate.c_str(), scorefontcolor);
 
-			//SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
-
 			//reset frame rate and string stream
 			framerate = 0;
 			out.str(std::string());
@@ -266,6 +275,10 @@ void *VideoController::RefreshDisplay(void* args){
 			}
 		}
 
+		if(bcurrentplayerscore){
+			SDL_BlitSurface(currentplayerscore, NULL, screen, &temprec);
+		}
+
 		while( SDL_PollEvent( &event ) ){
 			switch(event.type){
 				case SDL_QUIT:
@@ -280,14 +293,6 @@ void *VideoController::RefreshDisplay(void* args){
 			        break;
 			}
 		}
-
-		//if our small video is enabled
-		//render our scores to the screen
-		SDL_BlitSurface(scoreboard.surf, NULL, screen, &scoreboard.rect);
-
-		//put current player up to screen
-		SDL_BlitSurface(currentplayersb.surf, NULL, screen, &currentplayersb.rect);
-
 
 		SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
 		SDL_Flip(screen);
@@ -345,30 +350,28 @@ void VideoController::UpdateScore(int playernum, std::string score){
 
 	//disable the player's score
 	VideoController::DisablePlayerScore(playernum +1);
+	VideoController::DisableCurrentPlayerScore();
 
 	//Find a clever way of knowing how man characters we're expected to kick out.
 
-	SDL_Surface * temp;
+	SDL_Surface * temp, *temp2;
 
 	//build our text
 	temp = VideoController::ShadowText(score);
+	temp2 = TTF_RenderText_Blended(largescorefont, score.c_str(), scorefontcolor);
 
 	//free surface
 	SDL_FreeSurface(player[playernum].surf);
+	SDL_FreeSurface(currentplayerscore);
 
 	//assign surface
 	player[playernum].surf = temp;
+	currentplayerscore = temp2;
 
 	//reenable player's score
 	VideoController::EnablePlayerScore(playernum +1);
+	VideoController::EnableCurrentPlayerScore();
 
 	//leave
 	return;
 }
-
-
-
-
-
-
-
