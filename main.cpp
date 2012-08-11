@@ -91,9 +91,8 @@ int main (){
 	else{
 		LogController::instance()->info("readSwitchesThread Thread was Successfully Created");
 	}
-
-  Game tehGame;
-  SwitchHandler switchHandler(&tehGame);
+  
+  SwitchHandler switchHandler;
   WikiMode wikiMode(&switchHandler);
   BallDrain ballDrain(&switchHandler);
 

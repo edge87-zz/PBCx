@@ -11,17 +11,17 @@
 class SwitchHandler
 {
 public:
-	SwitchHandler(Game *game);
+	SwitchHandler();
 	
 	~SwitchHandler();
   
-  void giveSwitchData(int subset, unsigned char switchInfo);
-	
-  void registerObserver(int switchNumber, SwitchObserver *observer);
-  
-  std::string getSwitchString();
-  
-  std::string getCabinetString();
+	void giveSwitchData(int subset, unsigned char switchInfo);
+
+	void registerObserver(int switchNumber, SwitchObserver *observer);
+
+	std::string getSwitchString();
+
+	std::string getCabinetString();
 
 private:
 	vector<Switch*> switches;

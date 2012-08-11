@@ -10,7 +10,6 @@ WikiMode::WikiMode(SwitchHandler *handler)
 {  
   handler->registerObserver(16, this);
   resetMode();
-
 }
 
 void WikiMode::resetMode()

@@ -9,16 +9,12 @@ namespace
   const int maxCabinet = 2;
 }
 
-SwitchHandler::SwitchHandler(Game *game)
+SwitchHandler::SwitchHandler()
 {
 	for(int i = 0; i < maxSwitches; i++)
 	{
 		switches.push_back(new Switch(i, 15));
-	}
-  for(int i = 0; i < switches.size(); i++)
-  {
-    registerObserver(i, game);
-  }
+	}  
 }
 
 SwitchHandler::~SwitchHandler()

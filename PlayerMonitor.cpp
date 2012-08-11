@@ -3,6 +3,15 @@
 
 PlayerMonitor* PlayerMonitor::pinstance = NULL;
 
+PlayerMonitor* PlayerMonitor::instance()
+{
+	if(pinstance == NULL)
+	{
+		pinstance = new PlayerMonitor;
+	}
+	return pinstance;
+}
+
 PlayerMonitor::PlayerMonitor() : currentPlayer(NULL)
 {
 }
