@@ -23,8 +23,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <pthread.h>
-#include </usr/include/SDL/SDL.h>
-#include </usr/include/SDL/SDL_ttf.h>
+
 
 //My includes
 //#include "scon.hpp"
