@@ -37,6 +37,8 @@
 #include "SerialController.hpp"
 #include "LogController.hpp"
 #include "AudioController.hpp"
+#include "BallDrain.hpp"
+#include "PlayerMonitor.hpp"
 
 //Wait for Marcus's Fix
 //#include "VideoController.hpp"
@@ -93,12 +95,13 @@ int main (){
   Game tehGame;
   SwitchHandler switchHandler(&tehGame);
   WikiMode wikiMode(&switchHandler);
-  
+  BallDrain ballDrain(&switchHandler);
 
+  PlayerMonitor::instance()->resetGame(2, 3);
+  
   while(programRunning)
   { //game loop
 
-	cout << "in main loop." << endl;
     for(int i = 0; i < 8; i++)
     {
       //pthread_mutex_lock(&switch_lock);
@@ -110,7 +113,7 @@ int main (){
 	//switchText = TTF_RenderText_Solid(font,
 	//switchHandler.getSwitchString().c_str(),
 	//text_color);
-
+	
     wikiMode.run();
   }
 
