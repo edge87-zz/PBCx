@@ -26,31 +26,12 @@ void Switch::switchActive(bool value)
 	{
 		timespec tempTime;
 		clock_gettime(CLOCK_MONOTONIC, &tempTime);		
-		if(m_active)
-		{
-			double difference = (( (double)tempTime.tv_sec + (double)tempTime.tv_nsec/NANO) - ((double)m_lastActiveTime.tv_sec + (double)m_lastActiveTime.tv_nsec/NANO));
-			cout << difference << endl;
-			if(difference > m_debounceTime && difference < .1)
-			{
-				m_switchValue = value;
-				m_active = false;
-				// do something when switch is activated, advance score?
-				// perhaps add the function to a stack/list to be called by 
-				// a less time sensitive task
-				if(m_switchValue)
-				{
-					notifyObservers();
-				}
-			}
-			else if(difference > .1)
-			{
-				m_active = false;
-			}
-		}
-		else
+		double difference = (( (double)tempTime.tv_sec + (double)tempTime.tv_nsec/NANO) - ((double)m_lastActiveTime.tv_sec + (double)m_lastActiveTime.tv_nsec/NANO));
+			
+		if(m_active && (difference > m_debounceTime))
 		{
 			clock_gettime(CLOCK_MONOTONIC, &m_lastActiveTime);
-			m_active = true;
+			notifyObservers();
 		}
 	}
 }

@@ -1,28 +1,22 @@
-
-
 #include "Player.hpp"
 
-Player::Player(void){
-	score = 0;
-};
+Player::Player(int numberOfBalls)
+{
+	ballsLeft = numberOfBalls;
+}
 
-Player::~Player(){
-	//nothing really to destroy or clean up
-};
+Player::~Player()
+{
+	
+}
 
-void Player::add_score(int points){
-	score += points;
-};
-
-unsigned int Player::getScore(void){
-	return score;
-};
-
-
-
-
-
-
-
-
-
+void Player::incrementScore(int score)
+{
+	score = score;
+}
+	
+bool Player::DEATH()
+{
+	ballsLeft--;
+	return (ballsLeft == 0);
+}

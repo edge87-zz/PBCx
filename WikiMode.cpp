@@ -1,4 +1,5 @@
 #include "WikiMode.hpp"
+#include "PlayerMonitor.hpp"
 
 namespace
 {
@@ -21,6 +22,7 @@ void WikiMode::resetMode()
 
 void WikiMode::notify(int SwitchNumber)
 {
+  PlayerMonitor::instance()->incrementScore(100);
   if(progress <= 4 && reset != true)
   {
     progress++;
@@ -29,6 +31,7 @@ void WikiMode::notify(int SwitchNumber)
   {
     //mode complete
     reset = true;
+    PlayerMonitor::instance()->incrementScore(10000);
     clock_gettime(CLOCK_MONOTONIC, &endTimer);	
     endTimer.tv_sec += 5;
   }

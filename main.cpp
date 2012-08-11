@@ -109,11 +109,6 @@ int main (){
       //pthread_mutex_unlock(&switch_lock);
     }
 
-    //I Need this for example on how you got a string back for the switches.
-	//switchText = TTF_RenderText_Solid(font,
-	//switchHandler.getSwitchString().c_str(),
-	//text_color);
-	
     wikiMode.run();
   }
 

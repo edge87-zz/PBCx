@@ -115,6 +115,8 @@ class VideoController{
 
 		static void EnablePlayerScore(int player_number);
 		static void DisablePlayerScore(int player_number);
+		static void DisableCurrentPlayerScore();
+		static void EnableCurrentPlayerScore();
 
 		static void SetScore(int player_number);
 
@@ -129,22 +131,13 @@ class VideoController{
 		//\ Render us some shadowed text. Return SDL_Surface* and ask for nothing but a string
 		static SDL_Surface* ShadowText(std::string);
 
-		//\ Static variables for video
-		static libvlc_instance_t *libvlc;
-		static libvlc_media_t *m;
-		static libvlc_media_player_t *mp;
-
-
 	private:
-
-
 		static void *lock(void *data, void **p_pixels);
 		static void unlock(void *data, void *id, void *const *p_pixels);
 		static void display(void *data, void *id);
 		static void* Play(std::string filename, ctx* ctx);
 
-		//Logger has nothing until set
-		//LogController* logger;
+		static bool bcurrentplayerscore;
 };
 
 

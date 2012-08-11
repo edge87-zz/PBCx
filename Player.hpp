@@ -1,29 +1,21 @@
-#ifndef PLAYER_HPP_
-#define PLAYER_HPP_
+#ifndef PLAYER_HPP
+#define PLAYER_HPP
 
-class Player{
-
-	public:
-		// \Constructor
-		Player();
-
-		// \Destructor
-		~Player();
-
-		// \Adds points to the players score
-		void add_score(int points);
-
-		// \Returns Player's Score
-		unsigned int getScore(void);
-
-
-	private:
-
-		// \Player's Score
-		unsigned int score;
-
-
+class Player
+{
+public:	
+	Player(int numberOfBalls);
+	
+	~Player();
+	
+	void incrementScore(int score);
+	
+	bool DEATH();
+	
+private:
+	int score;
+	
+	int ballsLeft;
 };
 
-
-#endif /* PLAYER_HPP_ */
+#endif //PLAYER_HPP
