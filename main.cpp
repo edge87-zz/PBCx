@@ -24,8 +24,7 @@
 #include <cstdio>
 #include <pthread.h>
 
-#include </usr/include/SDL/SDL.h>
-#include </usr/include/SDL/SDL_ttf.h>
+
 #include </usr/include/SDL/SDL_mixer.h>
 
 
