@@ -60,12 +60,6 @@ extern bool programRunning;
 #define OTHERSCORESIZE 50
 #define CURRENTSCORESIZE 90
 
-//used for selecting a small screen to play a video on or full screen
-enum videosize{
-	small = 1,
-	full = 2,
-};
-
 //Fonts
 // Score Fonts =
 static TTF_Font* scorefont, *largescorefont;
@@ -101,7 +95,6 @@ struct ctx
 
 static SDL_Rect fpsr;
 
-
 static struct ctx smallvideo, fullvideo, scoreboard, currentplayersb;
 
 static struct players player[4];
@@ -128,13 +121,18 @@ class VideoController{
 		//\ Constantly refreshing our display. This is the threaded part
 		static void* RefreshDisplay(void* args);
 
-		static void PlayVideo(std::string filename, int priority, videosize vs);
+		static void PlayVideo(std::string filename, int priority);
 
 		//Stops all threads, unloads all resources
 		static void Stop();
 
 		//\ Render us some shadowed text. Return SDL_Surface* and ask for nothing but a string
 		static SDL_Surface* ShadowText(std::string);
+
+		//\ Static variables for video
+		static libvlc_instance_t *libvlc;
+		static libvlc_media_t *m;
+		static libvlc_media_player_t *mp;
 
 
 	private:

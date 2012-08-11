@@ -131,40 +131,16 @@ void VideoController::display(void *data, void *id){
     assert(id == NULL);
 }
 
-void VideoController::PlayVideo(std::string filename, int priority, videosize vs){
-	if(smallvideo.status && vs == small){
-		if(priority > smallvideo.priority){
-			//Kill current thread
-			smallvideo.status = false;
-
-			//reset our thread
-			smallvideo.status = true;
-
-			//Play video
-			Play(filename,&smallvideo);
-		}
-		else{
-			//Log Rejected to play small video as video with higher priority was in progress.
-			return;
-		}
-
-	}
-
-	if(smallvideo.status && vs == full){
-		//kills thread
-		smallvideo.status = false;
-
-		//get ready for ours
+void VideoController::PlayVideo(std::string filename, int priority){
+	if (fullvideo.status && priority > fullvideo.priority){
+		fullvideo.priority = priority;
+		fullvideo.status = false;
 		fullvideo.status = true;
-
 		Play(filename, &fullvideo);
-
-		return;
 	}
 
-	if(vs == small){
-		smallvideo.status = true;
-		Play(filename, &smallvideo);
+	else if( fullvideo.status){
+		//Log we aren't playing this file because the priority was lower
 		return;
 	}
 
@@ -176,7 +152,6 @@ void VideoController::PlayVideo(std::string filename, int priority, videosize vs
 
 void* VideoController::Play(std::string filename, ctx* ctx){
 	// TODO If we're already playing and a lower priority wants to play. No.
-
 	libvlc_instance_t *libvlc;
 	libvlc_media_t *m;
 	libvlc_media_player_t *mp;
@@ -187,26 +162,26 @@ void* VideoController::Play(std::string filename, ctx* ctx){
 	        "--no-video-title",
 	    };
 
-	    int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
+	int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
 
 	    //Initialise libVLC
 
-	    libvlc = libvlc_new(vlc_argc, vlc_argv);
-	    m = libvlc_media_new_path(libvlc, filename.c_str());
-	    mp = libvlc_media_player_new_from_media(m);
-	    libvlc_media_release(m);
+	libvlc = libvlc_new(vlc_argc, vlc_argv);
+	m = libvlc_media_new_path(libvlc, filename.c_str());
+	mp = libvlc_media_player_new_from_media(m);
+	libvlc_media_release(m);
 
-	    libvlc_video_set_callbacks(mp, VideoController::lock, VideoController::unlock, VideoController::display, ctx);
-	    libvlc_video_set_format(mp, "RV16", ctx->width, ctx->height, ctx->width*2);
-	    //libvlc_video_set_format(mp, "RV16", VIDEOWIDTH, VIDEOHEIGHT, VIDEOWIDTH*2);
-	    libvlc_media_player_play(mp);
+	libvlc_video_set_callbacks(mp, VideoController::lock, VideoController::unlock, VideoController::display, ctx);
+	libvlc_video_set_format(mp, "RV16", ctx->width, ctx->height, ctx->width*2);
+
+	libvlc_media_player_play(mp);
 
 		//Main loop
 
 	    //Takes the player a bit of time to get "up and running" so that it reports a "1" thats its playing. So we wait till it does.
-	    while(libvlc_media_player_is_playing(mp) == 0){
-	    	SDL_Delay(10);
-	    }
+	while(libvlc_media_player_is_playing(mp) == 0){
+		SDL_Delay(10);
+	}
 
 	    std::cout << "video started";
 	    bool videoplaying = true;
@@ -215,17 +190,14 @@ void* VideoController::Play(std::string filename, ctx* ctx){
 	    		videoplaying = false;
 	    	}
 	    }
-
-	    std::cout << "Video dead";
 	   //Stop stream and clean up libVLC
 
 	    libvlc_media_player_stop(mp);
 	    libvlc_media_player_release(mp);
 	    libvlc_release(libvlc);
 
-
 	    ctx->status = false;
-
+	    ctx->priority = 0;
 	    return NULL;
 }
 
