@@ -8,6 +8,8 @@ public:
 	
 	~Player();
 	
+	int getScore();
+	
 	void incrementScore(int score);
 	
 	bool DEATH();

@@ -10,9 +10,14 @@ Player::~Player()
 	
 }
 
-void Player::incrementScore(int score)
+int Player::getScore()
 {
-	score = score;
+	return score;
+}
+
+void Player::incrementScore(int thescore)
+{
+	score = thescore;
 }
 	
 bool Player::DEATH()

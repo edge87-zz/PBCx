@@ -1,5 +1,9 @@
 #include "PlayerMonitor.hpp"
 #include "LogController.hpp"
+#include "VideoController.hpp"
+#include <sstream>
+
+using namespace std;
 
 PlayerMonitor* PlayerMonitor::pinstance = NULL;
 
@@ -26,8 +30,10 @@ void PlayerMonitor::resetGame(int numberOfPlayers, int numberOfBalls)
 	for(int i = 0; i < numberOfPlayers; i++)
 	{
 		players.push_back(new Player(numberOfBalls));
+		VideoController::EnablePlayerScore(i++);
 	}
 	currentPlayer = players.begin();
+	
 }
 
 bool PlayerMonitor::changePlayer()
@@ -42,4 +48,8 @@ bool PlayerMonitor::changePlayer()
 void PlayerMonitor::incrementScore(int score)
 {
 	(*currentPlayer)->incrementScore(score);
+	stringstream ss;
+	ss << (*currentPlayer)->getScore();
+	
+	VideoController::UpdateScore(currentPlayer - players.begin(), ss.str());
 }
