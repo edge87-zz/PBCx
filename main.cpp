@@ -36,6 +36,7 @@
 #include "SwitchHandler.hpp"
 #include "Game.hpp"
 #include "SerialController.hpp"
+#include "LogController.hpp"
 #include "AudioController.hpp"
 
 //Wait for Marcus's Fix
@@ -59,21 +60,18 @@ unsigned char cabinet[2] = {(char)0};
 //unsigned char test[8] = {(ch	ar)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255};
 
 //Video Stuff
-bool displayRunning = true;
+bool programRunning = false;
 
 SDL_Event event;
 
 //Load Serial
-	//NEW Serial Object
-	SerialController *Serial = new SerialController();
+//NEW Serial Object
+SerialController *Serial = new SerialController();
 	
 int main (){
-	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		return false;
-	};
+	VideoController::init();
 	
-	SDL_Surface *screen = SDL_SetVideoMode(SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h, 32, SDL_DOUBLEBUF|SDL_HWSURFACE|SDL_FULLSCREEN);
-		
+	VideoController::PlayVideo("video_0.mpg",1);
 	AudioController::instance()->addMusic("main", "metallica.wav");
 	AudioController::instance()->playMusic("main");
 
@@ -89,21 +87,21 @@ int main (){
 	else{
 		LogController::instance()->info("SerialSend Thread was Successfully Created");
 	}
-	/*
+	
 	//Start our serial reading thread
 	if(pthread_create( &readSwitchesThread, NULL, read_switches_thread, NULL)){
 		LogController::instance()->error("readSwitchesThread Thread failed to spawn. Fatal Error.");
 	}
 	else{
 		LogController::instance()->info("readSwitchesThread Thread was Successfully Created");
-	}*/
+	}
 
   Game tehGame;
   SwitchHandler switchHandler(&tehGame);
   WikiMode wikiMode(&switchHandler);
   
 
-  while(displayRunning)
+  while(programRunning)
   { //game loop
 	if(SDL_PollEvent(&event)) {
 		switch(event.type){
@@ -111,7 +109,7 @@ int main (){
 				switch(event.key.keysym.sym)
 				{
 					case SDLK_ESCAPE:
-						displayRunning = false;
+						programRunning = false;
 					default:
 						break;
 				}			
@@ -125,11 +123,10 @@ int main (){
       //pthread_mutex_unlock(&switch_lock);
     }
 
-
     //I Need this for example on how you got a string back for the switches.
-//    switchText = TTF_RenderText_Solid(font,
-//      switchHandler.getSwitchString().c_str(),
-//      text_color);
+	//switchText = TTF_RenderText_Solid(font,
+	//switchHandler.getSwitchString().c_str(),
+	//text_color);
 
     wikiMode.run();
   }

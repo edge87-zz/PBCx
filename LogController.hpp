@@ -22,9 +22,7 @@ class LogController{
 
 	public:
 		// \ Starts an instance of logger if required. Returns pointer to only running instance.
-		static LogController* Instance();
-
-		static LogController* pinstance;
+		static LogController* instance();		
 
 		// \ Takes a string and appends the warning header to it and logs it.
 		void warn(std::string warning);
@@ -52,6 +50,8 @@ class LogController{
 
 		// \ A file handle io type for our file? or maybe its an object. Who the hell really knows?
 		std::ofstream logfile;
+		
+		static LogController* pinstance;
 };
 
 #endif /* LOGCONTROLLER_HPP_ */

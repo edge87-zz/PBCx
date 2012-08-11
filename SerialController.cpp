@@ -14,7 +14,7 @@ SerialController::SerialController() : serialOut(100), p_switches(64), c_switche
 
 	if (fd == -1){
 		//Could not open the port.
-		LogController::Instance()->error("Serial Port Didn't Open.");
+		LogController::instance()->error("Serial Port Didn't Open.");
 		return;
 	}
 	else{
@@ -37,7 +37,7 @@ SerialController::SerialController() : serialOut(100), p_switches(64), c_switche
 
 		tcsetattr(fd, TCSANOW, &options);			//Set the new options for the port "NOW"
 
-		LogController::Instance()->info("Serial Port is open and configured. Waiting for Ben's Board..");
+		LogController::instance()->info("Serial Port is open and configured. Waiting for Ben's Board..");
 	};
 	unsigned char *opcode = new unsigned char;
 	int done = 1;
@@ -47,12 +47,12 @@ SerialController::SerialController() : serialOut(100), p_switches(64), c_switche
 		read(fd,opcode, 1);
 
 		if(*opcode == OPC_OK){
-			LogController::Instance() -> info("Valid Serial Response 1 from Board.");
+			LogController::instance() -> info("Valid Serial Response 1 from Board.");
 
 			while(done == 1){
 				read(fd,opcode, 1);
 				if(*opcode == OPC_OK2){
-					LogController::Instance()-> info("Valid Serial Response 2 from Board.");
+					LogController::instance()-> info("Valid Serial Response 2 from Board.");
 					done = 0;
 				}
 			}
@@ -62,7 +62,7 @@ SerialController::SerialController() : serialOut(100), p_switches(64), c_switche
 };
 
 SerialController::~SerialController(){
-	LogController::Instance()->info("Closing Serial Port.");
+	LogController::instance()->info("Closing Serial Port.");
 
 	close(fd);
 };
@@ -73,17 +73,17 @@ void SerialController::KickCoil(int number, int duration){
 	std::ostringstream log;
 
 	if (number >= 32){
-		LogController::Instance()->warn("KickCoil called with Invalid Coil Number. Coil Not Fired.");
+		LogController::instance()->warn("KickCoil called with Invalid Coil Number. Coil Not Fired.");
 		return;
 	};
 
 	if (duration >= 251){
-		LogController::Instance()->warn("KickCoil called with Invalid Duration. Coil Not Fired");
+		LogController::instance()->warn("KickCoil called with Invalid Duration. Coil Not Fired");
 		return;
 	};
 
 	log << "Firing Coil " << number << " for " << duration;
-	LogController::Instance() ->info(log.str());
+	LogController::instance() ->info(log.str());
 
 	//Add our opcode to the coil
 	number |= OPC_COIL;
@@ -172,18 +172,18 @@ void SerialController::set_servo(int servo, int position){
 	unsigned char byte2;
 
 	if (servo >= 32){
-		LogController::Instance()->warn("Servo Out Of Range. Not Setting.");
+		LogController::instance()->warn("Servo Out Of Range. Not Setting.");
 		return;
 	};
 
 	if (position >= 181){
-		LogController::Instance()->warn("Servo Position Out of Range. Not Setting.");
+		LogController::instance()->warn("Servo Position Out of Range. Not Setting.");
 		return;
 	};
 
 	//Log that we are moving servo # into a position
 	log << "Setting Servo " << servo << " to " << position;
-	LogController::Instance() ->info(log.str());
+	LogController::instance() ->info(log.str());
 
 	//OR our opcode into servo
 	servo |= OPC_SERVO;
@@ -211,23 +211,23 @@ void SerialController::set_light(int light, int option, int level){
 	unsigned char byte2;
 
 	if (light > 63 || light < 0){
-		LogController::Instance() -> warn("Light is outside of valid 0 - 63 range");
+		LogController::instance() -> warn("Light is outside of valid 0 - 63 range");
 		return;
 	};
 
 	if (option != 32 && option != 16 && option != 8){
-		LogController::Instance() -> warn("Light option is invalid");
+		LogController::instance() -> warn("Light option is invalid");
 		return;
 	};
 
 	if (level > 7 || level < 0){
-		LogController::Instance() -> warn("Light Level is invalid");
+		LogController::instance() -> warn("Light Level is invalid");
 		return;
 	};
 
 	//Log that we are moving servo # into a position
 	log << "Setting light " << light << " with option " << option << " to level " << level;
-	LogController::Instance() ->info(log.str());
+	LogController::instance() ->info(log.str());
 
 	//OR our OPcode and options and level into the two bytes
 	light |= OPC_LIGHT;
@@ -267,7 +267,7 @@ void SerialController::set_rgb(int lred, int lgreen, int lblue, int rred, int rg
 
 		if(argb[i]> 255 || argb[i] < 0){
 			//std::cout << "RGB Value out of range\n";
-			LogController::Instance()->warn("RGB Value out of range");
+			LogController::instance()->warn("RGB Value out of range");
 			return;
 		};
 
@@ -276,7 +276,7 @@ void SerialController::set_rgb(int lred, int lgreen, int lblue, int rred, int rg
 	};
 
 	//If we got this far the RGB values were good so we can write the info log
-	LogController::Instance() ->info(log.str());
+	LogController::instance() ->info(log.str());
 
 	//Lock Sending Thread
 	pthread_mutex_lock(&serialqueue);
