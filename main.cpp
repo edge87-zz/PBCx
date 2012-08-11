@@ -25,6 +25,7 @@
 #include <pthread.h>
 #include </usr/include/SDL/SDL.h>
 #include </usr/include/SDL/SDL_ttf.h>
+#include </usr/include/SDL/SDL_mixer.h>
 
 //My includes
 //#include "scon.hpp"
@@ -34,6 +35,7 @@
 #include "SwitchHandler.hpp"
 #include "Game.hpp"
 #include "SerialController.hpp"
+#include "AudioController.hpp"
 
 //Wait for Marcus's Fix
 //#include "VideoController.hpp"
@@ -56,40 +58,46 @@ unsigned char cabinet[2] = {(char)0};
 //unsigned char test[8] = {(ch	ar)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255};
 
 //Video Stuff
-bool displayRunning = false;
+bool displayRunning = true;
 
-////MAIN Screen
-//SDL_Surface*	Surf_Display;
-//
-////Drawing Surface
-//SDL_Surface*	Surf_Background;
-//
-////Events needed for development so we can kill the screen.
-//SDL_Event Event;
+SDL_Event event;
+
+
 
 //Load Serial
 	//NEW Serial Object
 	SerialController *Serial = new SerialController();
-
+	
 int main (){
+	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		return false;
+	};
+	
+	SDL_Surface *screen = SDL_SetVideoMode(SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h, 32, SDL_DOUBLEBUF|SDL_HWSURFACE|SDL_FULLSCREEN);
+		
+	AudioController::instance()->addMusic("main", "metallica.wav");
+	AudioController::instance()->playMusic("main");
+
+	//Get our blank screen
+	SDL_Surface *blank = SDL_CreateRGBSurface(SDL_HWSURFACE, SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h, 32, 0, 0, 0, 0);
+	SDL_FillRect(blank, NULL, 0x5BB135);
 	//Log that we can log. (so we know when we can't)
-	LogController::Instance()->info("Log Object Created");
+	LogController::instance()->info("Log Object Created");
 
 	if(pthread_create(&sdthread, NULL, SerialOutThread, (void *)NULL)){
-		LogController::Instance()->error("SerialSend Thread failed to spawn. Fatal Error.");
-		}
-
-		else{
-			LogController::Instance()->info("SerialSend Thread was Successfully Created");
+		LogController::instance()->error("SerialSend Thread failed to spawn. Fatal Error.");
 	}
-
+	else{
+		LogController::instance()->info("SerialSend Thread was Successfully Created");
+	}
+	/*
 	//Start our serial reading thread
 	if(pthread_create( &readSwitchesThread, NULL, read_switches_thread, NULL)){
-		LogController::Instance()->error("readSwitchesThread Thread failed to spawn. Fatal Error.");
-		}
-		else{
-			LogController::Instance()->info("readSwitchesThread Thread was Successfully Created");
+		LogController::instance()->error("readSwitchesThread Thread failed to spawn. Fatal Error.");
 	}
+	else{
+		LogController::instance()->info("readSwitchesThread Thread was Successfully Created");
+	}*/
 
   Game tehGame;
   SwitchHandler switchHandler(&tehGame);
@@ -98,8 +106,19 @@ int main (){
 
   while(displayRunning)
   { //game loop
-
-
+	if(SDL_PollEvent(&event)) {
+		switch(event.type){
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_ESCAPE:
+						displayRunning = false;
+					default:
+						break;
+				}			
+		}
+	}
+	cout << "in main loop." << endl;
     for(int i = 0; i < 8; i++)
     {
       //pthread_mutex_lock(&switch_lock);
@@ -118,7 +137,7 @@ int main (){
 
   //Shutdown Serial
   //Shutdown Logger
-
+  SDL_Quit();
   //And die
   return 0;
 };
