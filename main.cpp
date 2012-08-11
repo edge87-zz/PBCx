@@ -29,7 +29,6 @@
 
 
 //My includes
-//#include "scon.hpp"
 #include "AudioController.hpp"
 #include "LogController.hpp"
 #include "WikiMode.hpp"
@@ -57,10 +56,9 @@ pthread_t sdthread;
 //global variables
 unsigned char switches[8] = {(char)0};
 unsigned char cabinet[2] = {(char)0};
-//unsigned char test[8] = {(ch	ar)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255,(char)255};
 
 //Video Stuff
-bool programRunning = false;
+bool programRunning = true;
 
 SDL_Event event;
 
@@ -75,10 +73,6 @@ int main (){
 	AudioController::instance()->addMusic("main", "metallica.wav");
 	AudioController::instance()->playMusic("main");
 
-	//Get our blank screen
-	SDL_Surface *blank = SDL_CreateRGBSurface(SDL_HWSURFACE, SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h, 32, 0, 0, 0, 0);
-	SDL_FillRect(blank, NULL, 0x5BB135);
-	//Log that we can log. (so we know when we can't)
 	LogController::instance()->info("Log Object Created");
 
 	if(pthread_create(&sdthread, NULL, SerialOutThread, (void *)NULL)){
@@ -103,18 +97,7 @@ int main (){
 
   while(programRunning)
   { //game loop
-	if(SDL_PollEvent(&event)) {
-		switch(event.type){
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_ESCAPE:
-						programRunning = false;
-					default:
-						break;
-				}			
-		}
-	}
+
 	cout << "in main loop." << endl;
     for(int i = 0; i < 8; i++)
     {
@@ -133,7 +116,6 @@ int main (){
 
   //Shutdown Serial
   //Shutdown Logger
-  SDL_Quit();
   //And die
   return 0;
 };
