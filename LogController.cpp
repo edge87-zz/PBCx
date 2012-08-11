@@ -2,7 +2,9 @@
 
 #include "LogController.hpp"
 
-LogController* LogController::Instance(){
+LogController* LogController::pinstance = NULL;
+
+LogController* LogController::instance(){
 	if(!pinstance){
 		pinstance = new LogController;
 	}
