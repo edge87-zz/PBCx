@@ -32,9 +32,12 @@ void BallDrain::notify(int switchNumber)
 			PlayerMonitor::instance()->changePlayer();
 			break;
 		case 59:
-			clock_gettime(CLOCK_MONOTONIC, &endTimer);	
-			endTimer.tv_sec += 2;
-			ballOne = true;
+			if(!ballOne)
+			{
+				clock_gettime(CLOCK_MONOTONIC, &endTimer);	
+				endTimer.tv_sec += 2;
+				ballOne = true;
+			}	
 			break;
 		default:
 			break;			
