@@ -53,8 +53,12 @@ void BallDrain::run()
   {
     if(tempTime.tv_sec > endTimer.tv_sec)
     {
-		Serial->KickCoil(22, 250);
-		ballOne = false;
+		Serial->KickCoil(22, 250);	
+		endTimer.tv_sec += 1;
     }
+    else if(tempTime.tv_sec > endTimer.tv_sec)
+    {
+		ballOne = false;
+	}
   }  
 }
