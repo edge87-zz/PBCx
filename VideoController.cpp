@@ -304,13 +304,15 @@ SDL_Surface* VideoController::ShadowText(std::string score){
 
 void VideoController::UpdateScore(int playernum, std::string score){
 	//index offset
-	playernum--;
+
 
 	//Check inputs
 	if(playernum > 4 || playernum <= 0){
 		//Handle this error..
 		return;
 	}
+
+	playernum--;
 
 	//disable the player's score
 	VideoController::DisablePlayerScore(playernum +1);
