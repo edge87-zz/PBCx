@@ -49,12 +49,14 @@ void BallDrain::run()
 {
   timespec tempTime;
   clock_gettime(CLOCK_MONOTONIC, &tempTime);	
+  bool kicked = false;
   if(ballOne == true)
   {
-    if(tempTime.tv_sec > endTimer.tv_sec)
+    if(tempTime.tv_sec > endTimer.tv_sec && !kicked)
     {
 		Serial->KickCoil(22, 250);	
 		endTimer.tv_sec += 1;
+		kicked = true;
     }
     else if(tempTime.tv_sec > endTimer.tv_sec)
     {
