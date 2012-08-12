@@ -22,8 +22,7 @@ Switch::~Switch()
 
 void Switch::switchActive(bool value)
 {
-	m_switchValue = value;
-	/*if(value != m_switchValue)
+	if(value != m_switchValue)
 	{
 		timespec tempTime;
 		clock_gettime(CLOCK_MONOTONIC, &tempTime);		
@@ -31,10 +30,12 @@ void Switch::switchActive(bool value)
 			
 		if(m_active && (difference > m_debounceTime))
 		{
+			m_switchValue = value;
+			cout << "observers notified" << endl;
 			clock_gettime(CLOCK_MONOTONIC, &m_lastActiveTime);
 			notifyObservers();
 		}
-	}*/
+	}
 }
 
 bool Switch::getSwitchValue()
