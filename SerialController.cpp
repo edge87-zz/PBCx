@@ -42,7 +42,7 @@ SerialController::SerialController() : serialOut(100), p_switches(64), c_switche
 	unsigned char *opcode = new unsigned char;
 	int done = 1;
 
-	while(false){
+	while(done == 1){
 		SDL_Delay(20);
 		read(fd,opcode, 1);
 
