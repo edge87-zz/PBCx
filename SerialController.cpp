@@ -1,4 +1,7 @@
 #include "SerialController.hpp"
+#include <iostream>
+
+using namespace std;
 
 SerialController::SerialController() : serialOut(100), p_switches(64), c_switches(2)
 {
@@ -83,7 +86,7 @@ void SerialController::KickCoil(int number, int duration){
 	};
 
 	log << "Firing Coil " << number << " for " << duration;
-	LogController::instance() ->info(log.str());
+	LogController::instance()->info(log.str());
 
 	//Add our opcode to the coil
 	number |= OPC_COIL;
@@ -102,15 +105,20 @@ void SerialController::KickCoil(int number, int duration){
 	return;
 };
 
-void SerialController::SendData(){
-	std::vector<unsigned char>::iterator itr;
-
-	if(serialOut.size() > 1){
+void SerialController::SendData()
+{
+	if(serialOut.size() > 1)
+	{
+		std::vector<unsigned char>::iterator itr;
 		//Lock Vector
 		pthread_mutex_lock(&serialqueue);
-
+		
+		
 		//Interate through the Vector till its empty sending that data to the serial
 		for(itr=serialOut.begin(); itr < serialOut.end(); itr++){
+			stringstream ss;
+			ss << *itr;
+			LogController::instance()->info(ss.str());
 			write(fd,&itr, 1);
 		}
 		serialOut.clear();
