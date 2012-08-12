@@ -42,6 +42,7 @@ void PlayerMonitor::resetGame(int numberOfPlayers, int numberOfBalls)
 
 bool PlayerMonitor::changePlayer()
 {
+	cout << "change player called" << endl;
 	currentPlayer++;
 	if(currentPlayer == players.end())
 	{
