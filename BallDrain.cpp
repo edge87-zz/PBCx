@@ -7,6 +7,7 @@ using namespace std;
 BallDrain::BallDrain(SwitchHandler *handler)
 {
 	ballOne = false;
+	kicked = false;
 	handler->registerObserver(63, this);	
 	handler->registerObserver(62, this);
 	handler->registerObserver(61, this);
@@ -49,7 +50,6 @@ void BallDrain::run()
 {
   timespec tempTime;
   clock_gettime(CLOCK_MONOTONIC, &tempTime);	
-  bool kicked = false;
   if(ballOne == true)
   {
     if(tempTime.tv_sec > endTimer.tv_sec && !kicked)
@@ -61,6 +61,7 @@ void BallDrain::run()
     else if(tempTime.tv_sec > endTimer.tv_sec)
     {
 		ballOne = false;
+		kicked = false;
 	}
   }  
 }

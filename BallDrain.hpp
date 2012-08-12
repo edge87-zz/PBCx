@@ -26,6 +26,8 @@ private:
 	
 	timespec endTimer;
 	
+	bool kicked;
+	
 };
 
 #endif //BALLDRAIN_HPP
