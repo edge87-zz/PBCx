@@ -27,11 +27,10 @@ void Switch::switchActive(bool value)
 		timespec tempTime;
 		clock_gettime(CLOCK_MONOTONIC, &tempTime);		
 		double difference = (( (double)tempTime.tv_sec + (double)tempTime.tv_nsec/NANO) - ((double)m_lastActiveTime.tv_sec + (double)m_lastActiveTime.tv_nsec/NANO));
-		cout << "debounce time: " << m_debounceTime << " |timer: " << difference << endl;
-		if(m_active && (difference > m_debounceTime))
+		
+		if(value && (difference > m_debounceTime))
 		{
 			m_switchValue = value;
-			cout << "observers notified" << endl;
 			clock_gettime(CLOCK_MONOTONIC, &m_lastActiveTime);
 			notifyObservers();
 		}
