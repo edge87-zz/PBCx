@@ -61,6 +61,13 @@ SerialController::SerialController()
 			}
 		}
 	}
+	
+	unsigned char code1 = 59;
+	unsigned char code2 = 5;
+	
+	write(fd, &code1, 1);
+	write(fd, &code2, 1);
+	
 	delete opcode;
 };
 
