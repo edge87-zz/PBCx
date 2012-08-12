@@ -136,6 +136,8 @@ void* read_switches_thread(void *){
 };
 
 void * SerialOutThread(void *args){
-	//call SerialController.
+	while (true){
+		Serial->SendData();
+	}
 	return NULL;
 };
