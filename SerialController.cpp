@@ -60,14 +60,7 @@ SerialController::SerialController()
 				}
 			}
 		}
-	}
-	
-	unsigned char code1 = 182;
-	unsigned char code2 = 250;
-	
-	write(fd, &code1, 1);
-	write(fd, &code2, 1);
-	
+	}	
 	delete opcode;
 };
 
@@ -123,10 +116,8 @@ void SerialController::SendData()
 		
 		//Interate through the Vector till its empty sending that data to the serial
 		for(itr=serialOut.begin(); itr < serialOut.end(); itr++){
-			stringstream ss;
-			ss << "Send data: " << int(*itr);
-			LogController::instance()->info(ss.str());
-			if(write(fd,&itr, 1) == -1)
+			unsigned char byte = (*itr);
+			if(write(fd,&byte, 1) == -1)
 			{
 				LogController::instance()->error("couldn't write serial");
 			}
