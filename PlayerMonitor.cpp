@@ -26,6 +26,10 @@ PlayerMonitor::~PlayerMonitor()
 
 void PlayerMonitor::resetGame(int numberOfPlayers, int numberOfBalls)
 {
+	for(vector<Player*>::iterator iter = players.begin(); iter != players.end(); iter++)
+	{
+		delete (*iter);
+	}
 	players.clear();
 	for(int i = 0; i < numberOfPlayers; i++)
 	{
