@@ -72,6 +72,9 @@ void initSounds()
 {
 	AudioController::instance()->addMusic("main", "Music/metallica.wav");
 	AudioController::instance()->addSound("scream", "Sounds/2scream.wav");
+	AudioController::instance()->addSound("gunShot", "Sounds/rifle.wav");
+	AudioController::instance()->addSound("explode", "Sounds/lowexplo.wav");
+	AudioController::instance()->addSound("bottle", "Sounds/bottlenobreak.wav");
 }
 	
 int main (){
