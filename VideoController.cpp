@@ -258,6 +258,9 @@ void *VideoController::RefreshDisplay(void* args){
 			}
 		}
 
+		//put current player up to screen
+		SDL_BlitSurface(currentplayersb.surf, NULL, screen, &currentplayersb.rect);
+
 		SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
 		SDL_Flip(screen);
 		SDL_Delay(10);
@@ -319,16 +322,18 @@ void VideoController::UpdateScore(int playernum, std::string score){
 
 	//Find a clever way of knowing how man characters we're expected to kick out.
 
-	SDL_Surface * temp;
+	SDL_Surface * temp, *temp2;
 
 	//build our text
 	temp = VideoController::ShadowText(score);
+	temp2 = TTF_RenderText_Blended(largescorefont, score.c_str(), scorefontcolor);
 
 	//free surface
 	SDL_FreeSurface(player[playernum].surf);
 
 	//assign surface
 	player[playernum].surf = temp;
+	currentplayersb.surf = temp2;
 
 	//reenable player's score
 	VideoController::EnablePlayerScore(playernum +1);
