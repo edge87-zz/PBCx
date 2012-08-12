@@ -259,7 +259,9 @@ void *VideoController::RefreshDisplay(void* args){
 		}
 
 		//put current player up to screen
-		SDL_BlitSurface(currentplayersb.surf, NULL, screen, &currentplayersb.rect);
+		if(currentplayersb.status){
+			SDL_BlitSurface(currentplayersb.surf, NULL, screen, &currentplayersb.rect);
+		}
 
 		SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
 		SDL_Flip(screen);
@@ -319,6 +321,7 @@ void VideoController::UpdateScore(int playernum, std::string score){
 
 	//disable the player's score
 	VideoController::DisablePlayerScore(playernum +1);
+	currentplayersb.status = false;
 
 	//Find a clever way of knowing how man characters we're expected to kick out.
 
@@ -330,6 +333,7 @@ void VideoController::UpdateScore(int playernum, std::string score){
 
 	//free surface
 	SDL_FreeSurface(player[playernum].surf);
+	SDL_FreeSurface(currentplayersb.surf);
 
 	//assign surface
 	player[playernum].surf = temp;
@@ -337,6 +341,7 @@ void VideoController::UpdateScore(int playernum, std::string score){
 
 	//reenable player's score
 	VideoController::EnablePlayerScore(playernum +1);
+	currentplayersb.status = true;
 
 	//leave
 	return;
