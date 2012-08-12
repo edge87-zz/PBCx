@@ -76,6 +76,7 @@ void initSounds()
 	
 int main (){
 	VideoController::init();
+	initSounds();
 	
 	VideoController::PlayVideo("video_0.mpg",1);
 	AudioController::instance()->playMusic("main");
