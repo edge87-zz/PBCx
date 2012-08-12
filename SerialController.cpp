@@ -119,7 +119,10 @@ void SerialController::SendData()
 			stringstream ss;
 			ss << int(*itr);
 			LogController::instance()->info(ss.str());
-			write(fd,&itr, 1);
+			if(write(fd,&itr, 1) == -1)
+			{
+				LogController::instance()->error("couldn't write serial");
+			}
 		}
 		serialOut.clear();
 		//Unlock Vector
