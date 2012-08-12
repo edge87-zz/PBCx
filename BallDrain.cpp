@@ -7,6 +7,7 @@ using namespace std;
 BallDrain::BallDrain(SwitchHandler *handler)
 {
 	ballOne = false;
+	coilKicked = false;
 	handler->registerObserver(63, this);	
 	handler->registerObserver(62, this);
 	handler->registerObserver(61, this);
@@ -51,7 +52,7 @@ void BallDrain::run()
   clock_gettime(CLOCK_MONOTONIC, &tempTime);	
   if(ballOne == true)
   {
-    if(tempTime.tv_sec > endTimer.tv_sec)
+    if(!coilKicked && (tempTime.tv_sec > endTimer.tv_sec))
     {
 		Serial->KickCoil(22, 250);	
 		endTimer.tv_sec += 1;
@@ -59,6 +60,7 @@ void BallDrain::run()
     else if(tempTime.tv_sec > endTimer.tv_sec)
     {
 		ballOne = false;
+		coilKicked = false;
 	}
   }  
 }

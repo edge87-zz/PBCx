@@ -26,7 +26,7 @@ private:
 	
 	timespec endTimer;
 	
-	bool kicked;
+	bool coilKicked;
 	
 };
 
