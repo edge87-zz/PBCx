@@ -55,6 +55,6 @@ void PlayerMonitor::incrementScore(int score)
 	(*currentPlayer)->incrementScore(score);
 	stringstream ss;
 	ss << (*currentPlayer)->getScore();
-	cout << "Player " << currentPlayer - players.begin() << ": " << (*currentPlayer)->getScore() << endl;
+	cout << "Player " << (currentPlayer - players.begin()) + 1 << ": " << (*currentPlayer)->getScore() << endl;
 	VideoController::UpdateScore((currentPlayer - players.begin())+1, ss.str());
 }

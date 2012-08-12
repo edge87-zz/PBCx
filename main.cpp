@@ -100,7 +100,6 @@ int main (){
   
   while(programRunning)
   { //game loop
-	cout << switchHandler.getSwitchString() << endl;
 
     for(int i = 0; i < 8; i++)
     {      
