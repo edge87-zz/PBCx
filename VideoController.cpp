@@ -256,13 +256,7 @@ void *VideoController::RefreshDisplay(void* args){
 
 		for(int i=0; i<4; i++){
 			if(player[i].status){
-				if(player[i].iscurrent == true){
-					SDL_BlitSurface(player[i].surf, NULL, screen, &player[i].rect);
-				}
-
-				else{
-					SDL_BlitSurface(player[i].surf, NULL, screen, &temprec);
-				}
+				SDL_BlitSurface(player[i].surf, NULL, screen, &player[i].rect);
 			}
 		}
 
@@ -280,14 +274,6 @@ void *VideoController::RefreshDisplay(void* args){
 			        break;
 			}
 		}
-
-		//if our small video is enabled
-		//render our scores to the screen
-		SDL_BlitSurface(scoreboard.surf, NULL, screen, &scoreboard.rect);
-
-		//put current player up to screen
-		SDL_BlitSurface(currentplayersb.surf, NULL, screen, &currentplayersb.rect);
-
 
 		SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
 		SDL_Flip(screen);
@@ -338,7 +324,7 @@ void VideoController::UpdateScore(int playernum, std::string score){
 	playernum--;
 
 	//Check inputs
-	if(playernum < 4 || playernum >= 0){
+	if(playernum > 4 || playernum <= 0){
 		//Handle this error..
 		return;
 	}
@@ -365,10 +351,3 @@ void VideoController::UpdateScore(int playernum, std::string score){
 	//leave
 	return;
 }
-
-
-
-
-
-
-

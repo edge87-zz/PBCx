@@ -30,7 +30,7 @@ void PlayerMonitor::resetGame(int numberOfPlayers, int numberOfBalls)
 	for(int i = 0; i < numberOfPlayers; i++)
 	{
 		players.push_back(new Player(numberOfBalls));
-		VideoController::EnablePlayerScore(i++);
+		VideoController::EnablePlayerScore(i + 1);
 	}
 	currentPlayer = players.begin();
 	
