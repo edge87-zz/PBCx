@@ -1,0 +1,47 @@
+        Kernel driver in use: radeon
+        Kernel modules: radeon
+        Kernel driver in use: HDA Intel
+        Kernel modules: snd-hda-intel
+        Kernel driver in use: pcieport
+        Kernel modules: shpchp
+        Kernel driver in use: ahci
+        Kernel modules: ahci
+        Kernel driver in use: ohci_hcd
+        Kernel driver in use: ehci_hcd
+        Kernel driver in use: ohci_hcd
+        Kernel driver in use: ehci_hcd
+        Kernel driver in use: piix4_smbus
+        Kernel modules: sp5100_tco, i2c-piix4
+        Kernel driver in use: HDA Intel
+        Kernel modules: snd-hda-intel
+        Kernel driver in use: ohci_hcd
+        Kernel driver in use: pcieport
+        Kernel modules: shpchp
+        Kernel driver in use: pcieport
+        Kernel modules: shpchp
+        Kernel driver in use: pcieport
+        Kernel modules: shpchp
+        Kernel driver in use: pcieport
+        Kernel modules: shpchp
+        Kernel driver in use: ohci_hcd
+        Kernel driver in use: ehci_hcd
+        Kernel driver in use: k10temp
+        Kernel modules: k10temp
+        Kernel driver in use: r8169
+        Kernel modules: r8169
+        Kernel driver in use: firewire_ohci
+        Kernel modules: firewire-ohci
+        Kernel driver in use: xhci_hcd
+        Kernel modules: xhci-hcd
+
+[   76.408964] ftdi_sio ttyUSB0: FTDI USB Serial Device converter now disconnected from ttyUSB0
+[   76.408988] ftdi_sio 8-2:1.0: device disconnected
+[   79.036257] usb 4-5: new full speed USB device number 2 using ohci_hcd
+[   79.220474] ftdi_sio 4-5:1.0: FTDI USB Serial Device converter detected
+[   79.220572] usb 4-5: Detected FT232RL
+[   79.220581] usb 4-5: Number of endpoints 2
+[   79.220588] usb 4-5: Endpoint 1 MaxPacketSize 64
+[   79.220596] usb 4-5: Endpoint 2 MaxPacketSize 64
+[   79.220603] usb 4-5: Setting MaxPacketSize 64
+[   79.224531] usb 4-5: FTDI USB Serial Device converter now attached to ttyUSB0
+

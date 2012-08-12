@@ -71,7 +71,7 @@ SerialController *Serial = new SerialController();
 int main (){
 	VideoController::init();
 	
-	//VideoController::PlayVideo("video_0.mpg",1);
+	VideoController::PlayVideo("video_0.mpg",1);
 	//AudioController::instance()->addMusic("main", "metallica.wav");
 	//AudioController::instance()->playMusic("main");
 
