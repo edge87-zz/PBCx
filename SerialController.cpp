@@ -113,6 +113,7 @@ void SerialController::SendData(){
 		for(itr=serialOut.begin(); itr < serialOut.end(); itr++){
 			write(fd,&itr, 1);
 		}
+		serialOut.clear();
 		//Unlock Vector
 		pthread_mutex_unlock(&serialqueue);
 	}
