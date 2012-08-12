@@ -116,6 +116,7 @@ int main (){
     }
 
     wikiMode.run();
+    ballDrain.run();
   }
 
   //Shutdown Serial
