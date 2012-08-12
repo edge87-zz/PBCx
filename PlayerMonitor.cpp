@@ -26,6 +26,10 @@ PlayerMonitor::~PlayerMonitor()
 
 void PlayerMonitor::resetGame(int numberOfPlayers, int numberOfBalls)
 {
+	for(vector<Player*>::iterator iter = players.begin(); iter != players.end(); iter++)
+	{
+		delete (*iter);
+	}
 	players.clear();
 	for(int i = 0; i < numberOfPlayers; i++)
 	{
@@ -38,6 +42,7 @@ void PlayerMonitor::resetGame(int numberOfPlayers, int numberOfBalls)
 
 bool PlayerMonitor::changePlayer()
 {
+	cout << "change player called" << endl;
 	currentPlayer++;
 	if(currentPlayer == players.end())
 	{
@@ -50,6 +55,6 @@ void PlayerMonitor::incrementScore(int score)
 	(*currentPlayer)->incrementScore(score);
 	stringstream ss;
 	ss << (*currentPlayer)->getScore();
-	cout << "Player " << currentPlayer - players.begin() << ": " << (*currentPlayer)->getScore() << endl;
+	cout << "Player " << (currentPlayer - players.begin()) + 1 << ": " << (*currentPlayer)->getScore() << endl;
 	VideoController::UpdateScore((currentPlayer - players.begin())+1, ss.str());
 }
