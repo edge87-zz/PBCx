@@ -26,7 +26,7 @@ void SwitchHandler::giveSwitchData(int subset, unsigned char switchInfo)
 {
 	for(int i = 0; i < 8; i++)
 	{
-		switches[(subset * 8) + i]->switchActive(1 && ((switchInfo >> i) & 1));
+		switches[(subset * 8) + i]->switchActive((switchInfo >> i) & 1);
 	}
 }
 

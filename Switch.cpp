@@ -22,6 +22,7 @@ Switch::~Switch()
 
 void Switch::switchActive(bool value)
 {
+	cout << m_switchNumber << ": " << value;
 	if(value != m_switchValue)
 	{
 		timespec tempTime;
