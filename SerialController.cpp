@@ -208,8 +208,8 @@ void SerialController::set_servo(int servo, int position){
 	pthread_mutex_lock(&serialqueue);
 
 	//Put some data at the end of the vector
-	serialOut.push_back(byte1);
-	serialOut.push_back(byte2);
+	//serialOut.push_back(byte1);
+	//serialOut.push_back(byte2);
 
 	//Let the Thread continue sending
 	pthread_mutex_unlock(&serialqueue);
@@ -296,10 +296,10 @@ void SerialController::set_rgb(int lred, int lgreen, int lblue, int rred, int rg
 	//Put some data at the end of the vector
 
 	//Send RGB LED OPcode
-	serialOut.push_back(OPC_SENDRGB);
+	//serialOut.push_back(OPC_SENDRGB);
 
 	for(int i=0; i < 6; i++){
-		serialOut.push_back(bytes[i]);
+		//serialOut.push_back(bytes[i]);
 	}
 
 	//Let the Thread continue sending
