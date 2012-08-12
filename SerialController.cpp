@@ -117,7 +117,7 @@ void SerialController::SendData()
 		//Interate through the Vector till its empty sending that data to the serial
 		for(itr=serialOut.begin(); itr < serialOut.end(); itr++){
 			stringstream ss;
-			ss << *itr;
+			ss << int(*itr);
 			LogController::instance()->info(ss.str());
 			write(fd,&itr, 1);
 		}
