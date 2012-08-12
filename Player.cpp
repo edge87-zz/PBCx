@@ -3,6 +3,7 @@
 Player::Player(int numberOfBalls)
 {
 	ballsLeft = numberOfBalls;
+	score = 0;
 }
 
 Player::~Player()
@@ -17,7 +18,7 @@ int Player::getScore()
 
 void Player::incrementScore(int thescore)
 {
-	score = thescore;
+	score += thescore;
 }
 	
 bool Player::DEATH()
