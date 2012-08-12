@@ -3,7 +3,7 @@
 
 using namespace std;
 
-SerialController::SerialController() : serialOut(100), p_switches(64), c_switches(2)
+SerialController::SerialController() : serialOut(), p_switches(64), c_switches(2)
 {
 	// Setup our Mutexs
 	serialqueue = PTHREAD_MUTEX_INITIALIZER;
