@@ -2,7 +2,7 @@
 #define LIGHT_HPP_
 
 #include <vector>
-#include "scon.hpp"
+#include "SerialController.hpp"
 
 enum Light_Option{
 	Solid = 0,

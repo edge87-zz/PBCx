@@ -2,6 +2,8 @@
 
 using namespace std;
 
+extern SerialController* Serial;
+
 LightController::LightController(LogController *pnt)
 {
 	// Link up our serial logger to our pointer.
@@ -20,7 +22,7 @@ void LightController::Reset()
 {  
   for(int i = 0; i < 64; i++)
   {
-    set_light(i, Solid, 0);
+    Serial->set_light(i, Solid, 0);
   }
 };
 
@@ -44,7 +46,7 @@ void LightController::Set(int lightnum, int level, Light_Option option)
 		return;
 	}	
   
-  set_light(lightnum, option, level);
+  Serial->set_light(lightnum, option, level);
 };
 
 void LightController::SetRange(int lightstart, int lightend, bool state, int level, Light_Option option){
@@ -74,7 +76,7 @@ void LightController::SetRange(int lightstart, int lightend, bool state, int lev
 		
     for(int i = lightstart; i <= lightend; i++)
     {
-      set_light(i, option, level);
+      Serial->set_light(i, option, level);
     }
 }
 
@@ -85,7 +87,7 @@ void LightController::SetStrobe(int lightnum, int numberAfter)
     //logger->warn("LightController::SetStrobe - Invalid Range. Went Over 63");
     return;
   }
-  set_light(lightnum, Strobe, numberAfter);
+  Serial->set_light(lightnum, Strobe, numberAfter);
 }
 
 
