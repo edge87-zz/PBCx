@@ -1,5 +1,6 @@
 #include "BallDrain.hpp"
 #include <iostream>
+#include "AudioController.hpp"
 
 using namespace std;
 
@@ -15,6 +16,6 @@ BallDrain::~BallDrain()
 
 void BallDrain::notify(int switchNumber)
 {
-	cout << "You are dead!" << endl;
+	AudioController::instance()->playSound("scream");
 	PlayerMonitor::instance()->changePlayer();
 }

@@ -68,12 +68,17 @@ SDL_Event event;
 //NEW Serial Object
 SerialController *Serial = new SerialController();
 	
+void initSounds()
+{
+	AudioController::instance()->addMusic("main", "Music/metallica.wav");
+	AudioController::instance()->addSound("scream", "Sounds/2scream.wav");
+}
+	
 int main (){
 	VideoController::init();
 	
 	VideoController::PlayVideo("video_0.mpg",1);
-	//AudioController::instance()->addMusic("main", "metallica.wav");
-	//AudioController::instance()->playMusic("main");
+	AudioController::instance()->playMusic("main");
 
 	LogController::instance()->info("Log Object Created");
 

@@ -26,7 +26,7 @@ void WikiMode::notify(int SwitchNumber)
   {
     progress++;
   }   
-  if(progress == 4)
+  if(progress == 4 && reset != true)
   {
     //mode complete
     reset = true;
