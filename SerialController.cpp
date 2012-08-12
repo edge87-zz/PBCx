@@ -252,8 +252,8 @@ void SerialController::set_light(int light, int option, int level){
 	pthread_mutex_lock(&serialqueue);
 
 	//Put some data at the end of the vector
-	serialOut.push_back(byte1);
-	serialOut.push_back(byte2);
+	//serialOut.push_back(byte1);
+	//serialOut.push_back(byte2);
 
 	//Let the Thread continue sending
 	pthread_mutex_unlock(&serialqueue);
