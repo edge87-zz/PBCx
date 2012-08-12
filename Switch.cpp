@@ -34,6 +34,10 @@ void Switch::switchActive(bool value)
 			clock_gettime(CLOCK_MONOTONIC, &m_lastActiveTime);
 			notifyObservers();
 		}
+		if(!value)
+		{
+			m_switchValue = value;
+		}
 	}
 }
 
