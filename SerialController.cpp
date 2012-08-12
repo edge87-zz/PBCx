@@ -62,8 +62,8 @@ SerialController::SerialController()
 		}
 	}
 	
-	unsigned char code1 = 59;
-	unsigned char code2 = 5;
+	unsigned char code1 = 182;
+	unsigned char code2 = 250;
 	
 	write(fd, &code1, 1);
 	write(fd, &code2, 1);
