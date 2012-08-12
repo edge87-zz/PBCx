@@ -6,6 +6,7 @@ using namespace std;
 
 BallDrain::BallDrain(SwitchHandler *handler)
 {
+	ballOne = false;
 	handler->registerObserver(63, this);	
 	handler->registerObserver(62, this);
 	handler->registerObserver(61, this);
