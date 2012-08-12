@@ -175,7 +175,7 @@ void* VideoController::Play(void* data){
 
 	SDL_Delay(1000);
 	while(libvlc_media_player_is_playing(mp) > 0 ){
-		SDL_Delay(100);
+
 	}
 
 	fullvideo.status = false;
