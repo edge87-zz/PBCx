@@ -99,6 +99,13 @@ static struct ctx smallvideo, fullvideo, scoreboard, currentplayersb;
 
 static struct players player[4];
 
+//Video Player Libs
+static libvlc_instance_t *libvlc;
+static libvlc_media_t *m;
+static 	libvlc_media_player_t *mp;
+
+static std::string fsname;
+
 class VideoController{
 	public:
 
@@ -133,7 +140,7 @@ class VideoController{
 		static void *lock(void *data, void **p_pixels);
 		static void unlock(void *data, void *id, void *const *p_pixels);
 		static void display(void *data, void *id);
-		static void* Play(std::string filename, ctx* ctx);
+		static void* Play(void* data);
 };
 
 

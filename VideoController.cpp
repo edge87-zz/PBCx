@@ -31,6 +31,21 @@ bool VideoController::init(){
 		return false;
 	}
 
+	////Setup Video Libs
+	char const *vlc_argv[] =
+	    {
+	        "--no-xlib",
+	        "--no-video-title",
+	    };
+
+	int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
+
+	//Initialise libVLC
+
+	libvlc = libvlc_new(vlc_argc, vlc_argv);
+
+	mp = NULL;
+
 	////Load Fonts
 
 	//Font files
@@ -49,9 +64,6 @@ bool VideoController::init(){
     fullvideo.priority = -1;
     fullvideo.mutex = SDL_CreateMutex();
     fullvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h, 16, 0x001f, 0x07e0, 0xf800, 0);
-
-    //Setup our background
-    //TODO Background
 
 	//Set Player Score board locations
 	player[0].rect.x = PLAYER1X;
@@ -108,17 +120,6 @@ void *VideoController::lock(void *data, void **p_pixels){
 void VideoController::unlock(void *data, void *id, void *const *p_pixels){
     struct ctx *ctx = static_cast<struct ctx*>(data);
 
-    /* VLC just rendered the video, but we can also render stuff */
-    uint16_t *pixels = static_cast<uint16_t*>(*p_pixels);
-    int x, y;
-
-    for(y = 10; y < 40; y++)
-        for(x = 10; x < 40; x++)
-            if(x < 13 || y < 13 || x > 36 || y > 36)
-                pixels[y * VIDEOWIDTH + x] = 0xffff;
-            else
-                pixels[y * VIDEOWIDTH + x] = 0x0;
-
     SDL_UnlockSurface(ctx->surf);
     SDL_UnlockMutex(ctx->mutex);
 
@@ -132,73 +133,55 @@ void VideoController::display(void *data, void *id){
 }
 
 void VideoController::PlayVideo(std::string filename, int priority){
+
 	if (fullvideo.status && priority > fullvideo.priority){
-		fullvideo.priority = priority;
 		fullvideo.status = false;
-		fullvideo.status = true;
-		Play(filename, &fullvideo);
+	    libvlc_media_player_stop(mp);
+	    libvlc_media_player_release(mp);
+
+		 if(pthread_create(&videorenderingthread, NULL, Play, NULL)){
+			 //Thread didn't launch
+		 }
+
+	    //Play thread
 	}
 
-	else if( fullvideo.status){
+	if (fullvideo.status){
 		//Log we aren't playing this file because the priority was lower
 		return;
 	}
 
 	fullvideo.status = true;
-	Play(filename, &fullvideo);
+
+	fsname = filename;
+
+
+	 if(pthread_create(&videorenderingthread, NULL, Play, NULL)){
+		 //Thread didn't launch
+	 }
 
 	return;
 }
 
-void* VideoController::Play(std::string filename, ctx* ctx){
-	// TODO If we're already playing and a lower priority wants to play. No.
-	libvlc_instance_t *libvlc;
-	libvlc_media_t *m;
-	libvlc_media_player_t *mp;
-
-	char const *vlc_argv[] =
-	    {
-	        "--no-xlib",
-	        "--no-video-title",
-	    };
-
-	int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
-
-	    //Initialise libVLC
-
-	libvlc = libvlc_new(vlc_argc, vlc_argv);
-	m = libvlc_media_new_path(libvlc, filename.c_str());
+void* VideoController::Play(void* data){
+	m = libvlc_media_new_path(libvlc, fsname.c_str());
 	mp = libvlc_media_player_new_from_media(m);
-	libvlc_media_release(m);
 
-	libvlc_video_set_callbacks(mp, VideoController::lock, VideoController::unlock, VideoController::display, ctx);
-	libvlc_video_set_format(mp, "RV16", ctx->width, ctx->height, ctx->width*2);
+	libvlc_video_set_callbacks(mp, VideoController::lock, VideoController::unlock, VideoController::display, &fullvideo);
+	libvlc_video_set_format(mp, "RV16", fullvideo.width, fullvideo.height, fullvideo.width*2);
 
 	libvlc_media_player_play(mp);
+	libvlc_media_release(m);
 
-		//Main loop
-
-	    //Takes the player a bit of time to get "up and running" so that it reports a "1" thats its playing. So we wait till it does.
-	while(libvlc_media_player_is_playing(mp) == 0){
-		SDL_Delay(10);
+	SDL_Delay(1000);
+	while(libvlc_media_player_is_playing(mp) > 0 ){
+		SDL_Delay(100);
 	}
 
-	    std::cout << "video started";
-	    bool videoplaying = true;
-	    while(videoplaying && ctx->status){
-	    	if(libvlc_media_player_is_playing(mp) == 0){
-	    		videoplaying = false;
-	    	}
-	    }
-	   //Stop stream and clean up libVLC
+	fullvideo.status = false;
+	fullvideo.priority = 0;
 
-	    libvlc_media_player_stop(mp);
-	    libvlc_media_player_release(mp);
-	    libvlc_release(libvlc);
-
-	    ctx->status = false;
-	    ctx->priority = 0;
-	    return NULL;
+	return NULL;
 }
 
 void VideoController::Reset(){

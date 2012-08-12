@@ -71,9 +71,9 @@ SerialController *Serial = new SerialController();
 int main (){
 	VideoController::init();
 	
-	//VideoController::PlayVideo("video_0.mpg",1);
-	AudioController::instance()->addMusic("main", "metallica.wav");
-	AudioController::instance()->playMusic("main");
+	VideoController::PlayVideo("video_0.mpg",1);
+	//AudioController::instance()->addMusic("main", "metallica.wav");
+	//AudioController::instance()->playMusic("main");
 
 	LogController::instance()->info("Log Object Created");
 
@@ -100,6 +100,8 @@ int main (){
   
   while(programRunning)
   { //game loop
+
+
 
     for(int i = 0; i < 8; i++)
     {

@@ -44,4 +44,4 @@ VideoController.o : VideoController.cpp VideoController.hpp
 	g++ -c VideoController.cpp
 	
 clean :
-	rm pbcx main.o Game.o Player.o scon.o Switch.o SwitchHandler.o LogController.o SerialController.o VideoController.o AudioController.o
+	rm pbcx main.o Player.o scon.o Switch.o SwitchHandler.o LogController.o SerialController.o VideoController.o AudioController.o

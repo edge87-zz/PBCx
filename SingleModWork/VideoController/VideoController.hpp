@@ -99,6 +99,11 @@ static struct ctx smallvideo, fullvideo, scoreboard, currentplayersb;
 
 static struct players player[4];
 
+//Video Player Libs
+static libvlc_instance_t *libvlc;
+static libvlc_media_t *m;
+static 	libvlc_media_player_t *mp;
+
 class VideoController{
 	public:
 
@@ -115,8 +120,6 @@ class VideoController{
 
 		static void EnablePlayerScore(int player_number);
 		static void DisablePlayerScore(int player_number);
-		static void DisableCurrentPlayerScore();
-		static void EnableCurrentPlayerScore();
 
 		static void SetScore(int player_number);
 
@@ -136,8 +139,6 @@ class VideoController{
 		static void unlock(void *data, void *id, void *const *p_pixels);
 		static void display(void *data, void *id);
 		static void* Play(std::string filename, ctx* ctx);
-
-		static bool bcurrentplayerscore;
 };
 
 

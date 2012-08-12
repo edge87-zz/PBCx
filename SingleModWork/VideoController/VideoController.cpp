@@ -31,6 +31,19 @@ bool VideoController::init(){
 		return false;
 	}
 
+	////Setup Video Libs
+	char const *vlc_argv[] =
+	    {
+	        "--no-xlib",
+	        "--no-video-title",
+	    };
+
+	int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
+
+	//Initialise libVLC
+
+	libvlc = libvlc_new(vlc_argc, vlc_argv);
+
 	////Load Fonts
 
 	//Font files
@@ -50,9 +63,6 @@ bool VideoController::init(){
     fullvideo.mutex = SDL_CreateMutex();
     fullvideo.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, SDL_GetVideoInfo()->current_w, SDL_GetVideoInfo()->current_h, 16, 0x001f, 0x07e0, 0xf800, 0);
 
-    //Setup our background
-    //TODO Background
-
 	//Set Player Score board locations
 	player[0].rect.x = PLAYER1X;
 	player[0].rect.y = PLAYER1Y;
@@ -68,9 +78,6 @@ bool VideoController::init(){
 		player[i].status = false;
 		player[i].iscurrent = false;
 	}
-
-	currentplayerscore = TTF_RenderText_Blended(largescorefont, "0", scorefontcolor);
-	bcurrentplayerscore = false;
 
 	//Current Player Score board
 	currentplayersb.rect.x = 10;
@@ -97,14 +104,6 @@ void VideoController::EnablePlayerScore(int player_number){
 
 void VideoController::DisablePlayerScore(int player_number){
 	player[player_number - 1].status = false;
-}
-
-void VideoController::DisableCurrentPlayerScore(){
-	bcurrentplayerscore = false;
-}
-
-void VideoController::EnableCurrentPlayerScore(){
-	bcurrentplayerscore = true;
 }
 
 void *VideoController::lock(void *data, void **p_pixels){
@@ -143,10 +142,18 @@ void VideoController::display(void *data, void *id){
 }
 
 void VideoController::PlayVideo(std::string filename, int priority){
+//	if(libvlc_media_player_is_playing(mp) > 0){
+//		fullvideo.status = true;
+//	 }
+//
+//	else{
+//		fullvideo.status = false;
+//	}
+
 	if (fullvideo.status && priority > fullvideo.priority){
-		fullvideo.priority = priority;
-		fullvideo.status = false;
-		fullvideo.status = true;
+	    libvlc_media_player_stop(mp);
+	    libvlc_media_player_release(mp);
+
 		Play(filename, &fullvideo);
 	}
 
@@ -162,31 +169,16 @@ void VideoController::PlayVideo(std::string filename, int priority){
 }
 
 void* VideoController::Play(std::string filename, ctx* ctx){
-	// TODO If we're already playing and a lower priority wants to play. No.
-	libvlc_instance_t *libvlc;
-	libvlc_media_t *m;
-	libvlc_media_player_t *mp;
 
-	char const *vlc_argv[] =
-	    {
-	        "--no-xlib",
-	        "--no-video-title",
-	    };
-
-	int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
-
-	    //Initialise libVLC
-
-	libvlc = libvlc_new(vlc_argc, vlc_argv);
 	m = libvlc_media_new_path(libvlc, filename.c_str());
 	mp = libvlc_media_player_new_from_media(m);
-	libvlc_media_release(m);
+
 
 	libvlc_video_set_callbacks(mp, VideoController::lock, VideoController::unlock, VideoController::display, ctx);
 	libvlc_video_set_format(mp, "RV16", ctx->width, ctx->height, ctx->width*2);
 
 	libvlc_media_player_play(mp);
-
+	libvlc_media_release(m);
 		//Main loop
 
 	    //Takes the player a bit of time to get "up and running" so that it reports a "1" thats its playing. So we wait till it does.
@@ -194,7 +186,6 @@ void* VideoController::Play(std::string filename, ctx* ctx){
 		SDL_Delay(10);
 	}
 
-	    std::cout << "video started";
 	    bool videoplaying = true;
 	    while(videoplaying && ctx->status){
 	    	if(libvlc_media_player_is_playing(mp) == 0){
@@ -203,9 +194,7 @@ void* VideoController::Play(std::string filename, ctx* ctx){
 	    }
 	   //Stop stream and clean up libVLC
 
-	    libvlc_media_player_stop(mp);
-	    libvlc_media_player_release(mp);
-	    libvlc_release(libvlc);
+
 
 	    ctx->status = false;
 	    ctx->priority = 0;
@@ -255,6 +244,8 @@ void *VideoController::RefreshDisplay(void* args){
 
 			FPS_SURF = TTF_RenderText_Solid(scorefont, sframerate.c_str(), scorefontcolor);
 
+			//SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
+
 			//reset frame rate and string stream
 			framerate = 0;
 			out.str(std::string());
@@ -265,18 +256,8 @@ void *VideoController::RefreshDisplay(void* args){
 
 		for(int i=0; i<4; i++){
 			if(player[i].status){
-				if(player[i].iscurrent == true){
-					SDL_BlitSurface(player[i].surf, NULL, screen, &player[i].rect);
-				}
-
-				else{
-					SDL_BlitSurface(player[i].surf, NULL, screen, &temprec);
-				}
+				SDL_BlitSurface(player[i].surf, NULL, screen, &player[i].rect);
 			}
-		}
-
-		if(bcurrentplayerscore){
-			SDL_BlitSurface(currentplayerscore, NULL, screen, &temprec);
 		}
 
 		while( SDL_PollEvent( &event ) ){
@@ -343,34 +324,29 @@ void VideoController::UpdateScore(int playernum, std::string score){
 	playernum--;
 
 	//Check inputs
-	if(playernum < 4 || playernum >= 0){
+	if(playernum > 4 || playernum <= 0){
 		//Handle this error..
 		return;
 	}
 
 	//disable the player's score
 	VideoController::DisablePlayerScore(playernum +1);
-	VideoController::DisableCurrentPlayerScore();
 
 	//Find a clever way of knowing how man characters we're expected to kick out.
 
-	SDL_Surface * temp, *temp2;
+	SDL_Surface * temp;
 
 	//build our text
 	temp = VideoController::ShadowText(score);
-	temp2 = TTF_RenderText_Blended(largescorefont, score.c_str(), scorefontcolor);
 
 	//free surface
 	SDL_FreeSurface(player[playernum].surf);
-	SDL_FreeSurface(currentplayerscore);
 
 	//assign surface
 	player[playernum].surf = temp;
-	currentplayerscore = temp2;
 
 	//reenable player's score
 	VideoController::EnablePlayerScore(playernum +1);
-	VideoController::EnableCurrentPlayerScore();
 
 	//leave
 	return;
