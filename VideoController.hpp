@@ -18,6 +18,10 @@
 
 #define TICK_INTERVAL 500 // half a second
 
+//Frame Rate
+#define FRAME_RATE_DELAY 30 //30ms. 1000 ms / 30ms = 33 fps
+static Uint32 next_frame_time;
+
 //threads
 static pthread_t videorefreshthread, videorenderingthread;
 
@@ -106,6 +110,7 @@ static 	libvlc_media_player_t *mp;
 
 static std::string fsname;
 
+
 class VideoController{
 	public:
 
@@ -135,6 +140,9 @@ class VideoController{
 
 		//\ Render us some shadowed text. Return SDL_Surface* and ask for nothing but a string
 		static SDL_Surface* ShadowText(std::string);
+
+		//Frame Rate Function
+		Uint32 time_left(void);
 
 	private:
 		static void *lock(void *data, void **p_pixels);

@@ -201,6 +201,9 @@ void *VideoController::RefreshDisplay(void* args){
 
 	ranscore = "90,000";
 
+	//Frame Rate primer
+	next_frame_time = SDL_GetTicks() + FRAME_RATE_DELAY;
+
 //Main Looping
 	while(true){
 		//Blit Our background
@@ -265,7 +268,9 @@ void *VideoController::RefreshDisplay(void* args){
 
 		SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
 		SDL_Flip(screen);
-		SDL_Delay(10);
+
+        SDL_Delay(time_left());
+        next_frame_time += FRAME_RATE_DELAY;
 	}
 	return NULL;//Shuts the editor up. "oh you didn't return anything, you must be an ahole"
 }
@@ -345,4 +350,14 @@ void VideoController::UpdateScore(int playernum, std::string score){
 
 	//leave
 	return;
+}
+
+Uint32 VideoController::time_left(void){
+    Uint32 now;
+
+    now = SDL_GetTicks();
+    if(next_frame_time <= now)
+        return 0;
+    else
+        return next_frame_time - now;
 }
