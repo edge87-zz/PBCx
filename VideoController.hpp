@@ -142,7 +142,7 @@ class VideoController{
 		static SDL_Surface* ShadowText(std::string);
 
 		//Frame Rate Function
-		Uint32 time_left(void);
+		static Uint32 time_left(void);
 
 	private:
 		static void *lock(void *data, void **p_pixels);
