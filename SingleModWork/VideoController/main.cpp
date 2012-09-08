@@ -19,8 +19,7 @@ int main(){
 //	VideoController::PlayVideo("video_0.mpg",1,full);
 	while(programRunning == true){
 		SDL_Delay(1000);
-		score++;
-		VideoController::UpdateScore(1,score);
+
 	}
 
 

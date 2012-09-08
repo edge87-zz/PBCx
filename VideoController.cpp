@@ -222,7 +222,7 @@ void *VideoController::RefreshDisplay(void* args){
 			//display text
 			//Convert Int to SS
 			out.str(std::string());
-			framerate *= 120;
+			framerate *= 2;
 
 			out << framerate;
 			//Convert SS to String

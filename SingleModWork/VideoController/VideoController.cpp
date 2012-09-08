@@ -118,16 +118,7 @@ void *VideoController::lock(void *data, void **p_pixels){
 void VideoController::unlock(void *data, void *id, void *const *p_pixels){
     struct ctx *ctx = static_cast<struct ctx*>(data);
 
-    /* VLC just rendered the video, but we can also render stuff */
-    uint16_t *pixels = static_cast<uint16_t*>(*p_pixels);
-    int x, y;
 
-    for(y = 10; y < 40; y++)
-        for(x = 10; x < 40; x++)
-            if(x < 13 || y < 13 || x > 36 || y > 36)
-                pixels[y * VIDEOWIDTH + x] = 0xffff;
-            else
-                pixels[y * VIDEOWIDTH + x] = 0x0;
 
     SDL_UnlockSurface(ctx->surf);
     SDL_UnlockMutex(ctx->mutex);
@@ -236,7 +227,7 @@ void *VideoController::RefreshDisplay(void* args){
 			//display text
 			//Convert Int to SS
 			out.str(std::string());
-			framerate *= 120;
+			framerate *= 2;
 
 			out << framerate;
 			//Convert SS to String
@@ -277,7 +268,7 @@ void *VideoController::RefreshDisplay(void* args){
 
 		SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
 		SDL_Flip(screen);
-		SDL_Delay(10);
+		//SDL_Delay(10);
 	}
 	return NULL;//Shuts the editor up. "oh you didn't return anything, you must be an ahole"
 }
