@@ -95,7 +95,7 @@ struct ctx
 
 static SDL_Rect fpsr;
 
-static struct ctx smallvideo, fullvideo, scoreboard, currentplayersb;
+static struct ctx fullvideo, scoreboard, currentplayersb;
 
 static struct players player[4];
 
@@ -113,9 +113,6 @@ class VideoController{
 		// Destroys Video
 		static bool destroy();
 
-		//\ brief This will reset our thread static variables and call start afterwards.
-		static void Reset();
-
 		static void UpdateScore(int player, std::string score);
 
 		static void EnablePlayerScore(int player_number);
@@ -124,7 +121,7 @@ class VideoController{
 		static void SetScore(int player_number);
 
 		//\ Constantly refreshing our display. This is the threaded part
-		static void* RefreshDisplay(void* args);
+		static void RefreshDisplay();
 
 		static void PlayVideo(std::string filename, int priority);
 

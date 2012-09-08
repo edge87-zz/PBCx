@@ -17,7 +17,7 @@ int main(){
 	VideoController::PlayVideo("video_0.mpg",1);
 //
 //	VideoController::PlayVideo("video_0.mpg",1,full);
-	while(programRunning == true){
+	while(programRunning){
 		SDL_Delay(1000);
 
 	}

@@ -83,19 +83,7 @@ bool VideoController::init(){
 	currentplayersb.rect.x = 10;
 	currentplayersb.rect.y = 720;
 
-	//Debug FPS placement. We're going to try to be dynamic with where we put this based on the resolution. Might be better
-	// To store this information in a variable and not keep calling the function.
-
-	fpsr.x = SDL_GetVideoInfo()->current_w - 100;
-	fpsr.y = SDL_GetVideoInfo()->current_h - 100;
-
-
-	 //kick off display thread and go back
-	 if(pthread_create(&videorefreshthread, NULL, RefreshDisplay, NULL)){
-		 //Thread didn't launch
-	 }
-
-	 return 0;
+	return 0;
 };
 
 void VideoController::EnablePlayerScore(int player_number){
@@ -122,6 +110,7 @@ void VideoController::unlock(void *data, void *id, void *const *p_pixels){
 
     SDL_UnlockSurface(ctx->surf);
     SDL_UnlockMutex(ctx->mutex);
+    VideoController::RefreshDisplay();
 
     assert(id == NULL); /* picture identifier, not needed here */
 }
@@ -130,6 +119,7 @@ void VideoController::display(void *data, void *id){
     /* VLC wants to display the video */
     (void) data;
     assert(id == NULL);
+
 }
 
 void VideoController::PlayVideo(std::string filename, int priority){
@@ -185,92 +175,30 @@ void* VideoController::Play(std::string filename, ctx* ctx){
 	    }
 	   //Stop stream and clean up libVLC
 
-
-
 	    ctx->status = false;
 	    ctx->priority = 0;
 	    return NULL;
 }
 
-void VideoController::Reset(){
+void VideoController::RefreshDisplay(){
 
-}
+	//Blank the screen
+	SDL_BlitSurface(blank, NULL, screen, NULL);
 
-void *VideoController::RefreshDisplay(void* args){
-	//Init
-	SDL_Event event;
-
-	SDL_Rect temprec;
-
-	Uint32 target = SDL_GetTicks() + TICK_INTERVAL;
-	int framerate, action = 0;
-	std::string sframerate, ranscore;
-	std::stringstream out;
-
-	ranscore = "90,000";
-
-//Main Looping
-	while(true){
-		//Blit Our background
-		SDL_BlitSurface(blank, NULL, screen, NULL);
-
-		if(fullvideo.status){
-			SDL_LockMutex(fullvideo.mutex);
-			SDL_BlitSurface(fullvideo.surf, NULL, screen, &fullvideo.rect);
-			SDL_UnlockMutex(fullvideo.mutex);
-		}
-
-		//increment our FPS
-		framerate++;
-
-		if(target < SDL_GetTicks()){
-			//display text
-			//Convert Int to SS
-			out.str(std::string());
-			framerate *= 2;
-
-			out << framerate;
-			//Convert SS to String
-			sframerate = out.str();
-
-			FPS_SURF = TTF_RenderText_Solid(scorefont, sframerate.c_str(), scorefontcolor);
-
-			//SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
-
-			//reset frame rate and string stream
-			framerate = 0;
-			out.str(std::string());
-
-			//Jump another X ms in the future
-			target = SDL_GetTicks() + TICK_INTERVAL;
-		}
-
-		for(int i=0; i<4; i++){
-			if(player[i].status){
-				SDL_BlitSurface(player[i].surf, NULL, screen, &player[i].rect);
-			}
-		}
-
-		while( SDL_PollEvent( &event ) ){
-			switch(event.type){
-				case SDL_QUIT:
-					programRunning = false;
-			        break;
-				case SDL_KEYDOWN:
-					action = event.key.keysym.sym;
-
-			        if(action == SDLK_ESCAPE){
-			        	programRunning = false;
-			        }
-			        break;
-			}
-		}
-
-		SDL_BlitSurface(FPS_SURF, NULL, screen, &fpsr);
-		SDL_Flip(screen);
-		//SDL_Delay(10);
+	if(fullvideo.status){
+		SDL_LockMutex(fullvideo.mutex);
+		SDL_BlitSurface(fullvideo.surf, NULL, screen, &fullvideo.rect);
+		SDL_UnlockMutex(fullvideo.mutex);
 	}
-	return NULL;//Shuts the editor up. "oh you didn't return anything, you must be an ahole"
+
+	for(int i=0; i<4; i++){
+		if(player[i].status){
+			SDL_BlitSurface(player[i].surf, NULL, screen, &player[i].rect);
+		}
+	}
+
+	SDL_Flip(screen);
+	return;
 }
 
 void VideoController::Stop(){
