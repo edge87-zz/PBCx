@@ -18,7 +18,9 @@ int main(){
 //
 //	VideoController::PlayVideo("video_0.mpg",1,full);
 	while(programRunning){
-		SDL_Delay(1000);
+		SDL_Delay(200);
+
+		//check for escape
 
 	}
 

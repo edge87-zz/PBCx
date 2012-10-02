@@ -106,8 +106,6 @@ void *VideoController::lock(void *data, void **p_pixels){
 void VideoController::unlock(void *data, void *id, void *const *p_pixels){
     struct ctx *ctx = static_cast<struct ctx*>(data);
 
-
-
     SDL_UnlockSurface(ctx->surf);
     SDL_UnlockMutex(ctx->mutex);
     VideoController::RefreshDisplay();

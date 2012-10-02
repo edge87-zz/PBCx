@@ -69,7 +69,6 @@ static SDL_Color scorefontcolor, scoreshadowcolor;
 // screen = main surface that we flip
 // background = what is the first layer applied and over written with other surfaces.
 // scorebackground = the background image applied to score zones each time around to remove text reminents
-
 static SDL_Surface *screen, *background, *currentplayerscore, *FPS_SURF, *blank;
 
 // Keep the players scores and locations and everything sane and stored here.
@@ -93,8 +92,6 @@ struct ctx
 	int height;
 };
 
-static SDL_Rect fpsr;
-
 static struct ctx fullvideo, scoreboard, currentplayersb;
 
 static struct players player[4];
@@ -102,7 +99,7 @@ static struct players player[4];
 //Video Player Libs
 static libvlc_instance_t *libvlc;
 static libvlc_media_t *m;
-static 	libvlc_media_player_t *mp;
+static libvlc_media_player_t *mp;
 
 class VideoController{
 	public:
@@ -120,7 +117,7 @@ class VideoController{
 
 		static void SetScore(int player_number);
 
-		//\ Constantly refreshing our display. This is the threaded part
+		//\ Refreshing our display.
 		static void RefreshDisplay();
 
 		static void PlayVideo(std::string filename, int priority);
